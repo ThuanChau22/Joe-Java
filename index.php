@@ -1,3 +1,4 @@
 <?php
-header("Location: ./src/app.php");
-exit();
+// header("Location: ./src/app.php");
+// exit();
+echo "Testing, testing";
