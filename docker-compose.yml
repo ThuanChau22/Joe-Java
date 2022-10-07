@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  app:
+    container_name: joe-java
+    image: joe-java
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ENV: ${ENV}
+        PORT: ${PORT}
+    ports:
+      - ${PORT}:${PORT}
+
+# Start: docker-compose up -d --build
+# Stop: docker-compose down --rmi all
