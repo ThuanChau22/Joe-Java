@@ -21,10 +21,12 @@
       "name": "gcr.io/cloud-builders/docker",
       "args": [
         "build",
+        "--build-arg",
+        "ENV=${_ENV}",
+        "--build-arg",
+        "PORT=${_PORT}",
         "-t",
         "gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$REVISION_ID",
-        "--build-arg ENV=${_ENV}",
-        "--build-arg PORT=${_PORT}",
         "."
       ]
     },
@@ -71,7 +73,7 @@
     ]
   },
   "substitutions": {
-    "_ENV":"<environment>",
+    "_ENV": "<environment>",
     "_PORT": "<port_number>",
     "_DB_NAME": "<database_name>",
     "_SERVICE_NAME": "<service_name>"
