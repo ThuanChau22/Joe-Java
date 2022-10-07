@@ -4,7 +4,7 @@
       "name": "bash",
       "args": [
         "-c",
-        "set | grep -E 'ENV|PORT|DB_NAME|DB_HOST|DB_USER|DB_PASS' > .env"
+        "set | grep -E '^ENV|PORT|DB_NAME|DB_HOST|DB_USER|DB_PASS' > .env"
       ],
       "env": [
         "ENV=${_ENV}",
