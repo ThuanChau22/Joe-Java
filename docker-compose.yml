@@ -7,8 +7,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        ENV: ${ENV}
+        PORT: ${PORT}
     ports:
-      - 8000:80
+      - ${PORT}:${PORT}
 
 # Start: docker-compose up -d --build
 # Stop: docker-compose down --rmi all

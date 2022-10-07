@@ -24,6 +24,7 @@ for ($i = 0; $i < $result->num_rows; $i++) {
   $age = $row["age"];
 }
 $port = $_SERVER["SERVER_PORT"];
+$env = $_ENV["ENV"];
 
 $result->close();
 $conn->close();
@@ -38,6 +39,7 @@ echo <<<_HTML
     <p>Name: $name</p>
     <p>Age: $age</p>
     <p>Running on port: $port</p>
+    <p>Environment: $env</p>
   </body>
 </html>
 _HTML;
