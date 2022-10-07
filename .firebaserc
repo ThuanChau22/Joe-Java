@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "joe-java"
+  },
+  "targets": {
+    "joe-java": {
+      "hosting": {
+        "main": [
+          "joe-java"
+        ],
+        "test": [
+          "joe-java-test"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

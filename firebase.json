@@ -1,0 +1,42 @@
+{
+  "hosting": [
+    {
+      "target": "main",
+      "public": "/",
+      "ignore": [
+        "**/.*",
+        "**/node_modules/**",
+        "firebase.json",
+        "docker-compose.yml",
+        "Dockerfile"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "run": {
+            "serviceId": "try-php"
+          }
+        }
+      ]
+    },
+    {
+      "target": "test",
+      "public": "/",
+      "ignore": [
+        "**/.*",
+        "**/node_modules/**",
+        "firebase.json",
+        "docker-compose.yml",
+        "Dockerfile"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "run": {
+            "serviceId": "joe-java"
+          }
+        }
+      ]
+    }
+  ]
+}
