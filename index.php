@@ -1,3 +1,3 @@
 <?php
-header("Location: https://staging-joe-java.web.app/src/app.php");
+header("Location: ./src/app.php");
 exit();
