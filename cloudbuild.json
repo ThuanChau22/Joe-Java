@@ -42,8 +42,6 @@
         "gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$REVISION_ID",
         "--region",
         "us-central1",
-        "--port",
-        "${_PORT}",
         "--allow-unauthenticated"
       ]
     }
