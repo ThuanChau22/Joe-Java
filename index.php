@@ -1,4 +1,3 @@
 <?php
-// header("Location: ./src/app.php");
-// exit();
-echo "Testing, testing";
+header("Location: https://staging-joe-java.web.app/src/app.php");
+exit();
