@@ -1,7 +1,7 @@
 {
   "hosting": [
     {
-      "target": "main",
+      "target": "production",
       "public": "/",
       "ignore": [
         "**/.*",
@@ -14,13 +14,13 @@
         {
           "source": "**",
           "run": {
-            "serviceId": "try-php"
+            "serviceId": "joe-java-production"
           }
         }
       ]
     },
     {
-      "target": "test",
+      "target": "stating",
       "public": "/",
       "ignore": [
         "**/.*",
@@ -33,7 +33,7 @@
         {
           "source": "**",
           "run": {
-            "serviceId": "joe-java"
+            "serviceId": "joe-java-staging"
           }
         }
       ]

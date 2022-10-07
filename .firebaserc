@@ -5,11 +5,11 @@
   "targets": {
     "joe-java": {
       "hosting": {
-        "main": [
+        "production": [
           "joe-java"
         ],
-        "test": [
-          "joe-java-test"
+        "staging": [
+          "staging-joe-java"
         ]
       }
     }
