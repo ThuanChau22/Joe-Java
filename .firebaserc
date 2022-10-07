@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "joe-java"
+  },
+  "targets": {
+    "joe-java": {
+      "hosting": {
+        "production": [
+          "joe-java"
+        ],
+        "staging": [
+          "staging-joe-java"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
