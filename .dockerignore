@@ -1,8 +1,8 @@
-**/*firebase*
+**/vendor
+**/.env.example
 **/.dockerignore
 **/.git
 **/.gitignore
 **/docker-compose*
 **/Dockerfile*
-**/vendor
 **/README.md
