@@ -1,7 +1,5 @@
 .center {
-  position: absolute;
   text-align: center;
-  top: 35%;
-  transform: translateY(-35%);
-  width: 100%;
+  transform: translateY(250%);
+  max-width: 100%;
 }

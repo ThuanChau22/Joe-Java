@@ -1,0 +1,9 @@
+Options +FollowSymLinks
+
+DirectoryIndex src/index.php
+
+RewriteEngine On
+RewriteBase /
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ /src/pages/$1.php
