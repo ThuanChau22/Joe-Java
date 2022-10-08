@@ -12,6 +12,8 @@ services:
         PORT: ${PORT}
     ports:
       - ${PORT}:${PORT}
+    volumes:
+      - "./:/var/www/html"
 
 # Start: docker-compose up -d --build
 # Stop: docker-compose down --rmi all
