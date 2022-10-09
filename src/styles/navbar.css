@@ -1,0 +1,12 @@
+.navbar {
+  background-color: rgb(102, 51, 0, 0.95);
+}
+
+.navbar-brand {
+  color: #ffb366 !important;
+  font-size: clamp(20px, 3vw, 30px) !important;
+}
+
+.nav-link {
+  font-size: clamp(16px, 2vw, 20px) !important;
+}
