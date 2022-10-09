@@ -16,7 +16,10 @@ function navbar($pageId)
   return <<<NAVBAR
   <nav class="navbar navbar-expand-md navbar-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="./home">Joe's Java</a>
+      <a class="navbar-brand" href="./home">
+        <img class="brand-image" src="../../assets/coffee-beans-icon.png" alt="Joe's Java">
+        <span class="brand-text">Joe's Java</span>
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
         <span class="navbar-toggler-icon"></span>
       </button>
