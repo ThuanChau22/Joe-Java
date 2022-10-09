@@ -10,4 +10,4 @@ $content = <<<CONTENT
   <h1>Coming Soon!</h1>
 </div>
 CONTENT;
-echo document(title: "Products", content: $content, styles: $styles);
+echo document(pageId: "products", content: $content, styles: $styles);

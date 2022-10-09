@@ -32,4 +32,4 @@ $content = <<<CONTENT
   <p><span>Address:</span><span>$address</span></p>
 </div>
 CONTENT;
-echo document(title: "Contacts", content: $content);
+echo document(pageId: "contacts", content: $content);

@@ -7,7 +7,7 @@ $dotenv = Dotenv\Dotenv::createImmutable($dotenvFilePath);
 $dotenv->safeLoad();
 
 // Connect to database
-// Return database connection
+// Return connection instance
 function connectDB()
 {
   try {

@@ -12,4 +12,4 @@ $content = <<<CONTENT
 </div>
 CONTENT;
 
-echo document(title: "Error", content: $content, styles: $styles);
+echo document(pageId: "error", content: $content, styles: $styles);

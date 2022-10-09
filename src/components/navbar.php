@@ -1,11 +1,18 @@
 <?php
-function navbar($title)
+function navbar($pageId)
 {
+  $navItems = "";
   $style = "style='color:#d9d9d9 !important; font-weight: bold !important'";
-  $productsStyle = $title == "Products" ? $style : "";
-  $aboutStyle = $title == "About" ? $style : "";
-  $contactsStyle = $title == "Contacts" ? $style : "";
-  $newsStyle = $title == "News" ? $style : "";
+  $pages = array("products", "about", "contacts", "news");
+  foreach ($pages as $page) {
+    $labelName = ucfirst($page);
+    $labelStyle = $page == $pageId ? $style : "";
+    $navItems .= <<<NAV_ITEM
+    <li class="nav-item">
+      <a class="nav-link" href="./$page" $labelStyle >$labelName</a>
+    </li>
+    NAV_ITEM;
+  }
   return <<<NAVBAR
   <nav class="navbar navbar-expand-md navbar-dark">
     <div class="container-fluid">
@@ -14,20 +21,7 @@ function navbar($title)
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="./products" $productsStyle >Products</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="./about" $aboutStyle >About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="./contacts" $contactsStyle >Contacts</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="./news" $newsStyle >News</a>
-          </li>
-        </ul>
+        <ul class="navbar-nav">$navItems</ul>
       </div>
     </div>
   </nav>
