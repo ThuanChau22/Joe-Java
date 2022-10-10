@@ -25,11 +25,31 @@ $styles = <<<STYLE
 STYLE;
 
 $content = <<<CONTENT
-<div>
-  <h1>Contacts Us</h1>
-  <p><span>Email:</span><span>$email</span></p>
-  <p><span>Phone Number:</span><span>$phone</span></p>
-  <p><span>Address:</span><span>$address</span></p>
+<div class="container">
+  <p class="contacts-page-title">Contacts Us</p>
+  <hr>
+  <div class="contacts-items container">
+    <div class="contacts-item">
+      <p class="contacts-label">Email:</p>
+      <p class="contacts-value">• $email</p>
+      <hr>
+    </div>
+    <div class="contacts-item">
+      <p class="contacts-label">Phone Number:</p>
+      <p class="contacts-value">• $phone</p>
+      <hr>
+    </div>
+    <div class="contacts-item">
+      <p class="contacts-label">Address:</p>
+      <p class="contacts-value">• $address</p>
+      <hr>
+    </div>
+  </div>
 </div>
 CONTENT;
-echo document(pageId: "contacts", content: $content);
+
+echo document(
+  pageId: "contacts",
+  styles: $styles,
+  content: $content,
+);
