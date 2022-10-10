@@ -15,7 +15,7 @@ function navbar($pageId)
   }
   return <<<NAVBAR
   <nav class="navbar navbar-expand-md navbar-dark">
-    <div class="container-fluid">
+    <div class="container">
       <a class="navbar-brand" href="./home">
         <img class="brand-image" src="../../assets/coffee-beans-icon.png" alt="Joe's Java">
         <span class="brand-text">Joe's Java</span>

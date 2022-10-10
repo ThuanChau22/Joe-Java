@@ -1,5 +1,11 @@
-.center {
+.error-center {
   text-align: center;
-  transform: translateY(250%);
-  max-width: 100%;
+  margin: 35vh auto 0;
+  transform: translateY(-35%);
+}
+
+.error-text {
+  color: #ffb366;
+  font-weight: bold;
+  font-size: clamp(25px, 3vw, 50px);
 }
