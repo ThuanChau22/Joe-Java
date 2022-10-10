@@ -17,10 +17,12 @@ function document($pageId = "", $content = "", $styles = "", $scripts = "")
     $head
     <body>
       $navbar
-      <div id="content">
-        $content
+      <div class="custom-scroll">
+        <div id="content">
+          $content
+        </div>
+        $footer
       </div>
-      $footer
       $scripts
     </body>
   </html>
