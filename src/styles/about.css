@@ -1,0 +1,26 @@
+#about {
+  background-color: rgb(2, 96, 90, 0.9);
+}
+
+.about-page-title {
+  color: #ffb366;
+  font-weight: bold;
+  font-size: clamp(25px, 3vw, 50px);
+  padding-top: clamp(15px, 1vw, 25px) !important;
+  text-align: center;
+  padding-bottom: clamp(0px, 3vw, 50px);
+}
+
+.about-content-image {
+  width: 100%;
+  border-radius: 20px;
+  margin: 25px 0px;
+}
+
+.about-content-text {
+  color: #d9d9d9;
+  text-align: center;
+  font-size: clamp(16px, 2vw, 20px);
+  padding: 0px clamp(5px, 3vw, 100px);
+  line-height: clamp(24px, 2vw, 45px);
+}
