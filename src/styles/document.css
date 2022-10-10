@@ -5,29 +5,11 @@ body {
   flex-direction: column;
   font-family: 'Noto Sans Display', sans-serif !important;
   position: relative;
-  overflow: hidden;
+  background-image: url("../../assets/coffee-beans-background.png");
 }
 
 p {
   margin: 0 !important;
-}
-
-.background-image {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.background-image::after {
-  content: "";
-  background-image: url("../../assets/coffee-beans-background.jpg");
-  opacity: 0.25;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: -1;
 }
 
 #content {

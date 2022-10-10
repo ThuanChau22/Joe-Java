@@ -15,7 +15,7 @@ function document($pageId = "", $content = "", $styles = "", $scripts = "")
   <!DOCTYPE html>
   <html>
     $head
-    <body class="background-image">
+    <body>
       $navbar
       <div id="content" class="container-fluid">
         $content
