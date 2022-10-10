@@ -6,10 +6,14 @@ $styles = <<<STYLE
 STYLE;
 
 $content = <<<CONTENT
-<div class="center">
-  <h1>404</h1>
-  <h1>Not Found</h1>
+<div class="error-center">
+  <p class="error-text">404</p>
+  <p class="error-text">Not Found</p>
 </div>
 CONTENT;
 
-echo document(title: "Error", content: $content, styles: $styles);
+echo document(
+  pageId: "error",
+  styles: $styles,
+  content: $content,
+);

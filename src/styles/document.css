@@ -5,56 +5,13 @@ body {
   flex-direction: column;
   font-family: 'Noto Sans Display', sans-serif !important;
   position: relative;
-  overflow: hidden;
+  background-image: url("../../assets/coffee-beans-background.png");
 }
 
 p {
-  margin: 0;
-}
-
-.background-image {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.background-image::after {
-  content: "";
-  background-image: url("../../assets/coffee-background.jpg");
-  opacity: 0.25;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: -1;
-}
-
-.navbar {
-  background-color: #663300;
-}
-
-.navbar-brand {
-  color: #ffa64d !important;
-  font-size: clamp(20px, 3vw, 30px) !important;
-}
-
-.nav-link {
-  font-size: clamp(16px, 2vw, 20px) !important;
+  margin: 0 !important;
 }
 
 #content {
   position: relative;
-}
-
-#footer {
-  background-color: #155115;
-  margin-top: auto;
-  text-align: center;
-}
-
-#footer>p {
-  color: #d9d9d9;
-  font-size: clamp(16px, 2vw, 18px);
-  padding-top: 10px;
 }

@@ -1,6 +1,5 @@
 <?php
 require_once("../components/document.php");
-// require_once("../utils/config.php");
 // try {
 //   $conn = connectDB();
 //   $value = "013739739";
@@ -30,4 +29,4 @@ require_once("../components/document.php");
 $content = <<<CONTENT
 <h1>Home</h1>
 CONTENT;
-echo document(title: "Home", content: $content);
+echo document(pageId: "home", content: $content);

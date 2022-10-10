@@ -1,0 +1,17 @@
+.navbar {
+  background-color: rgb(102, 51, 0, 0.95);
+}
+
+.brand-image {
+  width: clamp(25px, 1.2vw, 35px);
+  height: auto;
+}
+
+.brand-text {
+  color: #ffb366 !important;
+  font-size: clamp(20px, 3vw, 30px) !important;
+}
+
+.nav-link {
+  font-size: clamp(16px, 2vw, 20px) !important;
+}
