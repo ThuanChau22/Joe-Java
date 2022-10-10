@@ -4,8 +4,11 @@ body,
   height: 100%;
   display: flex;
   flex-direction: column;
-  font-family: 'Noto Sans Display', sans-serif !important;
   position: relative;
+}
+
+body {
+  font-family: 'Noto Sans Display', sans-serif !important;
   background-image: url("../../assets/coffee-beans-background.png");
 }
 
