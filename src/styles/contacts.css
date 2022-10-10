@@ -2,6 +2,14 @@
   color: #ffb366;
   font-weight: bold;
   font-size: clamp(25px, 3vw, 50px);
+  margin-top: clamp(15px, 1vw, 25px) !important;
+  text-align: center;
+}
+
+.contacts-page-greeting {
+  text-align: center;
+  margin-top: clamp(15px, 1vw, 25px) !important;
+  margin-bottom: clamp(15px, 1vw, 25px) !important;
 }
 
 .contacts-items {

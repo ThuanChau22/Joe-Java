@@ -6,8 +6,12 @@ $styles = <<<STYLE
 STYLE;
 
 $content = <<<CONTENT
-<div class="center">
-  <h1>Coming Soon!</h1>
+<div id="products" class="container">
+  <p class="products-page-title">Products</p>
+  <hr>
+  <div class="products-center">
+    <h1>Coming Soon!</h1>
+  </div>
 </div>
 CONTENT;
 echo document(pageId: "products", content: $content, styles: $styles);

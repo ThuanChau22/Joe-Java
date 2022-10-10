@@ -11,7 +11,8 @@ try {
     list($key, $value) = explode(":", $entry, 2);
     $contacts[trim($key)] = trim($value);
   }
-  $email = $contacts["email"];
+  $email1 = $contacts["email1"];
+  $email2 = $contacts["email2"];
   $phone = $contacts["phone"];
   $address = $contacts["address"];
 } catch (Exception $e) {
@@ -26,24 +27,37 @@ STYLE;
 
 $content = <<<CONTENT
 <div class="container">
-  <p class="contacts-page-title">Contacts Us</p>
-  <hr>
-  <div class="contacts-items container">
-    <div class="contacts-item">
-      <p class="contacts-label">Email:</p>
-      <p class="contacts-value">• $email</p>
-      <hr>
+  <p class="contacts-page-title">Contact Us</p>
+  <div class="row">
+    <div class="col-xl-8 offset-xl-2">
+      <p class="contacts-page-greeting lead text-muted">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Non pulvinar neque laoreet suspendisse interdum consectetur libero id faucibus. Dignissim convallis aenean et tortor at risus viverra adipiscing at. Sed risus pretium quam vulputate dignissim suspendisse in. Habitant morbi tristique senectus et netus et malesuada.
+      </p>
     </div>
-    <div class="contacts-item">
-      <p class="contacts-label">Phone Number:</p>
-      <p class="contacts-value">• $phone</p>
-      <hr>
-    </div>
-    <div class="contacts-item">
-      <p class="contacts-label">Address:</p>
-      <p class="contacts-value">• $address</p>
-      <hr>
-    </div>
+  </div>
+</div>
+<div class="contacts-items container">
+  <div class="contacts-item">
+    <p class="contacts-label">Email:</p>
+    <ul>
+      <li><p class="contacts-value text-muted">$email1</p></li>
+      <li><p class="contacts-value text-muted">$email2</p></li>
+    </ul>
+    <hr>
+  </div>
+  <div class="contacts-item">
+    <p class="contacts-label">Phone Number:</p>
+    <ul>
+      <li><p class="contacts-value text-muted">$phone</p></li>
+    </ul>
+    <hr>
+  </div>
+  <div class="contacts-item">
+    <p class="contacts-label">Address:</p>
+    <ul>
+      <li><p class="contacts-value text-muted">$address</p></li>
+    </ul>
+    <hr>
   </div>
 </div>
 CONTENT;

@@ -17,7 +17,7 @@ function document($pageId = "", $content = "", $styles = "", $scripts = "")
     $head
     <body>
       $navbar
-      <div id="content" class="container-fluid">
+      <div id="content">
         $content
       </div>
       $footer
