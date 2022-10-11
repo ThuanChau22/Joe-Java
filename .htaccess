@@ -1,9 +1,23 @@
 Options +FollowSymLinks
 
+# inherit rules from httpd.conf
+RewriteOptions Inherit
+
+# Disable directory browsing
+Options All -Indexes
+
+# Prevent folder listing
+IndexIgnore *
+
+# Default index file
 DirectoryIndex src/index.php
 
+# Truncate file path and extension
 RewriteEngine On
 RewriteBase /
-
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^([^\.]+)$ /src/pages/$1.php
+
+<FilesMatch "^\.|cloudbuild|composer*|docker*|readme.md">
+  Deny from all
+</FilesMatch>
