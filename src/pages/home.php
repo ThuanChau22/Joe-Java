@@ -1,5 +1,6 @@
 <?php
 require_once("../components/document.php");
+require_once("../utils/config.php");
 // try {
 //   $conn = connectDB();
 //   $value = "013739739";
@@ -17,11 +18,8 @@ require_once("../components/document.php");
 //   }
 //   $result->close();
 //   $env = $_ENV["ENV"];
-//   $body = <<<BODY
-//     <p>Name: $name</p>
-//     <p>Environment: $env</p>
-//   BODY;
-//   echo Document($body, "Home");
+
+//   echo "$name: $env";
 // } catch (Exception $e) {
 //   die(header('Location: ./error'));
 // }
