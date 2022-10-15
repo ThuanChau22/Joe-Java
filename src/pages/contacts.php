@@ -8,8 +8,10 @@ try {
   $entries = explode("\n", fread($file, filesize($filePath)));
   $contacts = array();
   foreach ($entries as $entry) {
-    list($key, $value) = explode(":", $entry, 2);
-    $contacts[trim($key)] = trim($value);
+    if ($entry != "") {
+      list($key, $value) = explode(":", $entry, 2);
+      $contacts[trim($key)] = trim($value);
+    }
   }
   $email1 = $contacts["email1"];
   $email2 = $contacts["email2"];
