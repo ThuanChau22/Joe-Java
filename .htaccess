@@ -18,6 +18,6 @@ RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^([^\.]+)$ /src/pages/$1.php
 
-<FilesMatch "^\.|cloudbuild|composer*|docker*|readme.md">
+<FilesMatch "^\.|cloudbuild|composer*|docker*|readme.md|.*.txt$">
   Deny from all
 </FilesMatch>
