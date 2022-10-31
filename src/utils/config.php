@@ -20,15 +20,3 @@ function connectDB()
     die(header('Location: ./error'));
   }
 }
-
-// Log into browser
-function consoleLog($data)
-{
-  if (is_string($data)) {
-    $data = "'$data'";
-  }
-  if (is_array($data) || is_object($data)) {
-    $data = "JSON.parse('" . json_encode($data) . "')";
-  }
-  echo "<script>console.log($data)</script>";
-}
