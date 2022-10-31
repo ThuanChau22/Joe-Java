@@ -3,7 +3,7 @@ function navbar($pageId)
 {
   $navItems = "";
   $style = "style='color:#d9d9d9 !important; font-weight: bold !important'";
-  $pages = array("products", "about", "contacts", "news");
+  $pages = array("about", "products", "news", "contacts", "customers");
   foreach ($pages as $page) {
     $labelName = ucfirst($page);
     $labelStyle = $page == $pageId ? $style : "";
