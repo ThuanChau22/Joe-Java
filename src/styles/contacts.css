@@ -6,12 +6,6 @@
   text-align: center;
 }
 
-.contacts-page-greeting {
-  text-align: center;
-  margin-top: clamp(15px, 1vw, 25px) !important;
-  margin-bottom: clamp(15px, 1vw, 25px) !important;
-}
-
 .contacts-items {
   background-color: rgba(255, 255, 255, 0.95);
   border-radius: 10px;
