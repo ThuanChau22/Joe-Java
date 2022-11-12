@@ -14,7 +14,7 @@ function navbar($pageId)
     NAV_ITEM;
   }
   return <<<NAVBAR
-  <nav class="navbar navbar-expand-md navbar-dark">
+  <nav id="navbar" class="navbar navbar-expand-md navbar-dark fixed-top">
     <div class="container">
       <a class="navbar-brand" href="./home">
         <img class="brand-image" src="../../assets/coffee-beans-icon.png" alt="Joe's Java">
@@ -28,5 +28,7 @@ function navbar($pageId)
       </div>
     </div>
   </nav>
+  <div id="navbar-padding"></div>
+  <script src="./src/scripts/navbar.js" type="text/javascript" ></script>
   NAVBAR;
 }
