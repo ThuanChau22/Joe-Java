@@ -11,7 +11,7 @@ $content = <<<CONTENT
   <div class="row">
     <div class="col-xl-2 col-md-0"></div>
     <div class="col-xl-4 col-md-6">
-      <img class="about-content-image img-responsive img-center" src="../../assets/about-coffee-1.jpg" alt="">
+      <img class="about-content-image img-responsive img-center" src="../../assets/about/image-1.jpg" alt="">
     </div>
     <div class="col-xl-4 col-md-6 my-auto">
       <p class="about-content-text">
@@ -23,7 +23,7 @@ $content = <<<CONTENT
   <div class="row">
     <div class="col-xl-2 col-md-0 order-md-4"></div>
     <div class="col-xl-4 col-md-6 order-md-3">
-      <img class="about-content-image img-responsive" src="../../assets/about-coffee-2.jpg" alt="">
+      <img class="about-content-image img-responsive" src="../../assets/about/image-2.jpg" alt="">
     </div>
     <div class="col-xl-4 col-md-6 order-md-2 my-auto">
       <p class="about-content-text">
@@ -35,7 +35,7 @@ $content = <<<CONTENT
   <div class="row">
     <div class="col-xl-2 col-md-0"></div>
     <div class="col-xl-4 col-md-6">
-      <img class="about-content-image img-responsive" src="../../assets/about-coffee-3.jpg" alt="">
+      <img class="about-content-image img-responsive" src="../../assets/about/image-3.jpg" alt="">
     </div>
     <div class="col-xl-4 col-md-6 my-auto">
       <p class="about-content-text">
