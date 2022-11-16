@@ -6,7 +6,7 @@ try {
   $file = fopen($filePath, "r");
   if (!$file) throw new Exception("Failed to open file");
   $entries = explode("\n", fread($file, filesize($filePath)));
-  $contacts = array();
+  $contacts = [];
   foreach ($entries as $entry) {
     if ($entry != "") {
       list($key, $value) = explode(":", $entry, 2);

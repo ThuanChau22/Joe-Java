@@ -2,7 +2,7 @@
 function navbar($pageId)
 {
   $navItems = "";
-  $pages = array("about", "products", "news", "contacts", "customers");
+  $pages = ["about", "products", "news", "contacts", "customers"];
   foreach ($pages as $page) {
     $labelName = ucfirst($page);
     if ($page == $pageId) {
