@@ -82,14 +82,15 @@ function login($username, $password)
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
-    $numberOfRows = $result->num_rows;
-    $user = $result->fetch_assoc();
+    $users = toArray($result, ["password"]);
     $result->close();
     $stmt->close();
     $conn->close();
     $hashedPassword = hash("sha512", $password);
-    $isAuth = $numberOfRows == 1 && $user["password"] == $hashedPassword;
-    return $isAuth ? "" : "Incorrect user name or password.";
+    if (count($users) == 0 || $users[0]["password"] != $hashedPassword) {
+      return "Incorrect user name or password.";
+    }
+    return "";
   } catch (Exception $e) {
     die(header('Location: ./error'));
   }
