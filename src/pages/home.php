@@ -43,7 +43,7 @@ $content = <<<CONTENT
 </div>
 CONTENT;
 
-$script = <<<SCRIPT
+$scripts = <<<SCRIPT
 <script src="/src/scripts/utils.js" type="text/javascript"></script>
 SCRIPT;
 
@@ -51,5 +51,5 @@ echo document(
   pageId: "home",
   styles: $styles,
   content: $content,
-  scripts: $script,
+  scripts: $scripts,
 );
