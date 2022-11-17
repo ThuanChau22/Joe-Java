@@ -2,7 +2,7 @@
 require_once("../components/document.php");
 
 $styles = <<<STYLE
-<link href="./src/styles/home.css" rel="stylesheet">
+<link href="/src/styles/home.css" rel="stylesheet">
 STYLE;
 
 $content = <<<CONTENT
@@ -44,7 +44,7 @@ $content = <<<CONTENT
 CONTENT;
 
 $script = <<<SCRIPT
-<script src="./src/scripts/utils.js" type="text/javascript" ></script>
+<script src="/src/scripts/utils.js" type="text/javascript"></script>
 SCRIPT;
 
 echo document(

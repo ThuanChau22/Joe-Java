@@ -1,4 +1,14 @@
 <?php
+require_once("../../vendor/autoload.php");
+
+// Load environment variables from .env to _ENV
+function load_ENV()
+{
+  $dotenvFilePath = dirname(__DIR__, 2);
+  $dotenv = Dotenv\Dotenv::createImmutable($dotenvFilePath);
+  $dotenv->safeLoad();
+}
+
 // Log into browser
 function consoleLog($data)
 {
@@ -12,7 +22,7 @@ function consoleLog($data)
 }
 
 // Sanitize user input
-function sanitize($conn, $string)
+function sanitizeHTML($string)
 {
-  return htmlentities($conn->real_escape_string(trim($string)));
+  return htmlentities(trim($string));
 }

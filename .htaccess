@@ -15,8 +15,12 @@ DirectoryIndex src/index.php
 # Truncate file path and extension
 RewriteEngine On
 RewriteBase /
+
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^([^\.]+)$ /src/pages/$1.php
+RewriteRule ^([^\.]+)/([a-zA-Z0-9]+)$ /src/pages/$1.php?id=$2 [NC,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ /src/pages/$1.php [NC,L]
 
 <FilesMatch "^\.|cloudbuild|composer*|docker*|readme.md|.*.txt$">
   Deny from all

@@ -1,46 +1,31 @@
 <?php
 require_once("../components/document.php");
-require_once("../utils/config.php");
+require_once("../utils/database.php");
 require_once("../utils/utils.php");
 
 $firstname = $lastname = $email = "";
 $address = $homePhone = $cellPhone = "";
 $successMessage = $errorMessage = "";
 if (isset($_POST["register"])) {
-  try {
-    $conn = connectDB();
-    $firstname = sanitize($conn, $_POST["first_name"]);
-    $lastname = sanitize($conn, $_POST["last_name"]);
-    $email = sanitize($conn, $_POST["email"]);
-    $address = sanitize($conn, $_POST["address"]);
-    $homePhone = sanitize($conn, $_POST["home_phone"]);
-    $cellPhone = sanitize($conn, $_POST["cell_phone"]);
-    $fields = "first_name, last_name, email, address, home_phone, cell_phone";
-    $values = array($firstname, $lastname, $email, $address, $homePhone, $cellPhone);
-    foreach ($values as $value) {
-      if ($value == "") {
-        $errorMessage = "Please fill in all form fields";
-        break;
-      }
+  $firstname = sanitizeHTML($_POST["first_name"]);
+  $lastname = sanitizeHTML($_POST["last_name"]);
+  $email = sanitizeHTML($_POST["email"]);
+  $address = sanitizeHTML($_POST["address"]);
+  $homePhone = sanitizeHTML($_POST["home_phone"]);
+  $cellPhone = sanitizeHTML($_POST["cell_phone"]);
+  $inputs = [$firstname, $lastname, $email, $address, $homePhone, $cellPhone];
+  for ($i = 0; $i < count($inputs) && $errorMessage == ""; $i++) {
+    if ($inputs[$i] == "") {
+      $errorMessage = "Please fill in all form fields";
     }
-    if (!$errorMessage) {
-      try {
-        $stmt = $conn->prepare("INSERT INTO customer ($fields) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssss", ...$values);
-        $stmt->execute();
-        $stmt->close();
-        $conn->close();
-        $firstname = $lastname = $email = "";
-        $address = $homePhone = $cellPhone = "";
-        $successMessage = "Customer created";
-      } catch (Exception $e) {
-        if ($conn->errno == 1062) {
-          $errorMessage = "Customer already existed";
-        }
-      }
-    }
-  } catch (Exception $e) {
-    die(header('Location: ./error'));
+  }
+  if (!$errorMessage) {
+    $errorMessage = addCustomer(...$inputs);
+  }
+  if (!$errorMessage) {
+    $firstname = $lastname = $email = "";
+    $address = $homePhone = $cellPhone = "";
+    $successMessage = "Customer created";
   }
 }
 
@@ -50,40 +35,25 @@ $numberOfResults = "";
 if (isset($_GET["search"])) {
   try {
     $conn = connectDB();
-    $search = sanitize($conn, $_GET["search"]);
+    $search = sanitizeHTML($_GET["search"]);
     if ($search != "") {
-      $types = "";
-      $conditions = "";
-      $conditionValues = array();
-      $conditionFields = array("first_name", "last_name", "email", "home_phone", "cell_phone");
-      foreach ($conditionFields as $index => $field) {
-        $types .= "s";
-        $isLast = $index == count($conditionFields) - 1;
-        $conditions .= "$field LIKE ?" . (!$isLast ? " OR " : "");
-        array_push($conditionValues, "%$search%");
-      }
-      $stmt = $conn->prepare("SELECT * FROM customer WHERE $conditions");
-      $stmt->bind_param($types, ...$conditionValues);
-      $stmt->execute();
-      $result = $stmt->get_result();
-      $stmt->close();
-      $conn->close();
+      $customers = listCustomers($search);
       $entries = "";
-      foreach ($result as $row) {
-        $entry = "<li><b>Name: </b>" . $row["first_name"] . " " . $row["last_name"] . "</li>";
-        $entry .= "<li><b>Email: </b>" . $row["email"] . "</li>";
-        $entry .= "<li><b>Address: </b>" . $row["address"] . "</li>";
-        $entry .= "<li><b>Home Contact: </b>" . $row["home_phone"] . "</li>";
-        $entry .= "<li><b>Mobile Contact: </b>" . $row["cell_phone"] . "</li>";
+      foreach ($customers as $customer) {
+        $name = $customer["first_name"] . " " . $customer["last_name"];
+        $entry = "<li><b>Name: </b>" . $name . "</li>";
+        $entry .= "<li><b>Email: </b>" . $customer["email"] . "</li>";
+        $entry .= "<li><b>Address: </b>" . $customer["address"] . "</li>";
+        $entry .= "<li><b>Home Contact: </b>" . $customer["home_phone"] . "</li>";
+        $entry .= "<li><b>Mobile Contact: </b>" . $customer["cell_phone"] . "</li>";
         $entries .= "<ul>$entry</ul><hr>";
       }
-      $numberOfResults = $result->num_rows ." results found!";
+      $numberOfResults = count($customers) . " results found!";
       $searchResult = <<<SEARCH_RESULT
       <div class="container">
         $entries
       </div>
       SEARCH_RESULT;
-      $result->close();
     }
   } catch (Exception $e) {
     die(header('Location: ./error'));
@@ -91,7 +61,7 @@ if (isset($_GET["search"])) {
 }
 
 $styles = <<<STYLE
-<link href="./src/styles/customers.css" rel="stylesheet">
+<link href="/src/styles/customers.css" rel="stylesheet">
 STYLE;
 
 $content = <<<CONTENT
