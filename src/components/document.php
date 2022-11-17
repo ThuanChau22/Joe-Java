@@ -5,9 +5,11 @@ require_once("footer.php");
 
 function document($pageId = "", $content = "", $styles = "", $scripts = "")
 {
-  $baseStyles = "<link href='./src/styles/document.css' rel='stylesheet'>";
-  $baseStyles .= "<link href='./src/styles/navbar.css' rel='stylesheet'>";
-  $baseStyles .= "<link href='./src/styles/footer.css' rel='stylesheet'>";
+  $baseStyles = <<<STYLES
+  <link href="/src/styles/document.css" rel="stylesheet">
+  <link href="/src/styles/navbar.css" rel="stylesheet">
+  <link href="/src/styles/footer.css" rel="stylesheet">
+  STYLES;
   $head = head($pageId, $baseStyles . $styles);
   $navbar = navbar($pageId);
   $footer = footer();

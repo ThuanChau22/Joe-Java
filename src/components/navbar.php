@@ -15,7 +15,7 @@ function navbar($pageId)
     } else {
       $navItems .= <<<NAV_ITEM
       <li class="nav-item">
-        <a class="nav-link" href="./$page">$labelName</a>
+        <a class="nav-link" href="/$page">$labelName</a>
       </li>
       NAV_ITEM;
     }
@@ -23,7 +23,7 @@ function navbar($pageId)
   return <<<NAVBAR
   <nav id="navbar" class="navbar navbar-expand-md navbar-dark fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="./home">
+      <a class="navbar-brand" href="/home">
         <img class="brand-image" src="../../assets/coffee-beans-icon.png" alt="Joe's Java">
         <span class="brand-text">Joe's Java</span>
       </a>
@@ -36,6 +36,6 @@ function navbar($pageId)
     </div>
   </nav>
   <div id="navbar-padding"></div>
-  <script src="./src/scripts/navbar.js" type="text/javascript" ></script>
+  <script src="/src/scripts/navbar.js" type="text/javascript"></script>
   NAVBAR;
 }

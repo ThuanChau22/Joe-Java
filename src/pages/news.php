@@ -2,7 +2,7 @@
 require_once("../components/document.php");
 
 $styles = <<<STYLE
-<link href="./src/styles/news.css" rel="stylesheet">
+<link href="/src/styles/news.css" rel="stylesheet">
 STYLE;
 
 $content = <<<CONTENT

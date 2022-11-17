@@ -41,7 +41,7 @@ $authenticated = <<<AUTHENTICATED
 AUTHENTICATED;
 
 $styles = <<<STYLE
-<link href="./src/styles/auth.css" rel="stylesheet">
+<link href="/src/styles/auth.css" rel="stylesheet">
 STYLE;
 
 $content = $authForm;

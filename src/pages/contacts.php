@@ -24,7 +24,7 @@ try {
 }
 
 $styles = <<<STYLE
-<link href="./src/styles/contacts.css" rel="stylesheet">
+<link href="/src/styles/contacts.css" rel="stylesheet">
 STYLE;
 
 $content = <<<CONTENT

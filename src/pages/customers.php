@@ -61,7 +61,7 @@ if (isset($_GET["search"])) {
 }
 
 $styles = <<<STYLE
-<link href="./src/styles/customers.css" rel="stylesheet">
+<link href="/src/styles/customers.css" rel="stylesheet">
 STYLE;
 
 $content = <<<CONTENT
