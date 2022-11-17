@@ -1,11 +1,13 @@
 <?php
 require_once("../components/document.php");
+require_once("../utils/utils.php");
 
 try {
   $filePath = "../../assets/contacts.txt";
   $file = fopen($filePath, "r");
   if (!$file) throw new Exception("Failed to open file");
-  $entries = explode("\r\n", fread($file, filesize($filePath)));
+  $fileContent = fread($file, filesize($filePath));
+  $entries = array_map("trim", explode("\n", $fileContent));
   $contacts = [];
   foreach ($entries as $entry) {
     if ($entry != "") {
