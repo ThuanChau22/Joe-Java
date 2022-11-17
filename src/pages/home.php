@@ -44,7 +44,7 @@ $content = <<<CONTENT
 CONTENT;
 
 $script = <<<SCRIPT
-<script src="./src/scripts/utils.js" type="text/javascript" ></script>
+<script src="./src/scripts/utils.js" type="text/javascript"></script>
 SCRIPT;
 
 echo document(

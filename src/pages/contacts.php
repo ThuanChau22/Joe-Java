@@ -5,12 +5,12 @@ try {
   $filePath = "../../assets/contacts.txt";
   $file = fopen($filePath, "r");
   if (!$file) throw new Exception("Failed to open file");
-  $entries = explode("\n", fread($file, filesize($filePath)));
+  $entries = explode("\r\n", fread($file, filesize($filePath)));
   $contacts = [];
   foreach ($entries as $entry) {
     if ($entry != "") {
-      list($key, $value) = explode(":", $entry, 2);
-      $contacts[trim($key)] = trim($value);
+      [$key, $value] = array_map("trim", explode(":", $entry, 2));
+      $contacts[$key] = $value;
     }
   }
   $email1 = $contacts["email1"];
