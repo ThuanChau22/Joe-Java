@@ -59,7 +59,7 @@
 }
 
 .home-guide-content {
-  color: #d9d9d9;
+  color: #ffb366;
   font-weight: bold;
   font-size: clamp(25px, 2vw, 40px);
   line-height: clamp(24px, 2vw, 45px);

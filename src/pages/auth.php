@@ -1,36 +1,22 @@
 <?php
 require_once("../components/document.php");
-require_once("../utils/config.php");
+require_once("../utils/database.php");
 require_once("../utils/utils.php");
 
 $isAuthenticated = false;
 $username = $errorMessage = "";
 if (isset($_POST["username"]) && isset($_POST["password"])) {
-  try {
-    $conn = connectDB();
-    $username = sanitize($conn, $_POST["username"]);
-    $password = sanitize($conn, $_POST["password"]);
-    if ($username == "" || $password == "") {
-      $errorMessage = "Please fill in all form fields.";
-    }
-    if (!$errorMessage && isset($_POST["signin"])) {
-      $stmt = $conn->prepare("SELECT password FROM admin WHERE username = ?");
-      $stmt->bind_param("s", $username);
-      $stmt->execute();
-      $result = $stmt->get_result();
-      $stmt->close();
-      $conn->close();
-      $hashPassword = hash("sha512", $password);
-      if ($result->num_rows != 0 && $result->fetch_assoc()["password"] == $hashPassword) {
-        $isAuthenticated = true;
-        $username = ucfirst($username);
-      } else {
-        $errorMessage = "Incorrect user name or password.";
-      }
-      $result->close();
-    }
-  } catch (Exception $e) {
-    die(header('Location: ./error'));
+  $username = sanitizeHTML($_POST["username"]);
+  $password = sanitizeHTML($_POST["password"]);
+  if ($username == "" || $password == "") {
+    $errorMessage = "Please fill in all form fields.";
+  }
+  if (!$errorMessage && isset($_POST["signin"])) {
+    $errorMessage = login($username, $password);
+  }
+  if (!$errorMessage) {
+    $isAuthenticated = true;
+    $username = ucfirst($username);
   }
 }
 
@@ -55,7 +41,7 @@ $authenticated = <<<AUTHENTICATED
 AUTHENTICATED;
 
 $styles = <<<STYLE
-<link href="./src/styles/auth.css" rel="stylesheet">
+<link href="/src/styles/auth.css" rel="stylesheet">
 STYLE;
 
 $content = $authForm;
