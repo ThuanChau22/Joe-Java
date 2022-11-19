@@ -43,11 +43,6 @@
   box-shadow: 0 2px 4px -1px #0003, 0 4px 5px #00000024, 0 1px 10px #0000001f;
 }
 
-.home-section-divider {
-  border-top: 3px solid #ffb366;
-  opacity: 0.5;
-}
-
 #home-guide-section {
   text-align: center;
   padding: clamp(50px, 10vw, 250px) 0%;

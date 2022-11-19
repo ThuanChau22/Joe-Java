@@ -7,8 +7,15 @@ STYLE;
 
 $content = <<<CONTENT
 <div class="error-center">
-  <p class="error-text">404</p>
-  <p class="error-text">Not Found</p>
+  <p class="error-title">Oops!</p>
+  <p class="error-info">Something went wrong.</p>
+  <p class="error-cta">
+    <a class="error-link" href="/home">
+      <span>Go to our</span>
+      <span class="error-link-indicator">home</span>
+      <span>page</span>
+    </a>
+  </p>
 </div>
 CONTENT;
 

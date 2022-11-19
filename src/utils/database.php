@@ -20,7 +20,8 @@ function connectDB()
     $dbname = $_ENV["DB_NAME"];
     return new mysqli($host, $user, $pass, $dbname);
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -92,7 +93,8 @@ function login($username, $password)
     }
     return "";
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -134,7 +136,8 @@ function listCustomers($search = null)
     $conn->close();
     return $customers;
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -165,7 +168,8 @@ function addCustomer($firstname, $lastname, $email, $address, $homePhone, $cellP
       $conn->close();
     }
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -190,7 +194,8 @@ function listProducts()
     $conn->close();
     return $products;
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -222,7 +227,8 @@ function listProductsByCategory($category = "coffee")
     $conn->close();
     return $products;
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -247,7 +253,8 @@ function listProductsByMostVisited($limit = 5)
     $conn->close();
     return $products;
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -257,32 +264,35 @@ function listProductsByMostVisited($limit = 5)
 function listProductsByIds($ids)
 {
   try {
-    $conn = connectDB();
-    $wildcards = $types = "";
-    for ($i = 0; $i < count($ids); $i++) {
-      $isLast = $i == count($ids) - 1;
-      $wildcards .= "?" . ($isLast ? "" : ",");
-      $types .= "s";
-    }
-    $query = <<<QUERY
-    SELECT id, name, image
-    FROM product WHERE id IN($wildcards)
-    QUERY;
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param($types, ...$ids);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $productsMap = toMap($result, ["id", "name", "image"]);
-    $result->close();
-    $stmt->close();
-    $conn->close();
     $products = [];
-    foreach ($ids as $id) {
-      $products[] = $productsMap[$id];
+    if (count($ids) > 0) {
+      $conn = connectDB();
+      $wildcards = $types = "";
+      for ($i = 0; $i < count($ids); $i++) {
+        $isLast = $i == count($ids) - 1;
+        $wildcards .= "?" . ($isLast ? "" : ",");
+        $types .= "s";
+      }
+      $query = <<<QUERY
+      SELECT id, name, image
+      FROM product WHERE id IN($wildcards)
+      QUERY;
+      $stmt = $conn->prepare($query);
+      $stmt->bind_param($types, ...$ids);
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $productsMap = toMap($result, ["id", "name", "image"]);
+      $result->close();
+      $stmt->close();
+      $conn->close();
+      foreach ($ids as $id) {
+        $products[] = $productsMap[$id];
+      }
     }
     return $products;
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -306,7 +316,8 @@ function getProductById($id)
     $conn->close();
     return $product;
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -323,7 +334,8 @@ function increaseProductVisitedCount($id)
     $stmt->execute();
     return "";
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   } finally {
     $stmt->close();
     $conn->close();
