@@ -16,15 +16,16 @@ DirectoryIndex src/index.php
 RewriteEngine On
 RewriteBase /
 
+# Route /products/{product-id} to item.php?id={product-id}
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^products/([a-zA-Z0-9]+)$ /src/pages/item.php?id=$1 [NC,L]
 
+# Route /{page-name} to src/pages/{page-name}.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^([^\.]+)$ /src/pages/$1.php [NC,L]
 
-# 404 Not Found
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ /src/pages/404.php [NC,L]
+# Route not found page to /src/pages/404.php
+ErrorDocument 404 /src/pages/404.php
 
 <FilesMatch "^\.|cloudbuild|composer*|docker*|readme.md|.*.txt$">
   Deny from all

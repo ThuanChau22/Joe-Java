@@ -20,7 +20,8 @@ function connectDB()
     $dbname = $_ENV["DB_NAME"];
     return new mysqli($host, $user, $pass, $dbname);
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -92,7 +93,8 @@ function login($username, $password)
     }
     return "";
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -134,7 +136,8 @@ function listCustomers($search = null)
     $conn->close();
     return $customers;
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -165,7 +168,8 @@ function addCustomer($firstname, $lastname, $email, $address, $homePhone, $cellP
       $conn->close();
     }
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -190,7 +194,8 @@ function listProducts()
     $conn->close();
     return $products;
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -222,7 +227,8 @@ function listProductsByCategory($category = "coffee")
     $conn->close();
     return $products;
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -247,7 +253,8 @@ function listProductsByMostVisited($limit = 5)
     $conn->close();
     return $products;
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -282,7 +289,8 @@ function listProductsByIds($ids)
     }
     return $products;
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -306,7 +314,8 @@ function getProductById($id)
     $conn->close();
     return $product;
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 
@@ -323,7 +332,8 @@ function increaseProductVisitedCount($id)
     $stmt->execute();
     return "";
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   } finally {
     $stmt->close();
     $conn->close();
