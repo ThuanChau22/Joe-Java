@@ -14,7 +14,6 @@ $content = <<<CONTENT
       Start Here
     </button>
   </div>
-  <hr class="home-section-divider">
   <div id="home-guide-section" class="container row mx-auto">
     <div class="col-md-4">
       <img class="home-guide-image img-responsive img-center" src="../../assets/home/coffee-bag.png" alt="">
@@ -35,7 +34,6 @@ $content = <<<CONTENT
       <div class="pb-5"></div>
     </div>
   </div>
-  <hr class="home-section-divider">
   <div class="home-discover-section">
     <a class="home-discover-link" href="./about">Learn More</a>
     <a class="home-discover-link" href="./products">All Products</a>
