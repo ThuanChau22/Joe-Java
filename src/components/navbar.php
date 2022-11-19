@@ -1,24 +1,19 @@
 <?php
+require_once("../utils/utils.php");
+
 function navbar($pageId)
 {
   $navItems = "";
   $pages = ["about", "products", "news", "contacts", "customers"];
+  $style = "style='color:#d9d9d9 !important; font-weight: bold !important'";
   foreach ($pages as $page) {
-    $labelName = ucfirst($page);
-    if ($page == $pageId) {
-      $style = "style='color:#d9d9d9 !important; font-weight: bold !important'";
-      $navItems .= <<<NAV_ITEM
-      <li class="nav-item">
-        <a class="nav-link disabled" $style >$labelName</a>
-      </li>
-      NAV_ITEM;
-    } else {
-      $navItems .= <<<NAV_ITEM
-      <li class="nav-item">
-        <a class="nav-link" href="/$page">$labelName</a>
-      </li>
-      NAV_ITEM;
-    }
+    $labelName = ucwords(strtolower($page));
+    $labelStyle = $page == $pageId ? $style : "";
+    $navItems .= <<<NAV_ITEM
+    <li class="nav-item">
+      <a class="nav-link" href="/$page" $labelStyle>$labelName</a>
+    </li>
+    NAV_ITEM;
   }
   return <<<NAVBAR
   <nav id="navbar" class="navbar navbar-expand-md navbar-dark fixed-top">
