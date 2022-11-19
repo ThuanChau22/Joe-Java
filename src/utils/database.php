@@ -264,28 +264,30 @@ function listProductsByMostVisited($limit = 5)
 function listProductsByIds($ids)
 {
   try {
-    $conn = connectDB();
-    $wildcards = $types = "";
-    for ($i = 0; $i < count($ids); $i++) {
-      $isLast = $i == count($ids) - 1;
-      $wildcards .= "?" . ($isLast ? "" : ",");
-      $types .= "s";
-    }
-    $query = <<<QUERY
-    SELECT id, name, image
-    FROM product WHERE id IN($wildcards)
-    QUERY;
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param($types, ...$ids);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $productsMap = toMap($result, ["id", "name", "image"]);
-    $result->close();
-    $stmt->close();
-    $conn->close();
     $products = [];
-    foreach ($ids as $id) {
-      $products[] = $productsMap[$id];
+    if (count($ids) > 0) {
+      $conn = connectDB();
+      $wildcards = $types = "";
+      for ($i = 0; $i < count($ids); $i++) {
+        $isLast = $i == count($ids) - 1;
+        $wildcards .= "?" . ($isLast ? "" : ",");
+        $types .= "s";
+      }
+      $query = <<<QUERY
+      SELECT id, name, image
+      FROM product WHERE id IN($wildcards)
+      QUERY;
+      $stmt = $conn->prepare($query);
+      $stmt->bind_param($types, ...$ids);
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $productsMap = toMap($result, ["id", "name", "image"]);
+      $result->close();
+      $stmt->close();
+      $conn->close();
+      foreach ($ids as $id) {
+        $products[] = $productsMap[$id];
+      }
     }
     return $products;
   } catch (Exception $e) {
