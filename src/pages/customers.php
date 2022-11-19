@@ -56,7 +56,8 @@ if (isset($_GET["search"])) {
       SEARCH_RESULT;
     }
   } catch (Exception $e) {
-    die(header('Location: ./error'));
+    include_once("error.php");
+    die();
   }
 }
 

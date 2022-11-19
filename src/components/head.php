@@ -1,7 +1,7 @@
 <?php
 function head($pageId = "", $styles = "")
 {
-  $title = "Joe's Java" . (!empty($pageId) ? " | " . ucfirst($pageId) : "");
+  $title = "Joe's Java" . (!empty($pageId) ? " | " . ucwords(strtolower($pageId)) : "");
   return <<<HEAD
   <head>
     <title>$title</title>

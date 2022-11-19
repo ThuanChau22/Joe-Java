@@ -20,7 +20,8 @@ try {
   $phone = $contacts["phone"];
   $address = $contacts["address"];
 } catch (Exception $e) {
-  die(header('Location: ./error'));
+  include_once("error.php");
+  die();
 } finally {
   fclose($file);
 }
