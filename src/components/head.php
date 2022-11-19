@@ -1,7 +1,13 @@
 <?php
 function head($pageId = "", $styles = "")
 {
-  $title = "Joe's Java" . (!empty($pageId) ? " | " . ucfirst($pageId) : "");
+  $title = "Joe's Java";
+  if (!empty($pageId)) {
+    $title .= " |";
+    foreach (array_map("ucfirst", explode(" ", $pageId)) as $word) {
+      $title .= " $word";
+    };
+  }
   return <<<HEAD
   <head>
     <title>$title</title>
