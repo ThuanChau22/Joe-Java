@@ -5,7 +5,8 @@
 .products-page-title {
   color: #ffb366;
   font-weight: bold;
-  font-size: clamp(25px, 3vw, 50px);
+  font-size: clamp(50px, 4vw, 75px);
+  font-family: "Dancing Script", cursive;
   margin-top: clamp(15px, 1vw, 25px) !important;
   text-align: center;
 }
