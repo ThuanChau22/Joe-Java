@@ -13,10 +13,6 @@
   padding: clamp(10px, 1vw, 20px) !important;
 }
 
-.contacts-item {
-  margin-top: clamp(10px, 1vw, 25px) !important;
-}
-
 .contacts-label {
   color: #663300;
   font-weight: bold;

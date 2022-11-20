@@ -25,9 +25,9 @@ function getSelectedFilters()
 }
 
 /**
- * List filter options
+ * Create products select form
  */
-function getFilterOptions($selectedFilters = ALL_PRODUCTS)
+function productSelectForm($selectedFilters = ALL_PRODUCTS)
 {
   $options = "";
   $optionEntries = [
@@ -45,7 +45,18 @@ function getFilterOptions($selectedFilters = ALL_PRODUCTS)
     </option>
     OPTIONS;
   }
-  return $options;
+  return <<<SELECT_FORM
+  <form class="row" method="get" action="products">
+    <div class="col-lg-2 col-md-4 col-9 pe-1">
+      <select class="products-filter-select form-select" name="filters">
+        $options
+      </select>
+    </div>
+    <div class="col-lg-1 col-md-2 col-3 ps-0">
+      <input class="products-filter-btn" type="submit" value="Apply">
+    </div>
+  </form>
+  SELECT_FORM;
 }
 
 /**
@@ -103,7 +114,7 @@ function getProductCards($selectedFilters = ALL_PRODUCTS)
 }
 
 $selectedFilters = getSelectedFilters();
-$filterOptions = getFilterOptions($selectedFilters);
+$productSelectForm = productSelectForm($selectedFilters);
 $productCards = getProductCards($selectedFilters);
 
 $styles = <<<STYLE
@@ -114,16 +125,7 @@ $content = <<<CONTENT
 <div id="products" class="container">
   <p class="products-page-title">Products</p>
   <hr>
-  <form method="get" action="products" action class="row">
-    <div class="col-lg-2 col-md-4 col-9 pe-1">
-      <select class="products-filter-select form-select" name="filters">
-        $filterOptions
-      </select>
-    </div>
-    <div class="col-lg-1 col-md-2 col-3 ps-0">
-      <input class="products-filter-btn" type="submit" value="Apply">
-    </div>
-  </form>
+  $productSelectForm
   <div class="row">
     $productCards
   </div>
