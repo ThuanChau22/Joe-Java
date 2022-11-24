@@ -22,6 +22,7 @@ try {
   $phone = $contacts["phone"];
   $address = $contacts["address"];
 } catch (Exception $e) {
+  http_response_code(400);
   include_once("error.php");
   die();
 } finally {
