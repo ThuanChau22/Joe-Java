@@ -72,3 +72,14 @@ function addCookieProduct($id)
   $expireTime = time() + 5 * 24 * 60 * 60;
   setcookie(VISITED_PRODUCTS, json_encode($productIds), $expireTime);
 }
+
+/**
+ * Stylizing 10-digit phone number
+ */
+function prettyPhoneNumber($phoneNumber)
+{
+  $area = substr($phoneNumber, 0, 3);
+  $prefix = substr($phoneNumber, 3, 3);
+  $line = substr($phoneNumber, 7, 4);
+  return "($area) $prefix-$line";
+}
