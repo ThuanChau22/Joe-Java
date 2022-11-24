@@ -46,9 +46,9 @@ function productSelectForm($selectedFilters = ALL_PRODUCTS)
     OPTIONS;
   }
   return <<<SELECT_FORM
-  <form class="row" method="get" action="products">
+  <form id="select-product-form" class="row" method="get" action="products">
     <div class="col-lg-2 col-md-4 col-9 pe-1">
-      <select class="products-filter-select form-select" name="filters">
+      <select class="products-filter-select form-select" name="filters" onchange="submitForm('select-product-form')">
         $options
       </select>
     </div>
@@ -62,9 +62,8 @@ function productSelectForm($selectedFilters = ALL_PRODUCTS)
 /**
  * List products based on selected filters
  */
-function getProductCards($selectedFilters = ALL_PRODUCTS)
+function productList($selectedFilters = ALL_PRODUCTS)
 {
-  $productCards = "";
   $products = [];
   switch ($selectedFilters) {
     case ALL_PRODUCTS:
@@ -89,11 +88,19 @@ function getProductCards($selectedFilters = ALL_PRODUCTS)
       die();
       break;
   }
+  if (count($products) == 0) {
+    return <<<PRODUCT_EMPTY
+    <div class="products-empty">
+      <p class="products-empty-content">Empty</p>
+    </div>
+    PRODUCT_EMPTY;
+  }
+  $productList = "";
   foreach ($products as $product) {
     $productId = $product["id"];
     $productImage = $product["image"];
     $productName = $product["name"];
-    $productCards .= <<<PRODUCT_CARD
+    $productList .= <<<PRODUCT_CARD
     <div class="products-card col-xl-2 col-lg-3 col-md-4 col-sm-6">
       <a class="products-card-link" href=/products/$productId>
         <div class="card">
@@ -110,12 +117,22 @@ function getProductCards($selectedFilters = ALL_PRODUCTS)
     </div>
     PRODUCT_CARD;
   }
-  return $productCards;
+  return <<<PRODUCT_LIST
+  <div class="row">
+    $productList
+  </div>
+  PRODUCT_LIST;
 }
 
-$selectedFilters = getSelectedFilters();
-$productSelectForm = productSelectForm($selectedFilters);
-$productCards = getProductCards($selectedFilters);
+try {
+  $selectedFilters = getSelectedFilters();
+  $productSelectForm = productSelectForm($selectedFilters);
+  $productList = productList($selectedFilters);
+} catch (Exception $e) {
+  http_response_code(400);
+  include_once("error.php");
+  die();
+}
 
 $styles = <<<STYLE
 <link href="/src/styles/products.css" rel="stylesheet">
@@ -126,15 +143,14 @@ $content = <<<CONTENT
   <p class="products-page-title">Products</p>
   <hr>
   $productSelectForm
-  <div class="row">
-    $productCards
-  </div>
+  $productList
   <div class="pt-5"></div>
 </div>
 CONTENT;
 
 $scripts = <<<SCRIPT
 <script src="/src/scripts/products.js" type="text/javascript"></script>
+<script src="/src/scripts/utils.js" type="text/javascript"></script>
 SCRIPT;
 
 echo document(
