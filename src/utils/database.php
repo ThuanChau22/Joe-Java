@@ -27,42 +27,6 @@ function connect_db()
 }
 
 /**
- * Convert query results into a list
- * Each entry is an associative array
- */
-function to_array($result, $fields)
-{
-  $array = [];
-  foreach ($result as $row) {
-    $entry = [];
-    foreach ($fields as $field) {
-      $entry[$field] = $row[$field];
-    }
-    $array[] = $entry;
-  }
-  return $array;
-}
-
-/**
- * Convert query results into a map
- * Each entry has record id as key
- * and an associative array as value
- * * Order of entries is not guaranteed
- */
-function to_map($result, $fields)
-{
-  $map = [];
-  foreach ($result as $row) {
-    $entry = [];
-    foreach ($fields as $field) {
-      $entry[$field] = $row[$field];
-    }
-    $map[$row["id"]] = $entry;
-  }
-  return $map;
-}
-
-/**
  * Sanitize MySQL input
  */
 function sanitize_sql($conn, $string)
@@ -84,7 +48,7 @@ function login($username, $password)
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
-    $users = to_array($result, ["password"]);
+    $users = $result->fetch_all(MYSQLI_ASSOC);
     $result->close();
     $stmt->close();
     $conn->close();
@@ -109,30 +73,31 @@ function list_customers($search = "")
 {
   try {
     $conn = connect_db();
-    $conditions = "";
-    $inputs = [];
-    if ($search != "") {
-      $search = sanitize_sql($conn, $search);
-      if ($search != "") {
-        $keys = ["first_name", "last_name", "email", "home_phone", "cell_phone"];
-        foreach ($keys as $i => $key) {
-          $isLast = $i == count($keys) - 1;
-          $conditions .= "$key LIKE ?" . ($isLast ? "" : " OR ");
-          $inputs[] = "%$search%";
-        }
-      }
-    }
-    $fields = "first_name, last_name, email, address, home_phone, cell_phone";
-    $query = "SELECT $fields FROM customer";
+    $query = <<<QUERY
+    SELECT first_name, last_name,
+      email, address, home_phone, cell_phone
+    FROM customer
+    QUERY;
     $stmt = $conn->prepare($query);
-    if ($conditions != "") {
+    $search = sanitize_sql($conn, $search);
+    if ($search != "") {
+      $conditions = "";
+      $conditionValues = [];
+      $searchFields = [
+        "first_name", "last_name",
+        "email", "home_phone", "cell_phone",
+      ];
+      foreach ($searchFields as $i => $field) {
+        $isLast = $i == count($searchFields) - 1;
+        $conditions .= "$field LIKE ?" . ($isLast ? "" : " OR ");
+        $conditionValues[] = "%$search%";
+      }
       $stmt = $conn->prepare("$query WHERE $conditions");
-      $stmt->bind_param("sssss", ...$inputs);
+      $stmt->bind_param("sssss", ...$conditionValues);
     }
     $stmt->execute();
     $result = $stmt->get_result();
-    $fields = array_map("trim", explode(",", $fields));
-    $customers = to_array($result, $fields);
+    $customers = $result->fetch_all(MYSQLI_ASSOC);
     $result->close();
     $stmt->close();
     $conn->close();
@@ -151,17 +116,16 @@ function add_customer($firstname, $lastname, $email, $address, $homePhone, $cell
 {
   try {
     $conn = connect_db();
-    $inputs = [$firstname, $lastname, $email, $address, $homePhone, $cellPhone];
-    for ($i = 0; $i < count($inputs); $i++) {
-      $inputs[$i] = sanitize_sql($conn, $inputs[$i]);
+    $values = [$firstname, $lastname, $email, $address, $homePhone, $cellPhone];
+    foreach ($values as $i => $value) {
+      $values[$i] = sanitize_sql($conn, $value);
     }
+    $fields = "first_name, last_name, email, address, home_phone, cell_phone";
+    $query = "INSERT INTO customer ($fields) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ssssss", ...$values);
     try {
-      $fields = "first_name, last_name, email, address, home_phone, cell_phone";
-      $query = "INSERT INTO customer ($fields) VALUES (?, ?, ?, ?, ?, ?)";
-      $stmt = $conn->prepare($query);
-      $stmt->bind_param("ssssss", ...$inputs);
       $stmt->execute();
-      return "";
     } catch (Exception $e) {
       if ($conn->errno == DUPLICATE_ERROR) {
         return "Customer already existed";
@@ -170,6 +134,7 @@ function add_customer($firstname, $lastname, $email, $address, $homePhone, $cell
       $stmt->close();
       $conn->close();
     }
+    return "";
   } catch (Exception $e) {
     http_response_code(500);
     include_once("error.php");
@@ -192,7 +157,7 @@ function list_products()
     $stmt = $conn->prepare($query);
     $stmt->execute();
     $result = $stmt->get_result();
-    $products = to_array($result, ["id", "name", "image"]);
+    $products = $result->fetch_all(MYSQLI_ASSOC);
     $result->close();
     $stmt->close();
     $conn->close();
@@ -226,7 +191,7 @@ function list_products_by_category($category = "coffee")
     $stmt = $conn->prepare($query);
     $stmt->execute();
     $result = $stmt->get_result();
-    $products = to_array($result, ["id", "name", "image"]);
+    $products = $result->fetch_all(MYSQLI_ASSOC);
     $result->close();
     $stmt->close();
     $conn->close();
@@ -253,7 +218,7 @@ function list_products_by_most_visited($limit = 5)
     $stmt->bind_param("s", $limit);
     $stmt->execute();
     $result = $stmt->get_result();
-    $products = to_array($result, ["id", "name", "image"]);
+    $products = $result->fetch_all(MYSQLI_ASSOC);
     $result->close();
     $stmt->close();
     $conn->close();
@@ -268,33 +233,39 @@ function list_products_by_most_visited($limit = 5)
 /**
  * List products from a list of ids
  */
-function list_products_by_id($ids)
+function list_products_by_id($idList)
 {
+  if (count($idList) == 0) {
+    return [];
+  }
   try {
-    $products = [];
-    if (count($ids) > 0) {
-      $conn = connect_db();
-      $wildcards = $types = "";
-      for ($i = 0; $i < count($ids); $i++) {
-        $isLast = $i == count($ids) - 1;
-        $wildcards .= "?" . ($isLast ? "" : ",");
-        $types .= "s";
-      }
-      $query = <<<QUERY
+    $conn = connect_db();
+    $wildcards = $types = "";
+    foreach ($idList as $i => $id) {
+      $idList[$i] = sanitize_sql($conn, $id);
+      $isLast = $i == count($idList) - 1;
+      $wildcards .= "?" . ($isLast ? "" : ",");
+      $types .= "s";
+    }
+    $query = <<<QUERY
       SELECT id, name, image
       FROM product WHERE id IN($wildcards)
       QUERY;
-      $stmt = $conn->prepare($query);
-      $stmt->bind_param($types, ...$ids);
-      $stmt->execute();
-      $result = $stmt->get_result();
-      $productsMap = to_map($result, ["id", "name", "image"]);
-      $result->close();
-      $stmt->close();
-      $conn->close();
-      foreach ($ids as $id) {
-        $products[] = $productsMap[$id];
-      }
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param($types, ...$idList);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $products = $result->fetch_all(MYSQLI_ASSOC);
+    $result->close();
+    $stmt->close();
+    $conn->close();
+    $mappedProducts = [];
+    foreach ($products as $product) {
+      $mappedProducts[$product["id"]] = $product;
+    }
+    $products = [];
+    foreach ($idList as $id) {
+      $products[] = $mappedProducts[$id];
     }
     return $products;
   } catch (Exception $e) {
@@ -311,17 +282,19 @@ function get_product_by_id($id)
 {
   try {
     $conn = connect_db();
-    $fields = "id, name, image, description";
-    $query = "SELECT $fields FROM product WHERE id = ?";
+    $query = <<<QUERY
+    SELECT id, name, image, description
+    FROM product WHERE id = ?
+    QUERY;
     $stmt = $conn->prepare($query);
+    $id = sanitize_sql($conn, $id);
     $stmt->bind_param("s", $id);
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows == 0) {
       throw new Exception("Product not found.", 404);
     }
-    $fields = array_map("trim", explode(",", $fields));
-    [$product] = to_array($result, $fields);
+    [$product] = $result->fetch_all(MYSQLI_ASSOC);
     $result->close();
     $stmt->close();
     $conn->close();
@@ -346,8 +319,13 @@ function update_product_visited_count($id)
 {
   try {
     $conn = connect_db();
-    $query = "UPDATE product SET visited = visited + 1 WHERE id = ?";
+    $query = <<<QUERY
+    UPDATE product
+    SET visited = visited + 1
+    WHERE id = ?
+    QUERY;
     $stmt = $conn->prepare($query);
+    $id = sanitize_sql($conn, $id);
     $stmt->bind_param("s", $id);
     $stmt->execute();
   } catch (Exception $e) {
