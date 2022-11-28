@@ -51,13 +51,13 @@ function register_customer_form()
     <div class="row px-2">
       <div class="col-sm-6 px-1">
         <div class="form-floating mb-2">
-          <input class="customers-register-input form-control" type="text" autocomplete="off" placeholder="First name" name="first_name" value="$firstname" >
+          <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="First name" name="first_name" value="$firstname" >
           <label>First name</label>
         </div>
       </div>
       <div class="col-sm-6 px-1">
         <div class="form-floating mb-2">
-          <input class="customers-register-input form-control" type="text" autocomplete="off" placeholder="Last name" name="last_name" value="$lastname">
+          <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="Last name" name="last_name" value="$lastname">
           <label>Last name</label>
         </div>
       </div>
@@ -65,13 +65,13 @@ function register_customer_form()
     <div class="row px-2">
       <div class="col-sm-6 px-1">
         <div class="form-floating mb-2">
-          <input class="customers-register-input form-control" type="text" autocomplete="off" name="email" placeholder="Email address" value="$email">
+          <input class="customers-form-input form-control" type="text" autocomplete="off" name="email" placeholder="Email address" value="$email">
           <label>Email address</label>
         </div>
       </div>
       <div class="col-sm-6 px-1">
         <div class="form-floating mb-2">
-          <input class="customers-register-input form-control" type="text" autocomplete="off" placeholder="Home address" name="address" value="$address">
+          <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="Home address" name="address" value="$address">
           <label>Home address</label>
         </div>
       </div>
@@ -79,21 +79,75 @@ function register_customer_form()
     <div class="row px-2">
       <div class="col-sm-6 px-1">
         <div class="form-floating mb-2">
-          <input class="customers-register-input form-control" type="text" autocomplete="off" placeholder="Home phone number" name="home_phone" value="$homePhone">
+          <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="Home phone number" name="home_phone" value="$homePhone">
           <label>Home phone number</label>
         </div>
       </div>
       <div class="col-sm-6 px-1">
         <div class="form-floating mb-2">
-          <input class="customers-register-input form-control" type="text" autocomplete="off" placeholder="Cell phone number" name="cell_phone" value="$cellPhone">
+          <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="Cell phone number" name="cell_phone" value="$cellPhone">
           <label>Cell phone number</label>
         </div>
       </div>
     </div>
-    <input class="customers-register-btn" type="submit" name="register" value="Submit">
-    <span class="customers-register-message ms-2 $messageColor">$messageText</span>
+    <input class="customers-form-btn" type="submit" name="register" value="Submit">
+    <span class="customers-form-message ms-2 $messageColor">$messageText</span>
   </form>
   REGISTER_FORM;
+}
+
+/**
+ * Create admin login form
+ */
+function admin_login_form()
+{
+  $username = $password = $errorMessage = "";
+  if (isset($_POST["login"])) {
+    $username = sanitize_html($_POST["username"]);
+    $password = sanitize_html($_POST["password"]);
+    if ($username == "" || $password == "") {
+      $errorMessage = "Please fill in all form fields.";
+    }
+    if (!$errorMessage) {
+      $errorMessage = login($username, $password);
+    }
+    if (!$errorMessage) {
+      create_session(strtolower($username));
+      header("Location: " . $_SERVER["REQUEST_URI"]);
+    }
+  }
+  return <<<LOGIN_FORM
+  <form method="post" action="customers">
+    <div class="row px-2">
+      <div class="col-sm-6 px-1">
+        <div class="form-floating mb-2">
+          <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="Username" name="username" value="$username" >
+          <label>Username</label>
+        </div>
+      </div>
+      <div class="col-sm-6 px-1">
+        <div class="form-floating mb-2">
+          <input class="customers-form-input form-control" type="password" autocomplete="off" placeholder="Password" name="password" value="$password">
+          <label>Password</label>
+        </div>
+      </div>
+    </div>
+    <input class="customers-form-btn" type="submit" name="login" value="Submit">
+    <span class="customers-form-message ms-2 text-danger">$errorMessage</span>
+  </form>
+  LOGIN_FORM;
+}
+
+/**
+ * Create admin logout form
+ */
+function logout_form()
+{
+  return <<<LOGOUT_FORM
+  <form method="post" action="customers">
+    <input class="customers-logout-btn" type="submit" name="logout" value="Logout">
+  </form>
+  LOGOUT_FORM;
 }
 
 /**
@@ -194,7 +248,17 @@ function customer_list($selectedOption = OWN_COMPANY, $searchTerm = "")
 }
 
 try {
-  $registerCustomerForm = register_customer_form();
+  if (isset($_POST["logout"])) {
+    remove_session();
+  }
+  $customerFormTitle = "Login";
+  $customerForm = admin_login_form();
+  $logoutForm = "";
+  if (is_authenticated()) {
+    $customerFormTitle = "Register";
+    $customerForm = register_customer_form();
+    $logoutForm = logout_form();
+  }
   $selectedOption = get_selected_customer_option();
   $customerSelectForm = customer_select_form($selectedOption);
   $searchTerm = get_search_term();
@@ -217,10 +281,17 @@ $content = <<<CONTENT
 <div class="container">
   <p class="customers-page-title">Customers</p>
   <hr>
-  <p class="customers-form-title mt-2 mb-2">
-    Register
-  </p>
-  $registerCustomerForm
+  <div class="row mt-2 mb-2">
+    <div class="col-6">
+      <p class="customers-form-title">
+        $customerFormTitle
+      </p>
+    </div>
+    <div class="col-6">
+      $logoutForm
+    </div>
+  </div>
+  $customerForm
   <p class="customers-form-title mt-5 mb-2">
     Customers
   </p>

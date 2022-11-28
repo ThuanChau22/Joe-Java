@@ -87,3 +87,41 @@ function pretty_phone_number($phoneNumber)
   $line = substr($phoneNumber, 7, 4);
   return "($area) $prefix-$line";
 }
+
+/**
+ * Create a new session after user being authenticated
+ */
+function create_session($userName)
+{
+  session_start();
+  $_SESSION["user"] = $userName;
+  $_SESSION["check"] = hash("sha512", $userName . $_SERVER["HTTP_USER_AGENT"]);
+}
+
+/**
+ * Check whether session existed
+ * and requester matches current user
+ */
+function is_authenticated()
+{
+  session_start();
+  $user = isset($_SESSION["user"]) ? $_SESSION["user"] : "";
+  $check = isset($_SESSION["check"]) ? $_SESSION["check"] : "";
+  $userAgent = $_SERVER["HTTP_USER_AGENT"];
+  if ($user != "" && $check != "" && $check == hash("sha512", $user . $userAgent)) {
+    return true;
+  }
+  session_destroy();
+  return false;
+}
+
+/**
+ * Remove current session
+ */
+function remove_session()
+{
+  session_start();
+  unset($_SESSION);
+  setcookie(session_name(), "", time() - 3 * 24 * 60 * 60);
+  session_destroy();
+}
