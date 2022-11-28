@@ -5,7 +5,8 @@
 .products-page-title {
   color: #ffb366;
   font-weight: bold;
-  font-size: clamp(25px, 3vw, 50px);
+  font-size: clamp(50px, 4vw, 75px);
+  font-family: "Dancing Script", cursive;
   margin-top: clamp(15px, 1vw, 25px) !important;
   text-align: center;
 }
@@ -45,6 +46,19 @@
 .products-filter-btn:active {
   color: #663300;
   box-shadow: 0 2px 4px -1px #0003, 0 4px 5px #00000024, 0 1px 10px #0000001f;
+}
+
+.products-empty {
+  text-align: center;
+  margin: 20vh auto 0;
+  transform: translateY(-35%);
+
+}
+
+.products-empty-content {
+  color: #ffb366;
+  font-size: clamp(40px, 4vw, 60px);
+  font-family: "Dancing Script", cursive;
 }
 
 .products-card {

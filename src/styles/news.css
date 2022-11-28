@@ -1,7 +1,8 @@
 .news-page-title {
   color: #ffb366;
   font-weight: bold;
-  font-size: clamp(25px, 3vw, 50px);
+  font-size: clamp(50px, 4vw, 75px);
+  font-family: "Dancing Script", cursive;
   margin-top: clamp(15px, 1vw, 25px) !important;
   text-align: center;
 }
@@ -20,6 +21,7 @@
 }
 
 .news-item-title {
+  color: #663300;
   font-weight: bold;
   font-size: clamp(20px, 2vw, 28px);
   margin-top: clamp(10px, 1vw, 20px) !important;

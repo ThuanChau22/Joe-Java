@@ -1,7 +1,165 @@
 .customers-page-title {
   color: #ffb366;
   font-weight: bold;
-  font-size: clamp(25px, 3vw, 50px);
+  font-size: clamp(50px, 4vw, 75px);
+  font-family: "Dancing Script", cursive;
   margin-top: clamp(15px, 1vw, 25px) !important;
   text-align: center;
+}
+
+.customers-form-title {
+  color: #663300;
+  font-weight: bold;
+  font-size: clamp(20px, 2vw, 35px);
+}
+
+.customers-form-input:focus {
+  border-color: #ced4da !important;
+  box-shadow: unset !important;
+}
+
+.customers-form-btn {
+  color: #663300;
+  font-size: clamp(18px, 2vw, 25px);
+  font-weight: bold;
+  background-color: #ffb366;
+  border: 1px solid #ffb366;
+  border-radius: 6px;
+  padding: 0.2% 2%;
+  box-shadow: 0 2px 4px -1px #0003, 0 4px 5px #00000024, 0 1px 10px #0000001f;
+}
+
+.customers-form-btn:hover {
+  color: #d9d9d9;
+  box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
+}
+
+.customers-form-btn:active {
+  color: #663300;
+  box-shadow: 0 2px 4px -1px #0003, 0 4px 5px #00000024, 0 1px 10px #0000001f;
+}
+
+.customers-form-message {
+  font-size: clamp(18px, 2vw, 25px);
+}
+
+.customers-logout-btn {
+  color: #663300;
+  float: right;
+  font-weight: bold;
+  text-decoration: underline;
+  padding-top: 0;
+  font-size: clamp(14px, 1vw, 24px);
+  border: 0;
+  background-color: transparent;
+}
+
+.customers-logout-btn:hover {
+  color: #4d2600;
+}
+
+.customers-filter-select {
+  color: #663300 !important;
+  font-size: clamp(16px, 2vw, 18px) !important;
+  font-weight: bold !important;
+}
+
+.customers-filter-select:focus {
+  border-color: #ced4da !important;
+  box-shadow: unset !important;
+}
+
+.customers-filter-option {
+  color: #663300 !important;
+  font-weight: bold !important;
+}
+
+.customers-filter-btn {
+  background-color: #ffb366;
+  border: 1px solid #ffb366;
+  border-radius: 6px;
+  color: #663300;
+  font-size: clamp(16px, 2vw, 18px);
+  font-weight: bold;
+  height: 100%;
+  width: 100%;
+}
+
+.customers-filter-btn:hover {
+  color: #d9d9d9;
+  box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
+}
+
+.customers-filter-btn:active {
+  color: #663300;
+  box-shadow: 0 2px 4px -1px #0003, 0 4px 5px #00000024, 0 1px 10px #0000001f;
+}
+
+.customers-search-input {
+  font-size: clamp(16px, 2vw, 18px) !important;
+}
+
+.customers-search-input:focus {
+  border-color: #ced4da !important;
+  box-shadow: unset !important;
+}
+
+.customers-search-spinner {
+  position: absolute;
+  color: #ffb366;
+  font-size: clamp(16px, 2vw, 18px);
+  top: 50%;
+  transform: translateY(-50%);
+  right: 8px;
+}
+
+.customers-search-btn {
+  background-color: #ffb366;
+  border: 1px solid #ffb366;
+  border-radius: 6px;
+  color: #663300;
+  font-size: clamp(16px, 2vw, 18px);
+  font-weight: bold;
+  height: 100%;
+  width: 100%;
+}
+
+.customers-search-btn:hover {
+  color: #d9d9d9;
+  box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
+}
+
+.customers-search-btn:active {
+  color: #663300;
+  box-shadow: 0 2px 4px -1px #0003, 0 4px 5px #00000024, 0 1px 10px #0000001f;
+}
+
+.customers-empty {
+  text-align: center;
+  color: #ffb366;
+  font-size: clamp(40px, 4vw, 60px);
+  font-family: "Dancing Script", cursive;
+}
+
+.customers-entry {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  padding: clamp(10px, 1vw, 20px) !important;
+  word-wrap: break-word;
+}
+
+.customers-entry-name {
+  color: #ffb366;
+  font-weight: bold;
+  font-size: clamp(18px, 2vw, 24px);
+}
+
+.customers-entry-label {
+  color: #663300;
+  font-weight: bold;
+  font-size: clamp(16px, 2vw, 20px);
+}
+
+.customers-entry-value {
+  font-size: clamp(16px, 2vw, 20px);
 }
