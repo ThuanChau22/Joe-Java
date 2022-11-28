@@ -1,39 +1,28 @@
 let searchTerm = "";
+let timeoutId = 0;
 
 const searchCustomers = (element) => {
-  let isModified = false;
-  if (searchTerm !== element.value) {
-    searchTerm = element.value;
-    isModified = true;
-  }
-  if (isModified && (searchTerm.length == 0 || searchTerm.length >= 3)) {
-    const customerList = document.getElementById("customer-list");
-    const spinner = `
-    <div class="customers-spinner mt-3">
-      <i class="fa fa-spinner fa-spin"></i>
-    </div>`;
-    removeAllNodes(customerList);
-    addNode(customerList, spinner)
-    const xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        removeAllNodes(customerList);
-        addNode(customerList, this.responseText);
-      }
-    };
-    xhttp.open("GET", `/src/scripts/customers.php?search=${searchTerm}`, true);
-    xhttp.send();
-  }
-}
-
-const addNode = (node, content) => {
-  const newNode = document.createElement("div");
-  node.appendChild(newNode);
-  newNode.outerHTML = content;
-}
-
-const removeAllNodes = (node) => {
-  while (node.hasChildNodes()) {
-    node.removeChild(node.firstChild);
-  }
+  clearTimeout(timeoutId);
+  timeoutId = setTimeout(() => {
+    let isModified = false;
+    const value = element.value.trim();
+    if (searchTerm !== value) {
+      searchTerm = value;
+      isModified = true;
+    }
+    if (isModified && (searchTerm.length == 0 || searchTerm.length >= 3)) {
+      const spinner = document.getElementById("search-spinner");
+      spinner.innerHTML = `<i class="fa fa-spinner fa-spin"></i>`;
+      const xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = () => {
+        if (xhttp.readyState == 4 && xhttp.status == 200) {
+          const customerList = document.getElementById("customer-list");
+          customerList.innerHTML = xhttp.responseText;
+          spinner.innerHTML = "";
+        }
+      };
+      xhttp.open("GET", `/src/scripts/customers.php?search=${searchTerm}`, true);
+      xhttp.send();
+    }
+  }, 500);
 }

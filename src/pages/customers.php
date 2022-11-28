@@ -159,8 +159,9 @@ function customer_search_form($searchTerm = "")
 {
   return <<<SEARCH_FORM
   <form class="row" method="get" action="customers">
-    <div class="col-lg-6 col-8 pe-1">
-      <input class="customers-search-input form-control" type="text" autocomplete="off" placeholder="🔎︎ Name, email, phone..." name="search" value="$searchTerm" onkeyup="searchCustomers(this)">
+    <div class="col-lg-6 col-8 pe-1 position-relative">
+      <input class="customers-search-input form-control pe-4" type="text" autocomplete="off" placeholder="Name, email, phone..." name="search" value="$searchTerm" onkeyup="searchCustomers(this)">
+      <div id="search-spinner" class="customers-search-spinner"></div>
     </div>
     <div class="col-lg-3 col-4 ps-0">
       <input class="customers-search-btn" type="submit" value="Find User">

@@ -89,6 +89,15 @@
   box-shadow: unset !important;
 }
 
+.customers-search-spinner {
+  position: absolute;
+  color: #ffb366;
+  font-size: clamp(16px, 2vw, 18px);
+  top: 50%;
+  transform: translateY(-50%);
+  right: 8px;
+}
+
 .customers-search-btn {
   background-color: #ffb366;
   border: 1px solid #ffb366;
@@ -108,12 +117,6 @@
 .customers-search-btn:active {
   color: #663300;
   box-shadow: 0 2px 4px -1px #0003, 0 4px 5px #00000024, 0 1px 10px #0000001f;
-}
-
-.customers-spinner {
-  text-align: center;
-  color: #ffb366;
-  font-size: clamp(30px, 3vw, 50px)
 }
 
 .customers-empty {
