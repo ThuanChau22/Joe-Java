@@ -4,7 +4,7 @@ require_once("../utils/database.php");
 require_once("../utils/utils.php");
 
 /**
- * Filter options
+ * Product select options
  */
 define("ALL_PRODUCTS", "all-products");
 define("COFFEE_BEANS", "coffee-beans");
@@ -13,21 +13,21 @@ define("MOST_5_VISITS", "most-5-visits");
 define("LAST_5_VISITS", "last-5-visits");
 
 /**
- * Read selected filters
+ * Read selected product option
  */
-function getSelectedFilters()
+function get_selected_product_option()
 {
-  $selectedFilters = ALL_PRODUCTS;
-  if (isset($_GET["filters"])) {
-    $selectedFilters = sanitizeHTML($_GET["filters"]);
+  $selectedOption = ALL_PRODUCTS;
+  if (isset($_GET["category"])) {
+    $selectedOption = sanitize_html($_GET["category"]);
   }
-  return $selectedFilters;
+  return $selectedOption;
 }
 
 /**
- * List filter options
+ * Create product select form
  */
-function getFilterOptions($selectedFilters = ALL_PRODUCTS)
+function product_select_form($selectedOption = ALL_PRODUCTS)
 {
   $options = "";
   $optionEntries = [
@@ -37,40 +37,50 @@ function getFilterOptions($selectedFilters = ALL_PRODUCTS)
     MOST_5_VISITS => "Most 5 Visits",
     LAST_5_VISITS => "Last 5 Visits",
   ];
-  foreach ($optionEntries as $value => $text) {
-    $selected = $selectedFilters == $value ? "selected" : "";
+  foreach ($optionEntries as $option => $description) {
+    $selected = $selectedOption == $option ? "selected" : "";
     $options .= <<<OPTIONS
-    <option class="products-filter-option" value="$value" $selected>
-      $text
+    <option class="products-filter-option" value="$option" $selected>
+      $description
     </option>
     OPTIONS;
   }
-  return $options;
+  return <<<SELECT_FORM
+  <form id="select-product-form" class="row" method="get" action="products">
+    <div class="col-lg-2 col-md-4 col-9 pe-1">
+      <select class="products-filter-select form-select" name="category" onchange="submitForm('select-product-form')">
+        $options
+      </select>
+    </div>
+    <div class="col-lg-1 col-md-2 col-3 ps-0">
+      <input class="products-filter-btn" type="submit" value="Apply">
+    </div>
+  </form>
+  SELECT_FORM;
 }
 
 /**
- * List products based on selected filters
+ * Create product list based on selected option
  */
-function getProductCards($selectedFilters = ALL_PRODUCTS)
+function product_list($selectedOption = ALL_PRODUCTS)
 {
-  $productCards = "";
   $products = [];
-  switch ($selectedFilters) {
+  switch ($selectedOption) {
     case ALL_PRODUCTS:
-      $products = listProducts();
+      $products = list_products();
       break;
     case COFFEE_BEANS:
-      $products = listProductsByCategory(category: "coffee");
+      $products = list_products_by_category(category: "coffee");
       break;
     case BREWING_TOOLS:
-      $products = listProductsByCategory(category: "brewing-tool");
+      $products = list_products_by_category(category: "brewing-tool");
       break;
     case MOST_5_VISITS:
-      $products = listProductsByMostVisited();
+      $products = list_products_by_most_visited();
       break;
     case LAST_5_VISITS:
-      $productIds = getCookieProducts();
-      $products = listProductsByIds($productIds);
+      $productIdList = list_visited_product_id();
+      $products = list_products_by_id($productIdList);
       break;
     default:
       http_response_code(404);
@@ -78,11 +88,19 @@ function getProductCards($selectedFilters = ALL_PRODUCTS)
       die();
       break;
   }
+  if (count($products) == 0) {
+    return <<<PRODUCT_EMPTY
+    <div class="products-empty">
+      <p class="products-empty-content">No Product Found</p>
+    </div>
+    PRODUCT_EMPTY;
+  }
+  $productList = "";
   foreach ($products as $product) {
     $productId = $product["id"];
     $productImage = $product["image"];
     $productName = $product["name"];
-    $productCards .= <<<PRODUCT_CARD
+    $productList .= <<<PRODUCT_CARD
     <div class="products-card col-xl-2 col-lg-3 col-md-4 col-sm-6">
       <a class="products-card-link" href=/products/$productId>
         <div class="card">
@@ -99,12 +117,22 @@ function getProductCards($selectedFilters = ALL_PRODUCTS)
     </div>
     PRODUCT_CARD;
   }
-  return $productCards;
+  return <<<PRODUCT_LIST
+  <div class="row">
+    $productList
+  </div>
+  PRODUCT_LIST;
 }
 
-$selectedFilters = getSelectedFilters();
-$filterOptions = getFilterOptions($selectedFilters);
-$productCards = getProductCards($selectedFilters);
+try {
+  $selectedOption = get_selected_product_option();
+  $productSelectForm = product_select_form($selectedOption);
+  $productList = product_list($selectedOption);
+} catch (Exception $e) {
+  http_response_code(400);
+  include_once("error.php");
+  die();
+}
 
 $styles = <<<STYLE
 <link href="/src/styles/products.css" rel="stylesheet">
@@ -114,25 +142,15 @@ $content = <<<CONTENT
 <div id="products" class="container">
   <p class="products-page-title">Products</p>
   <hr>
-  <form method="get" action="products" action class="row">
-    <div class="col-lg-2 col-md-4 col-9 pe-1">
-      <select class="products-filter-select form-select" name="filters">
-        $filterOptions
-      </select>
-    </div>
-    <div class="col-lg-1 col-md-2 col-3 ps-0">
-      <input class="products-filter-btn" type="submit" value="Apply">
-    </div>
-  </form>
-  <div class="row">
-    $productCards
-  </div>
+  $productSelectForm
+  $productList
   <div class="pt-5"></div>
 </div>
 CONTENT;
 
 $scripts = <<<SCRIPT
 <script src="/src/scripts/products.js" type="text/javascript"></script>
+<script src="/src/scripts/utils.js" type="text/javascript"></script>
 SCRIPT;
 
 echo document(

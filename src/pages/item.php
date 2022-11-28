@@ -3,17 +3,23 @@ require_once("../components/document.php");
 require_once("../utils/database.php");
 require_once("../utils/utils.php");
 
-$productId = "";
-$productId = "";
-if (isset($_GET["id"])) {
-  $productId = $_GET["id"];
+try {
+  $productId = "";
+  $productId = "";
+  if (isset($_GET["id"])) {
+    $productId = $_GET["id"];
+  }
+  $product = get_product_by_id($productId);
+  $productImage = $product["image"];
+  $productName = $product["name"];
+  $productDescription = $product["description"];
+  set_visited_product_id($productId);
+  update_product_visited_count($productId);
+} catch (Exception $e) {
+  http_response_code(400);
+  include_once("error.php");
+  die();
 }
-$product = getProductById($productId);
-$productImage = $product["image"];
-$productName = $product["name"];
-$productDescription = $product["description"];
-addCookieProduct($productId);
-increaseProductVisitedCount($productId);
 
 $styles = <<<STYLE
 <link href="/src/styles/item.css" rel="stylesheet">

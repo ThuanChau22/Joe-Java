@@ -5,10 +5,11 @@
 .about-page-title {
   color: #ffb366;
   font-weight: bold;
-  font-size: clamp(25px, 3vw, 50px);
+  font-size: clamp(50px, 4vw, 75px);
   padding-top: clamp(15px, 1vw, 25px) !important;
   text-align: center;
   padding-bottom: clamp(0px, 3vw, 50px);
+  font-family: "Dancing Script", cursive;
 }
 
 .about-content-image {

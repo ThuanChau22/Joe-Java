@@ -2,6 +2,8 @@
 require_once("../components/document.php");
 require_once("../utils/utils.php");
 
+$email1 = $email2 = "";
+$phone = $address = "";
 try {
   $filePath = "../../assets/contacts.txt";
   $file = fopen($filePath, "r");
@@ -17,9 +19,10 @@ try {
   }
   $email1 = $contacts["email1"];
   $email2 = $contacts["email2"];
-  $phone = $contacts["phone"];
+  $phone = pretty_phone_number($contacts["phone"]);
   $address = $contacts["address"];
 } catch (Exception $e) {
+  http_response_code(400);
   include_once("error.php");
   die();
 } finally {
@@ -35,28 +38,22 @@ $content = <<<CONTENT
   <p class="contacts-page-title">Contact Us</p>
   <hr>
   <div class="contacts-items">
-    <div class="contacts-item">
-      <p class="contacts-label">Email:</p>
-      <ul>
-        <li><p class="contacts-value text-muted">$email1</p></li>
-        <li><p class="contacts-value text-muted">$email2</p></li>
-      </ul>
-      <hr>
-    </div>
-    <div class="contacts-item">
-      <p class="contacts-label">Phone Number:</p>
-      <ul>
-        <li><p class="contacts-value text-muted">$phone</p></li>
-      </ul>
-      <hr>
-    </div>
-    <div class="contacts-item">
-      <p class="contacts-label">Address:</p>
-      <ul>
-        <li><p class="contacts-value text-muted">$address</p></li>
-      </ul>
-      <hr>
-    </div>
+    <p class="contacts-label mt-4">Email:</p>
+    <ul>
+      <li><p class="contacts-value text-muted">$email1</p></li>
+      <li><p class="contacts-value text-muted">$email2</p></li>
+    </ul>
+    <hr>
+    <p class="contacts-label mt-4">Phone Number:</p>
+    <ul>
+      <li><p class="contacts-value text-muted">$phone</p></li>
+    </ul>
+    <hr>
+    <p class="contacts-label mt-4">Address:</p>
+    <ul>
+      <li><p class="contacts-value text-muted">$address</p></li>
+    </ul>
+    <hr>
   </div>
 </div>
 CONTENT;
