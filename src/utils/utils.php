@@ -21,11 +21,9 @@ function load_env()
  */
 function console_log($data)
 {
-  if (is_string($data)) {
-    $data = "'$data'";
-  }
+  $data = json_encode($data);
   if (is_array($data) || is_object($data)) {
-    $data = "JSON.parse('" . json_encode($data) . "')";
+    $data = "JSON.parse($data)";
   }
   echo "<script>console.log($data)</script>";
 }
