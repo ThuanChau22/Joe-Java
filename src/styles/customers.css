@@ -127,6 +127,7 @@
   background-color: rgba(255, 255, 255, 0.95);
   border-radius: 10px;
   padding: clamp(10px, 1vw, 20px) !important;
+  word-wrap: break-word;
 }
 
 .customers-entry-name {
