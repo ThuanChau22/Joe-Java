@@ -6,8 +6,8 @@ require_once("../utils/utils.php");
 $isAuthenticated = false;
 $username = $errorMessage = "";
 if (isset($_POST["username"]) && isset($_POST["password"])) {
-  $username = sanitizeHTML($_POST["username"]);
-  $password = sanitizeHTML($_POST["password"]);
+  $username = sanitize_html($_POST["username"]);
+  $password = sanitize_html($_POST["password"]);
   if ($username == "" || $password == "") {
     $errorMessage = "Please fill in all form fields.";
   }

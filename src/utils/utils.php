@@ -9,7 +9,7 @@ define("VISITED_PRODUCTS", "visited-products");
 /**
  * Load environment variables from .env to _ENV
  */
-function load_ENV()
+function load_env()
 {
   $dotenvFilePath = dirname(__DIR__, 2);
   $dotenv = Dotenv\Dotenv::createImmutable($dotenvFilePath);
@@ -17,9 +17,9 @@ function load_ENV()
 }
 
 /**
- * Log to browser
+ * Log output to browser
  */
-function consoleLog($data)
+function console_log($data)
 {
   if (is_string($data)) {
     $data = "'$data'";
@@ -33,50 +33,56 @@ function consoleLog($data)
 /**
  * Sanitize user input
  */
-function sanitizeHTML($string)
+function sanitize_html($string)
 {
   return htmlentities(trim($string));
 }
 
 /**
- * List product ids from cookie
+ * List visited product ids from cookie
  */
-function getCookieProducts()
+function list_visited_product_id()
 {
-  $productIds = [];
+  $productIdList = [];
   if (isset($_COOKIE[VISITED_PRODUCTS])) {
-    $productIds = json_decode($_COOKIE[VISITED_PRODUCTS]);
+    $productIdList = json_decode($_COOKIE[VISITED_PRODUCTS]);
   }
-  return $productIds;
+  return $productIdList;
 }
 
 /**
- * Add product id into cookie
+ * Set product id as first position to cookie
  */
-function addCookieProduct($id)
+function set_visited_product_id($id)
 {
-  $productIds = getCookieProducts();
-  $index = -1;
-  for ($i = 0; $i < count($productIds) && $i != $index; $i++) {
-    if ($productIds[$i] == $id) {
-      $index = $i;
+  $productIdList = list_visited_product_id();
+  $productIdListLength = count($productIdList);
+  $productIdIndex = -1;
+  for ($i = 0; $i < $productIdListLength && $i != $productIdIndex; $i++) {
+    if ($productIdList[$i] == $id) {
+      $productIdIndex = $i;
     }
   }
-  if ($index != -1) {
-    array_splice($productIds, $index, 1);
+  if ($productIdIndex != -1) {
+    array_splice($productIdList, $productIdIndex, 1);
   }
-  if (count($productIds) == 5) {
-    array_pop($productIds);
+  if ($productIdListLength == 5) {
+    array_pop($productIdList);
   }
-  array_unshift($productIds, $id);
-  $expireTime = time() + 5 * 24 * 60 * 60;
-  setcookie(VISITED_PRODUCTS, json_encode($productIds), $expireTime);
+  array_unshift($productIdList, $id);
+  setcookie(
+    VISITED_PRODUCTS,
+    value: json_encode($productIdList),
+    expires_or_options: time() + 5 * 24 * 60 * 60,
+    secure: true,
+    httponly: true,
+  );
 }
 
 /**
  * Stylizing 10-digit phone number
  */
-function prettyPhoneNumber($phoneNumber)
+function pretty_phone_number($phoneNumber)
 {
   $area = substr($phoneNumber, 0, 3);
   $prefix = substr($phoneNumber, 3, 3);

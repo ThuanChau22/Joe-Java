@@ -9,12 +9,12 @@ try {
   if (isset($_GET["id"])) {
     $productId = $_GET["id"];
   }
-  $product = getProductById($productId);
+  $product = get_product_by_id($productId);
   $productImage = $product["image"];
   $productName = $product["name"];
   $productDescription = $product["description"];
-  addCookieProduct($productId);
-  increaseProductVisitedCount($productId);
+  set_visited_product_id($productId);
+  update_product_visited_count($productId);
 } catch (Exception $e) {
   http_response_code(400);
   include_once("error.php");

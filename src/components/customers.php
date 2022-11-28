@@ -14,8 +14,8 @@ function customers($customers)
     $lastname = $customer["last_name"];
     $email = $customer["email"];
     $address = $customer["address"];
-    $homePhone = prettyPhoneNumber($customer["home_phone"]);
-    $cellPhone = prettyPhoneNumber($customer["cell_phone"]);
+    $homePhone = pretty_phone_number($customer["home_phone"]);
+    $cellPhone = pretty_phone_number($customer["cell_phone"]);
     $entries .= <<<CUSTOMER
     <div class="customers-entry mb-4">
       <p class="customers-entry-name">$firstname $lastname</p>

@@ -1,13 +1,12 @@
 let searchTerm = "";
 
 const searchCustomers = (element) => {
-  const value = element.value;
-  let updated = false;
-  if (searchTerm !== value) {
-    searchTerm = value;
-    updated = true;
+  let isModified = false;
+  if (searchTerm !== element.value) {
+    searchTerm = element.value;
+    isModified = true;
   }
-  if (updated && (value.length == 0 || value.length >= 3)) {
+  if (isModified && (searchTerm.length == 0 || searchTerm.length >= 3)) {
     const customerList = document.getElementById("customer-list");
     const spinner = `
     <div class="customers-spinner mt-3">

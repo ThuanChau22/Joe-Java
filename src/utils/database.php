@@ -10,10 +10,10 @@ define("DUPLICATE_ERROR", 1062);
  * Connect to database
  * Return connection instance
  */
-function connectDB()
+function connect_db()
 {
   try {
-    load_ENV();
+    load_env();
     $host = $_ENV["DB_HOST"];
     $user = $_ENV["DB_USER"];
     $pass = $_ENV["DB_PASS"];
@@ -30,7 +30,7 @@ function connectDB()
  * Convert query results into a list
  * Each entry is an associative array
  */
-function toArray($result, $fields)
+function to_array($result, $fields)
 {
   $array = [];
   foreach ($result as $row) {
@@ -49,7 +49,7 @@ function toArray($result, $fields)
  * and an associative array as value
  * * Order of entries is not guaranteed
  */
-function toMap($result, $fields)
+function to_map($result, $fields)
 {
   $map = [];
   foreach ($result as $row) {
@@ -65,7 +65,7 @@ function toMap($result, $fields)
 /**
  * Sanitize MySQL input
  */
-function sanitizeMySQL($conn, $string)
+function sanitize_sql($conn, $string)
 {
   return $conn->real_escape_string($string);
 }
@@ -76,15 +76,15 @@ function sanitizeMySQL($conn, $string)
 function login($username, $password)
 {
   try {
-    $conn = connectDB();
-    $username = sanitizeMySQL($conn, $username);
-    $password = sanitizeMySQL($conn, $password);
+    $conn = connect_db();
+    $username = sanitize_sql($conn, $username);
+    $password = sanitize_sql($conn, $password);
     $query = "SELECT password FROM admin WHERE username = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
-    $users = toArray($result, ["password"]);
+    $users = to_array($result, ["password"]);
     $result->close();
     $stmt->close();
     $conn->close();
@@ -105,14 +105,14 @@ function login($username, $password)
  * If search is specified,
  * Return customers based on search term
  */
-function listCustomers($search = "")
+function list_customers($search = "")
 {
   try {
-    $conn = connectDB();
+    $conn = connect_db();
     $conditions = "";
     $inputs = [];
     if ($search != "") {
-      $search = sanitizeMySQL($conn, $search);
+      $search = sanitize_sql($conn, $search);
       if ($search != "") {
         $keys = ["first_name", "last_name", "email", "home_phone", "cell_phone"];
         foreach ($keys as $i => $key) {
@@ -132,7 +132,7 @@ function listCustomers($search = "")
     $stmt->execute();
     $result = $stmt->get_result();
     $fields = array_map("trim", explode(",", $fields));
-    $customers = toArray($result, $fields);
+    $customers = to_array($result, $fields);
     $result->close();
     $stmt->close();
     $conn->close();
@@ -147,13 +147,13 @@ function listCustomers($search = "")
 /**
  * Add a customer to the database
  */
-function addCustomer($firstname, $lastname, $email, $address, $homePhone, $cellPhone)
+function add_customer($firstname, $lastname, $email, $address, $homePhone, $cellPhone)
 {
   try {
-    $conn = connectDB();
+    $conn = connect_db();
     $inputs = [$firstname, $lastname, $email, $address, $homePhone, $cellPhone];
     for ($i = 0; $i < count($inputs); $i++) {
-      $inputs[$i] = sanitizeMySQL($conn, $inputs[$i]);
+      $inputs[$i] = sanitize_sql($conn, $inputs[$i]);
     }
     try {
       $fields = "first_name, last_name, email, address, home_phone, cell_phone";
@@ -180,10 +180,10 @@ function addCustomer($firstname, $lastname, $email, $address, $homePhone, $cellP
 /**
  * List all products
  */
-function listProducts()
+function list_products()
 {
   try {
-    $conn = connectDB();
+    $conn = connect_db();
     $query = <<<QUERY
     SELECT id, name, image
     FROM product LEFT OUTER JOIN coffee USING(id)
@@ -192,7 +192,7 @@ function listProducts()
     $stmt = $conn->prepare($query);
     $stmt->execute();
     $result = $stmt->get_result();
-    $products = toArray($result, ["id", "name", "image"]);
+    $products = to_array($result, ["id", "name", "image"]);
     $result->close();
     $stmt->close();
     $conn->close();
@@ -208,10 +208,10 @@ function listProducts()
  * List products based on category
  * Category options: coffee, brewing-tool
  */
-function listProductsByCategory($category = "coffee")
+function list_products_by_category($category = "coffee")
 {
   try {
-    $conn = connectDB();
+    $conn = connect_db();
     $query = <<<QUERY
     SELECT id, name, image
     FROM product JOIN coffee USING(id)
@@ -226,7 +226,7 @@ function listProductsByCategory($category = "coffee")
     $stmt = $conn->prepare($query);
     $stmt->execute();
     $result = $stmt->get_result();
-    $products = toArray($result, ["id", "name", "image"]);
+    $products = to_array($result, ["id", "name", "image"]);
     $result->close();
     $stmt->close();
     $conn->close();
@@ -241,10 +241,10 @@ function listProductsByCategory($category = "coffee")
 /**
  * List most visited products
  */
-function listProductsByMostVisited($limit = 5)
+function list_products_by_most_visited($limit = 5)
 {
   try {
-    $conn = connectDB();
+    $conn = connect_db();
     $query = <<<QUERY
     SELECT id, name, image
     FROM product ORDER BY visited DESC LIMIT ?
@@ -253,7 +253,7 @@ function listProductsByMostVisited($limit = 5)
     $stmt->bind_param("s", $limit);
     $stmt->execute();
     $result = $stmt->get_result();
-    $products = toArray($result, ["id", "name", "image"]);
+    $products = to_array($result, ["id", "name", "image"]);
     $result->close();
     $stmt->close();
     $conn->close();
@@ -268,12 +268,12 @@ function listProductsByMostVisited($limit = 5)
 /**
  * List products from a list of ids
  */
-function listProductsByIds($ids)
+function list_products_by_id($ids)
 {
   try {
     $products = [];
     if (count($ids) > 0) {
-      $conn = connectDB();
+      $conn = connect_db();
       $wildcards = $types = "";
       for ($i = 0; $i < count($ids); $i++) {
         $isLast = $i == count($ids) - 1;
@@ -288,7 +288,7 @@ function listProductsByIds($ids)
       $stmt->bind_param($types, ...$ids);
       $stmt->execute();
       $result = $stmt->get_result();
-      $productsMap = toMap($result, ["id", "name", "image"]);
+      $productsMap = to_map($result, ["id", "name", "image"]);
       $result->close();
       $stmt->close();
       $conn->close();
@@ -307,10 +307,10 @@ function listProductsByIds($ids)
 /**
  * Get a product based on product id
  */
-function getProductById($id)
+function get_product_by_id($id)
 {
   try {
-    $conn = connectDB();
+    $conn = connect_db();
     $fields = "id, name, image, description";
     $query = "SELECT $fields FROM product WHERE id = ?";
     $stmt = $conn->prepare($query);
@@ -321,7 +321,7 @@ function getProductById($id)
       throw new Exception("Product not found.", 404);
     }
     $fields = array_map("trim", explode(",", $fields));
-    [$product] = toArray($result, $fields);
+    [$product] = to_array($result, $fields);
     $result->close();
     $stmt->close();
     $conn->close();
@@ -342,10 +342,10 @@ function getProductById($id)
 /**
  * Increment product visited count by one
  */
-function increaseProductVisitedCount($id)
+function update_product_visited_count($id)
 {
   try {
-    $conn = connectDB();
+    $conn = connect_db();
     $query = "UPDATE product SET visited = visited + 1 WHERE id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $id);

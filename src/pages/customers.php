@@ -5,23 +5,26 @@ require_once("../utils/database.php");
 require_once("../utils/utils.php");
 
 /**
- * Filter options
+ * Customer select options
  */
 define("OWN_COMPANY", "own");
 define("ALL_COMPANIES", "all");
 
-function registerCustomerForm()
+/**
+ * Create register customer form
+ */
+function register_customer_form()
 {
   $firstname = $lastname = $email = "";
   $address = $homePhone = $cellPhone = "";
   $successMessage = $errorMessage = "";
   if (isset($_POST["register"])) {
-    $firstname = sanitizeHTML($_POST["first_name"]);
-    $lastname = sanitizeHTML($_POST["last_name"]);
-    $email = sanitizeHTML($_POST["email"]);
-    $address = sanitizeHTML($_POST["address"]);
-    $homePhone = sanitizeHTML($_POST["home_phone"]);
-    $cellPhone = sanitizeHTML($_POST["cell_phone"]);
+    $firstname = sanitize_html($_POST["first_name"]);
+    $lastname = sanitize_html($_POST["last_name"]);
+    $email = sanitize_html($_POST["email"]);
+    $address = sanitize_html($_POST["address"]);
+    $homePhone = sanitize_html($_POST["home_phone"]);
+    $cellPhone = sanitize_html($_POST["cell_phone"]);
     $inputs = [$firstname, $lastname, $email, $address, $homePhone, $cellPhone];
     for ($i = 0; $i < count($inputs) && $errorMessage == ""; $i++) {
       if ($inputs[$i] == "") {
@@ -29,7 +32,7 @@ function registerCustomerForm()
       }
     }
     if (!$errorMessage) {
-      $errorMessage = addCustomer(...$inputs);
+      $errorMessage = add_customer(...$inputs);
     }
     if (!$errorMessage) {
       $firstname = $lastname = $email = "";
@@ -94,32 +97,32 @@ function registerCustomerForm()
 }
 
 /**
- * Read customer selected filters
+ * Read selected customer option
  */
-function getSelectedFilters()
+function get_selected_customer_option()
 {
-  $selectedFilters = OWN_COMPANY;
+  $selectedOption = OWN_COMPANY;
   if (isset($_GET["company"])) {
-    $selectedFilters = sanitizeHTML($_GET["company"]);
+    $selectedOption = sanitize_html($_GET["company"]);
   }
-  return $selectedFilters;
+  return $selectedOption;
 }
 
 /**
  * Create customer select form
  */
-function customerSelectForm($selectedFilters = OWN_COMPANY)
+function customer_select_form($selectedOption = OWN_COMPANY)
 {
   $options = "";
   $optionEntries = [
     OWN_COMPANY => "Joe's Java",
     ALL_COMPANIES => "All Companies",
   ];
-  foreach ($optionEntries as $value => $text) {
-    $selected = $selectedFilters == $value ? "selected" : "";
+  foreach ($optionEntries as $option => $description) {
+    $selected = $selectedOption == $option ? "selected" : "";
     $options .= <<<OPTIONS
-    <option class="customers-filter-option" value="$value" $selected>
-      $text
+    <option class="customers-filter-option" value="$option" $selected>
+      $description
     </option>
     OPTIONS;
   }
@@ -140,11 +143,11 @@ function customerSelectForm($selectedFilters = OWN_COMPANY)
 /**
  * Read customer search term
  */
-function getSearchTerm()
+function get_search_term()
 {
   $searchTerm = "";
   if (isset($_GET["search"])) {
-    $searchTerm = sanitizeHTML($_GET["search"]);
+    $searchTerm = sanitize_html($_GET["search"]);
   }
   return $searchTerm;
 }
@@ -152,7 +155,7 @@ function getSearchTerm()
 /**
  * Create customer search form
  */
-function customerSearchForm($searchTerm = "")
+function customer_search_form($searchTerm = "")
 {
   return <<<SEARCH_FORM
   <form class="row" method="get" action="customers">
@@ -167,12 +170,15 @@ function customerSearchForm($searchTerm = "")
   SEARCH_FORM;
 }
 
-function customerList($selectedFilters = OWN_COMPANY, $searchTerm = "")
+/**
+ * Create list of customer based on selected option and search term
+ */
+function customer_list($selectedOption = OWN_COMPANY, $searchTerm = "")
 {
   $customers = [];
-  switch ($selectedFilters) {
+  switch ($selectedOption) {
     case OWN_COMPANY:
-      $customers = listCustomers($searchTerm);
+      $customers = list_customers($searchTerm);
       break;
     case ALL_COMPANIES:
       $customers = [];
@@ -187,15 +193,15 @@ function customerList($selectedFilters = OWN_COMPANY, $searchTerm = "")
 }
 
 try {
-  $registerCustomerForm = registerCustomerForm();
-  $selectedFilters = getSelectedFilters();
-  $customerSelectForm = customerSelectForm($selectedFilters);
-  $searchTerm = getSearchTerm();
+  $registerCustomerForm = register_customer_form();
+  $selectedOption = get_selected_customer_option();
+  $customerSelectForm = customer_select_form($selectedOption);
+  $searchTerm = get_search_term();
   $customerSearchForm = "";
-  if ($selectedFilters == OWN_COMPANY) {
-    $customerSearchForm = customerSearchForm($searchTerm);
+  if ($selectedOption == OWN_COMPANY) {
+    $customerSearchForm = customer_search_form($searchTerm);
   }
-  $customerList = customerList($selectedFilters, $searchTerm);
+  $customerList = customer_list($selectedOption, $searchTerm);
 } catch (Exception $e) {
   http_response_code(400);
   include_once("error.php");

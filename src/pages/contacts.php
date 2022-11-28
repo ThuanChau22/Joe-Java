@@ -19,7 +19,7 @@ try {
   }
   $email1 = $contacts["email1"];
   $email2 = $contacts["email2"];
-  $phone = $contacts["phone"];
+  $phone = pretty_phone_number($contacts["phone"]);
   $address = $contacts["address"];
 } catch (Exception $e) {
   http_response_code(400);
