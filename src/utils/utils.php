@@ -89,7 +89,7 @@ function pretty_phone_number($phoneNumber)
 }
 
 /**
- * Create a new session after user being authenticated
+ * Create a new session
  */
 function create_session($userName)
 {
