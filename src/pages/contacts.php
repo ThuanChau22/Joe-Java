@@ -7,7 +7,7 @@ $phone = $address = "";
 try {
   $filePath = "../../assets/contacts.txt";
   $file = fopen($filePath, "r");
-  if (!$file) throw new Exception("Failed to open file");
+  if (!$file) throw new Exception("Failed to open file", 500);
   $fileContent = fread($file, filesize($filePath));
   $entries = array_map("trim", explode("\n", $fileContent));
   $contacts = [];
@@ -22,9 +22,7 @@ try {
   $phone = pretty_phone_number($contacts["phone"]);
   $address = $contacts["address"];
 } catch (Exception $e) {
-  http_response_code(400);
-  include_once("error.php");
-  die();
+  handle_client_error($e);
 } finally {
   fclose($file);
 }

@@ -100,9 +100,9 @@ function create_session($userName)
 
 /**
  * Check whether session existed
- * and requester matches current user
+ * and valid with current user
  */
-function is_authenticated()
+function validate_session()
 {
   session_start();
   $user = isset($_SESSION["user"]) ? $_SESSION["user"] : "";
@@ -124,4 +124,16 @@ function remove_session()
   unset($_SESSION);
   setcookie(session_name(), "", time() - 3 * 24 * 60 * 60);
   session_destroy();
+}
+
+/**
+ * Handle exception
+ */
+function handle_client_error($exception)
+{
+  // console_log($exception->getMessage());
+  $code = $exception->getCode();
+  http_response_code($code);
+  include_once($code == 404 ? "404.php" : "error.php");
+  die();
 }
