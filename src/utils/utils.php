@@ -127,7 +127,7 @@ function remove_session()
 }
 
 /**
- * Handle exception
+ * Handle client side exception
  */
 function handle_client_error($exception)
 {
@@ -136,4 +136,29 @@ function handle_client_error($exception)
   http_response_code($code);
   include_once($code == 404 ? "404.php" : "error.php");
   die();
+}
+
+/**
+ * Handle json response
+ */
+function json_response($data = null, $code = 200, $message = "")
+{
+  header_remove();
+  http_response_code($code);
+  header("Cache-Control: no-transform,public,max-age=300,s-maxage=900");
+  header('Content-Type: application/json');
+  $body = $data;
+  if ($code >= 300 && $code < 500) {
+    $body = [
+      "status" => $code,
+      "message" => $message,
+    ];
+  }
+  if ($code >= 500) {
+    $body = [
+      "status" => $code,
+      "message" => "Internal Server Error",
+    ];
+  }
+  return json_encode($body);
 }
