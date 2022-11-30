@@ -82,11 +82,6 @@ function product_list($selectedOption = ALL_PRODUCTS)
       $productIdList = list_visited_product_id();
       $products = list_products_by_id($productIdList);
       break;
-    default:
-      http_response_code(404);
-      include_once("404.php");
-      die();
-      break;
   }
   if (count($products) == 0) {
     return <<<PRODUCT_EMPTY
@@ -124,14 +119,43 @@ function product_list($selectedOption = ALL_PRODUCTS)
   PRODUCT_LIST;
 }
 
+$pageContent = "";
 try {
-  $selectedOption = get_selected_product_option();
-  $productSelectForm = product_select_form($selectedOption);
-  $productList = product_list($selectedOption);
+  if (!isset($_GET["id"])) {
+    $selectedOption = get_selected_product_option();
+    $productSelectForm = product_select_form($selectedOption);
+    $productList = product_list($selectedOption);
+    $pageContent = <<<PRODUCTS
+    <p class="products-page-title">Products</p>
+    <hr>
+    $productSelectForm
+    $productList
+    PRODUCTS;
+  } else {
+    $productId = sanitize_html($_GET["id"]);
+    $product = get_product_by_id($productId);
+    $productImage = $product["image"];
+    $productName = $product["name"];
+    $productDescription = $product["description"];
+    set_visited_product_id($productId);
+    update_product_visited_count($productId);
+    $pageContent = <<<PRODUCT_ITEM
+    <div class="pt-5"></div>
+    <div class="row">
+      <div class="col-md-6">
+        <img class="products-item-image img-responsive img-center" src="$productImage">
+      </div>
+      <div class="col-md-6">
+        <p class="products-item-name">$productName</p>
+        <div class="pt-4"></div>
+        <p class="products-item-description-label">Description:</p>
+        <p class="products-item-description-content text-muted">$productDescription</p>
+      </div>
+    </div>
+    PRODUCT_ITEM;
+  }
 } catch (Exception $e) {
-  http_response_code(400);
-  include_once("error.php");
-  die();
+  handle_client_error($e);
 }
 
 $styles = <<<STYLE
@@ -140,10 +164,7 @@ STYLE;
 
 $content = <<<CONTENT
 <div id="products" class="container">
-  <p class="products-page-title">Products</p>
-  <hr>
-  $productSelectForm
-  $productList
+  $pageContent
   <div class="pt-5"></div>
 </div>
 CONTENT;

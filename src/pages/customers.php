@@ -238,11 +238,6 @@ function customer_list($selectedOption = OWN_COMPANY, $searchTerm = "")
     case ALL_COMPANIES:
       $customers = [];
       break;
-    default:
-      http_response_code(404);
-      include_once("404.php");
-      die();
-      break;
   }
   return customers($customers);
 }
@@ -254,7 +249,7 @@ try {
   $customerFormTitle = "Login";
   $customerForm = admin_login_form();
   $logoutForm = "";
-  if (is_authenticated()) {
+  if (validate_session()) {
     $customerFormTitle = "Register";
     $customerForm = register_customer_form();
     $logoutForm = logout_form();
@@ -268,9 +263,7 @@ try {
   }
   $customerList = customer_list($selectedOption, $searchTerm);
 } catch (Exception $e) {
-  http_response_code(400);
-  include_once("error.php");
-  die();
+  handle_client_error($e);
 }
 
 $styles = <<<STYLE
