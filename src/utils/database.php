@@ -20,9 +20,7 @@ function connect_db()
     $dbname = $_ENV["DB_NAME"];
     return new mysqli($host, $user, $pass, $dbname);
   } catch (Exception $e) {
-    http_response_code(500);
-    include_once("error.php");
-    die();
+    throw new Exception("Unable to connect to database", 500);
   }
 }
 
@@ -58,9 +56,7 @@ function login($username, $password)
     }
     return "";
   } catch (Exception $e) {
-    http_response_code(500);
-    include_once("error.php");
-    die();
+    throw $e;
   }
 }
 
@@ -103,9 +99,7 @@ function list_customers($search = "")
     $conn->close();
     return $customers;
   } catch (Exception $e) {
-    http_response_code(500);
-    include_once("error.php");
-    die();
+    throw $e;
   }
 }
 
@@ -136,9 +130,7 @@ function add_customer($firstname, $lastname, $email, $address, $homePhone, $cell
     }
     return "";
   } catch (Exception $e) {
-    http_response_code(500);
-    include_once("error.php");
-    die();
+    throw $e;
   }
 }
 
@@ -163,9 +155,7 @@ function list_products()
     $conn->close();
     return $products;
   } catch (Exception $e) {
-    http_response_code(500);
-    include_once("error.php");
-    die();
+    throw $e;
   }
 }
 
@@ -197,9 +187,7 @@ function list_products_by_category($category = "coffee")
     $conn->close();
     return $products;
   } catch (Exception $e) {
-    http_response_code(500);
-    include_once("error.php");
-    die();
+    throw $e;
   }
 }
 
@@ -224,9 +212,7 @@ function list_products_by_most_visited($limit = 5)
     $conn->close();
     return $products;
   } catch (Exception $e) {
-    http_response_code(500);
-    include_once("error.php");
-    die();
+    throw $e;
   }
 }
 
@@ -269,9 +255,7 @@ function list_products_by_id($idList)
     }
     return $products;
   } catch (Exception $e) {
-    http_response_code(500);
-    include_once("error.php");
-    die();
+    throw $e;
   }
 }
 
@@ -292,7 +276,7 @@ function get_product_by_id($id)
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows == 0) {
-      throw new Exception("Product not found.", 404);
+      throw new Exception("Product not found", 404);
     }
     [$product] = $result->fetch_all(MYSQLI_ASSOC);
     $result->close();
@@ -300,15 +284,7 @@ function get_product_by_id($id)
     $conn->close();
     return $product;
   } catch (Exception $e) {
-    $errorCode = 500;
-    $errorPage = "error.php";
-    if ($e->getCode() == 404) {
-      $errorCode = 404;
-      $errorPage = "404.php";
-    }
-    http_response_code($errorCode);
-    include_once($errorPage);
-    die();
+    throw $e;
   }
 }
 
@@ -329,9 +305,7 @@ function update_product_visited_count($id)
     $stmt->bind_param("s", $id);
     $stmt->execute();
   } catch (Exception $e) {
-    http_response_code(500);
-    include_once("error.php");
-    die();
+    throw $e;
   } finally {
     $stmt->close();
     $conn->close();

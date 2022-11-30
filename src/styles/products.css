@@ -79,3 +79,25 @@
   transition: all 1s ease 0s;
   transform: translateX(0px);
 }
+
+.products-item-image {
+  width: 100%;
+}
+
+.products-item-name {
+  color: #663300;
+  font-size: clamp(32px, 3vw, 70px);
+  font-family: "Dancing Script", cursive;
+  font-weight: bold;
+}
+
+.products-item-description-label {
+  color: #ffb366;
+  font-size: clamp(25px, 3vw, 45px);
+  font-family: "Dancing Script", cursive;
+  font-weight: bold;
+}
+
+.products-item-description-content {
+  font-size: clamp(16px, 2vw, 25px)
+}
