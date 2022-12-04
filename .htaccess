@@ -17,8 +17,11 @@ RewriteEngine On
 RewriteBase /
 
 RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^json/products/([a-zA-Z0-9]+)/$ /src/json/products.php?id=$1 [NC,L]
 RewriteRule ^json/products/([a-zA-Z0-9]+)$ /src/json/products.php?id=$1 [NC,L]
+RewriteRule ^json/([^\.]+)/$ /src/json/$1.php [NC,L]
 RewriteRule ^json/([^\.]+)$ /src/json/$1.php [NC,L]
+RewriteRule ^products/([a-zA-Z0-9]+)/$ /src/pages/products.php?id=$1 [NC,L]
 RewriteRule ^products/([a-zA-Z0-9]+)$ /src/pages/products.php?id=$1 [NC,L]
 RewriteRule ^([^\.]+)/$ /src/pages/$1.php [NC,L]
 RewriteRule ^([^\.]+)$ /src/pages/$1.php [NC,L]
