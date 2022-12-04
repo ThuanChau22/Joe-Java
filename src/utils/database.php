@@ -69,11 +69,12 @@ function list_customers($search = "")
 {
   try {
     $conn = connect_db();
-    $query = <<<QUERY
-    SELECT first_name, last_name,
-      email, address, home_phone, cell_phone
+    $query = <<<SQL
+    SELECT
+      first_name, last_name, email,
+      address, home_phone, cell_phone
     FROM customer
-    QUERY;
+    SQL;
     $stmt = $conn->prepare($query);
     $search = sanitize_sql($conn, $search);
     if ($search != "") {
@@ -141,11 +142,11 @@ function list_products()
 {
   try {
     $conn = connect_db();
-    $query = <<<QUERY
+    $query = <<<SQL
     SELECT id, name, image
     FROM product LEFT OUTER JOIN coffee USING(id)
     ORDER BY category, type, roast_level
-    QUERY;
+    SQL;
     $stmt = $conn->prepare($query);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -167,16 +168,16 @@ function list_products_by_category($category = "coffee")
 {
   try {
     $conn = connect_db();
-    $query = <<<QUERY
+    $query = <<<SQL
     SELECT id, name, image
     FROM product JOIN coffee USING(id)
     ORDER BY type, roast_level
-    QUERY;
+    SQL;
     if ($category == "brewing-tool") {
-      $query = <<<QUERY
+      $query = <<<SQL
       SELECT id, name, image
       FROM product WHERE category = "tool"
-      QUERY;
+      SQL;
     }
     $stmt = $conn->prepare($query);
     $stmt->execute();
@@ -198,10 +199,10 @@ function list_products_by_most_visited($limit = 5)
 {
   try {
     $conn = connect_db();
-    $query = <<<QUERY
+    $query = <<<SQL
     SELECT id, name, image
     FROM product ORDER BY visited DESC LIMIT ?
-    QUERY;
+    SQL;
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $limit);
     $stmt->execute();
@@ -233,10 +234,10 @@ function list_products_by_id($idList)
       $wildcards .= "?" . ($isLast ? "" : ",");
       $types .= "s";
     }
-    $query = <<<QUERY
-      SELECT id, name, image
-      FROM product WHERE id IN($wildcards)
-      QUERY;
+    $query = <<<SQL
+    SELECT id, name, image
+    FROM product WHERE id IN($wildcards)
+    SQL;
     $stmt = $conn->prepare($query);
     $stmt->bind_param($types, ...$idList);
     $stmt->execute();
@@ -266,10 +267,10 @@ function get_product_by_id($id)
 {
   try {
     $conn = connect_db();
-    $query = <<<QUERY
+    $query = <<<SQL
     SELECT id, name, image, description
     FROM product WHERE id = ?
-    QUERY;
+    SQL;
     $stmt = $conn->prepare($query);
     $id = sanitize_sql($conn, $id);
     $stmt->bind_param("s", $id);
@@ -295,11 +296,11 @@ function update_product_visited_count($id)
 {
   try {
     $conn = connect_db();
-    $query = <<<QUERY
+    $query = <<<SQL
     UPDATE product
     SET visited = visited + 1
     WHERE id = ?
-    QUERY;
+    SQL;
     $stmt = $conn->prepare($query);
     $id = sanitize_sql($conn, $id);
     $stmt->bind_param("s", $id);

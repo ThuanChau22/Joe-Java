@@ -9,13 +9,13 @@ function navbar($pageId)
   foreach ($pages as $page) {
     $labelName = ucwords(strtolower($page));
     $labelStyle = $page == $pageId ? $style : "";
-    $navItems .= <<<NAV_ITEM
+    $navItems .= <<<HTML
     <li class="nav-item">
       <a class="nav-link" href="/$page" $labelStyle>$labelName</a>
     </li>
-    NAV_ITEM;
+    HTML;
   }
-  return <<<NAVBAR
+  return <<<HTML
   <nav id="navbar" class="navbar navbar-expand-md navbar-dark fixed-top">
     <div class="container">
       <a class="navbar-brand" href="/home">
@@ -32,5 +32,5 @@ function navbar($pageId)
   </nav>
   <div id="navbar-padding"></div>
   <script src="/src/scripts/navbar.js" type="text/javascript"></script>
-  NAVBAR;
+  HTML;
 }
