@@ -27,37 +27,33 @@ try {
   fclose($file);
 }
 
-$styles = <<<STYLE
-<link href="/src/styles/contacts.css" rel="stylesheet">
-STYLE;
-
-$content = <<<CONTENT
-<div class="container">
-  <p class="contacts-page-title">Contact Us</p>
-  <hr>
-  <div class="contacts-items">
-    <p class="contacts-label mt-4">Email:</p>
-    <ul>
-      <li><p class="contacts-value text-muted">$email1</p></li>
-      <li><p class="contacts-value text-muted">$email2</p></li>
-    </ul>
-    <hr>
-    <p class="contacts-label mt-4">Phone Number:</p>
-    <ul>
-      <li><p class="contacts-value text-muted">$phone</p></li>
-    </ul>
-    <hr>
-    <p class="contacts-label mt-4">Address:</p>
-    <ul>
-      <li><p class="contacts-value text-muted">$address</p></li>
-    </ul>
-    <hr>
-  </div>
-</div>
-CONTENT;
-
 echo document(
   pageId: "contacts",
-  styles: $styles,
-  content: $content,
+  styles: <<<HTML
+  <link href="/src/styles/contacts.css" rel="stylesheet">
+  HTML,
+  content: <<<HTML
+  <div class="container">
+    <p class="contacts-page-title">Contact Us</p>
+    <hr>
+    <div class="contacts-items">
+      <p class="contacts-label mt-4">Email:</p>
+      <ul>
+        <li><p class="contacts-value text-muted">$email1</p></li>
+        <li><p class="contacts-value text-muted">$email2</p></li>
+      </ul>
+      <hr>
+      <p class="contacts-label mt-4">Phone Number:</p>
+      <ul>
+        <li><p class="contacts-value text-muted">$phone</p></li>
+      </ul>
+      <hr>
+      <p class="contacts-label mt-4">Address:</p>
+      <ul>
+        <li><p class="contacts-value text-muted">$address</p></li>
+      </ul>
+      <hr>
+    </div>
+  </div>
+  HTML,
 );

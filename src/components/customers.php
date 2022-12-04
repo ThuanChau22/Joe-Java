@@ -3,12 +3,7 @@ require_once("../utils/utils.php");
 
 function customers($customers)
 {
-  if (count($customers) == 0) {
-    return <<<CUSTOMER_EMPTY
-    <p class="customers-empty mt-3">No Customer Found</p>
-    CUSTOMER_EMPTY;
-  }
-  $entries = "";
+  $customerList = "";
   foreach ($customers as $customer) {
     $firstname = $customer["first_name"];
     $lastname = $customer["last_name"];
@@ -16,7 +11,7 @@ function customers($customers)
     $address = $customer["address"];
     $homePhone = pretty_phone_number($customer["home_phone"]);
     $cellPhone = pretty_phone_number($customer["cell_phone"]);
-    $entries .= <<<CUSTOMER
+    $customerList .= <<<HTML
     <div class="customers-entry mb-4">
       <p class="customers-entry-name">$firstname $lastname</p>
       <hr>
@@ -37,11 +32,13 @@ function customers($customers)
       </ul>
       <hr>
     </div>
-    CUSTOMER;
+    HTML;
   }
-  return <<<CUSTOMER_LIST
-  <div class="container">
-    $entries
-  </div>
-  CUSTOMER_LIST;
+  return count($customers) > 0
+    ? <<<HTML
+    <div class="container">$customerList</div>
+    HTML
+    : <<<HTML
+    <p class="customers-empty mt-3">No Customer Found</p>
+    HTML;
 }

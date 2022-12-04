@@ -1,6 +1,13 @@
 let searchTerm = "";
 let timeoutId = 0;
 
+const initialSearchTerm = () => {
+  const className = "customers-search-input";
+  const searchInput = document.getElementsByClassName(className)[0];
+  searchTerm = searchInput.value;
+}
+window.addEventListener("load", initialSearchTerm);
+
 const searchCustomers = (element) => {
   clearTimeout(timeoutId);
   timeoutId = setTimeout(() => {
