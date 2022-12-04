@@ -46,7 +46,7 @@ function register_customer_form()
     $messageText = $successMessage;
     $messageColor = "text-success";
   }
-  return <<<REGISTER_FORM
+  return <<<HTML
   <form method="post" action="customers">
     <div class="row px-2">
       <div class="col-sm-6 px-1">
@@ -93,7 +93,7 @@ function register_customer_form()
     <input class="customers-form-btn" type="submit" name="register" value="Submit">
     <span class="customers-form-message ms-2 $messageColor">$messageText</span>
   </form>
-  REGISTER_FORM;
+  HTML;
 }
 
 /**
@@ -116,7 +116,7 @@ function admin_login_form()
       header("Location: " . $_SERVER["REQUEST_URI"]);
     }
   }
-  return <<<LOGIN_FORM
+  return <<<HTML
   <form method="post" action="customers">
     <div class="row px-2">
       <div class="col-sm-6 px-1">
@@ -135,7 +135,7 @@ function admin_login_form()
     <input class="customers-form-btn" type="submit" name="login" value="Submit">
     <span class="customers-form-message ms-2 text-danger">$errorMessage</span>
   </form>
-  LOGIN_FORM;
+  HTML;
 }
 
 /**
@@ -143,11 +143,11 @@ function admin_login_form()
  */
 function logout_form()
 {
-  return <<<LOGOUT_FORM
+  return <<<HTML
   <form method="post" action="customers">
     <input class="customers-logout-btn" type="submit" name="logout" value="Logout">
   </form>
-  LOGOUT_FORM;
+  HTML;
 }
 
 /**
@@ -174,13 +174,13 @@ function customer_select_form($selectedOption = OWN_COMPANY)
   ];
   foreach ($optionEntries as $option => $description) {
     $selected = $selectedOption == $option ? "selected" : "";
-    $options .= <<<OPTIONS
+    $options .= <<<HTML
     <option class="customers-filter-option" value="$option" $selected>
       $description
     </option>
-    OPTIONS;
+    HTML;
   }
-  return <<<SELECT_FORM
+  return <<<HTML
   <form id="select-customer-form" class="row" method="get" action="customers">
     <div class="col-lg-6 col-8 pe-1">
       <select class="customers-filter-select form-select" name="company" onchange="submitForm('select-customer-form')">
@@ -191,7 +191,7 @@ function customer_select_form($selectedOption = OWN_COMPANY)
       <input class="customers-filter-btn" type="submit" value="Apply">
     </div>
   </form>
-  SELECT_FORM;
+  HTML;
 }
 
 /**
@@ -211,7 +211,7 @@ function get_search_term()
  */
 function customer_search_form($searchTerm = "")
 {
-  return <<<SEARCH_FORM
+  return <<<HTML
   <form class="row" method="get" action="customers">
     <div class="col-lg-6 col-8 pe-1 position-relative">
       <input class="customers-search-input form-control pe-4" type="text" autocomplete="off" placeholder="Name, email, phone..." name="search" value="$searchTerm" onkeyup="searchCustomers(this)">
@@ -222,7 +222,7 @@ function customer_search_form($searchTerm = "")
     </div>
     <br>
   </form>
-  SEARCH_FORM;
+  HTML;
 }
 
 /**
@@ -266,51 +266,44 @@ try {
   handle_client_error($e);
 }
 
-$styles = <<<STYLE
-<link href="/src/styles/customers.css" rel="stylesheet">
-STYLE;
-
-$content = <<<CONTENT
-<div class="container">
-  <p class="customers-page-title">Customers</p>
-  <hr>
-  <div class="row mt-2 mb-2">
-    <div class="col-6">
-      <p class="customers-form-title">
-        $customerFormTitle
-      </p>
-    </div>
-    <div class="col-6">
-      $logoutForm
-    </div>
-  </div>
-  $customerForm
-  <p class="customers-form-title mt-5 mb-2">
-    Customers
-  </p>
-  <div class="row">
-    <div class="col-md-6 mb-1">
-      $customerSelectForm
-    </div>
-    <div class="col-md-6 mb-3">
-      $customerSearchForm
-    </div>
-  </div>
-  <div id="customer-list" class="mb-5">
-    $customerList
-  </div>
-</div>
-CONTENT;
-
-
-$scripts = <<<SCRIPT
-<script src="/src/scripts/customers.js" type="text/javascript"></script>
-<script src="/src/scripts/utils.js" type="text/javascript"></script>
-SCRIPT;
-
 echo document(
   pageId: "customers",
-  styles: $styles,
-  content: $content,
-  scripts: $scripts,
+  styles: <<<HTML
+  <link href="/src/styles/customers.css" rel="stylesheet">
+  HTML,
+  scripts: <<<HTML
+  <script src="/src/scripts/customers.js" type="text/javascript"></script>
+  <script src="/src/scripts/utils.js" type="text/javascript"></script>
+  HTML,
+  content: <<<HTML
+  <div class="container">
+    <p class="customers-page-title">Customers</p>
+    <hr>
+    <div class="row mt-2 mb-2">
+      <div class="col-6">
+        <p class="customers-form-title">
+          $customerFormTitle
+        </p>
+      </div>
+      <div class="col-6">
+        $logoutForm
+      </div>
+    </div>
+    $customerForm
+    <p class="customers-form-title mt-5 mb-2">
+      Customers
+    </p>
+    <div class="row">
+      <div class="col-md-6 mb-1">
+        $customerSelectForm
+      </div>
+      <div class="col-md-6 mb-3">
+        $customerSearchForm
+      </div>
+    </div>
+    <div id="customer-list" class="mb-5">
+      $customerList
+    </div>
+  </div>
+  HTML,
 );

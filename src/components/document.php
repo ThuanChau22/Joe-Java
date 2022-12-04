@@ -5,16 +5,16 @@ require_once("footer.php");
 
 function document($pageId = "", $content = "", $styles = "", $scripts = "")
 {
-  $styles = <<<STYLES
+  $styles = <<<HTML
   <link href="/src/styles/document.css" rel="stylesheet">
   <link href="/src/styles/navbar.css" rel="stylesheet">
   <link href="/src/styles/footer.css" rel="stylesheet">
   $styles
-  STYLES;
+  HTML;
   $head = head($pageId, $styles);
   $navbar = navbar($pageId);
   $footer = footer();
-  return <<<DOCUMENT
+  return <<<HTML
   <!DOCTYPE html>
   <html>
     $head
@@ -29,5 +29,5 @@ function document($pageId = "", $content = "", $styles = "", $scripts = "")
       $scripts
     </body>
   </html>
-  DOCUMENT;
+  HTML;
 }

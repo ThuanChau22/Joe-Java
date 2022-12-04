@@ -2,7 +2,7 @@
 function head($pageId = "", $styles = "")
 {
   $title = "Joe's Java" . (!empty($pageId) ? " | " . ucwords(strtolower($pageId)) : "");
-  return <<<HEAD
+  return <<<HTML
   <head>
     <title>$title</title>
     <meta charset="utf-8">
@@ -21,5 +21,5 @@ function head($pageId = "", $styles = "")
     <!-- Latest compiled JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
   </head>
-  HEAD;
+  HTML;
 }
