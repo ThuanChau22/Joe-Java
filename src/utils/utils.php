@@ -107,11 +107,11 @@ function validate_session()
   session_start();
   $user = isset($_SESSION["user"]) ? $_SESSION["user"] : "";
   $check = isset($_SESSION["check"]) ? $_SESSION["check"] : "";
-  $userAgent = $_SERVER["HTTP_USER_AGENT"];
+  $userAgent = isset($_SERVER["HTTP_USER_AGENT"]) ? $_SERVER["HTTP_USER_AGENT"] : "";
   if ($user != "" && $check != "" && $check == hash("sha512", $user . $userAgent)) {
     return true;
   }
-  session_destroy();
+  remove_session();
   return false;
 }
 
@@ -120,7 +120,9 @@ function validate_session()
  */
 function remove_session()
 {
-  session_start();
+  if (session_status() != PHP_SESSION_ACTIVE) {
+    session_start();
+  }
   unset($_SESSION);
   setcookie(session_name(), "", time() - 3 * 24 * 60 * 60);
   session_destroy();
