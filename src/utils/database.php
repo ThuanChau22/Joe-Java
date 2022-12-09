@@ -143,7 +143,7 @@ function list_products()
   try {
     $conn = connect_db();
     $query = <<<SQL
-    SELECT id, name, image
+    SELECT id, name, image, price
     FROM product LEFT OUTER JOIN coffee USING(id)
     ORDER BY category, type, roast_level
     SQL;
@@ -169,13 +169,13 @@ function list_products_by_category($category = "coffee")
   try {
     $conn = connect_db();
     $query = <<<SQL
-    SELECT id, name, image
+    SELECT id, name, image, price
     FROM product JOIN coffee USING(id)
     ORDER BY type, roast_level
     SQL;
     if ($category == "brewing-tool") {
       $query = <<<SQL
-      SELECT id, name, image
+      SELECT id, name, image, price
       FROM product WHERE category = "tool"
       SQL;
     }
@@ -200,7 +200,7 @@ function list_products_by_most_visited($limit = 5)
   try {
     $conn = connect_db();
     $query = <<<SQL
-    SELECT id, name, image
+    SELECT id, name, image, price
     FROM product ORDER BY visited DESC LIMIT ?
     SQL;
     $stmt = $conn->prepare($query);
@@ -235,7 +235,7 @@ function list_products_by_id($idList)
       $types .= "s";
     }
     $query = <<<SQL
-    SELECT id, name, image
+    SELECT id, name, image, price
     FROM product WHERE id IN($wildcards)
     SQL;
     $stmt = $conn->prepare($query);
@@ -268,7 +268,7 @@ function get_product_by_id($id)
   try {
     $conn = connect_db();
     $query = <<<SQL
-    SELECT id, name, image, description
+    SELECT id, name, image, price, description
     FROM product WHERE id = ?
     SQL;
     $stmt = $conn->prepare($query);

@@ -88,6 +88,7 @@ function product_list($selectedOption = ALL_PRODUCTS)
     $productId = $product["id"];
     $productImage = $product["image"];
     $productName = $product["name"];
+    $productPrice = $product["price"];
     $productList .= <<<HTML
     <div class="products-card col-xl-2 col-lg-3 col-md-4 col-sm-6">
       <a class="products-card-link" href=/products/$productId>
@@ -99,6 +100,7 @@ function product_list($selectedOption = ALL_PRODUCTS)
                 $productName
               </p>
             </div>
+            <p class="products-card-price">$$productPrice</p>
           </div>
         </div>
       </a>
@@ -133,18 +135,21 @@ try {
     $product = get_product_by_id($productId);
     $productImage = $product["image"];
     $productName = $product["name"];
+    $productPrice = $product["price"];
     $productDescription = $product["description"];
     set_visited_product_id($productId);
     update_product_visited_count($productId);
     $pageContent = <<<HTML
     <div class="pt-5"></div>
-    <div class="row">
+    <div class="products-item row">
       <div class="col-md-6">
         <img class="products-item-image img-responsive img-center" src=$productImage>
       </div>
       <div class="col-md-6">
         <p class="products-item-name">$productName</p>
-        <div class="pt-4"></div>
+        <div class="pt-1"></div>
+        <p class="products-item-price">$$productPrice</p>
+        <div class="pt-3"></div>
         <p class="products-item-description-label">Description:</p>
         <p class="products-item-description-content text-muted">$productDescription</p>
       </div>
