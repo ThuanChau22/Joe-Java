@@ -35,15 +35,15 @@ function sanitize_sql($conn, $string)
 /**
  * Authenticate user with password
  */
-function login($username, $password)
+function login($email, $password)
 {
   try {
     $conn = connect_db();
-    $username = sanitize_sql($conn, $username);
+    $email = sanitize_sql($conn, $email);
     $password = sanitize_sql($conn, $password);
-    $query = "SELECT password FROM admin WHERE username = ?";
+    $query = "SELECT password FROM user WHERE email = ?";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $username);
+    $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
     $users = $result->fetch_all(MYSQLI_ASSOC);
@@ -55,6 +55,31 @@ function login($username, $password)
       return "Incorrect user name or password.";
     }
     return "";
+  } catch (Exception $e) {
+    throw $e;
+  }
+}
+
+/**
+ * Check whether authenticated user is an admin
+ */
+function isAdmin($email)
+{
+  try {
+    $conn = connect_db();
+    $query = <<<SQL
+    SELECT id FROM admin
+    JOIN user USING(id) WHERE email = ?
+    SQL;
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $count = $result->num_rows;
+    $result->close();
+    $stmt->close();
+    $conn->close();
+    return $count == 1;
   } catch (Exception $e) {
     throw $e;
   }
@@ -73,7 +98,7 @@ function list_customers($search = "")
     SELECT
       first_name, last_name, email,
       address, home_phone, cell_phone
-    FROM customer
+    FROM customer JOIN user USING(id)
     SQL;
     $stmt = $conn->prepare($query);
     $search = sanitize_sql($conn, $search);
@@ -106,30 +131,54 @@ function list_customers($search = "")
 
 /**
  * Add a customer to the database
+ * {
+ *    email, password,
+ *    first_name, last_name,
+ *    home_phone, cell_phone, address
+ * }
  */
-function add_customer($firstname, $lastname, $email, $address, $homePhone, $cellPhone)
+function add_customer($inputs)
 {
   try {
     $conn = connect_db();
-    $values = [$firstname, $lastname, $email, $address, $homePhone, $cellPhone];
-    foreach ($values as $i => $value) {
-      $values[$i] = sanitize_sql($conn, $value);
-    }
-    $fields = "first_name, last_name, email, address, home_phone, cell_phone";
-    $query = "INSERT INTO customer ($fields) VALUES (?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("ssssss", ...$values);
     try {
+      $email = sanitize_sql($conn, $inputs["email"]);
+      $password = sanitize_sql($conn, $inputs["password"]);
+      $hashedPassword = hash("sha512", $password);
+      $conn->begin_transaction();
+      $query = "INSERT INTO user (email, password) VALUES (LOWER(?), ?)";
+      $stmt = $conn->prepare($query);
+      $stmt->bind_param("ss", $email, $hashedPassword);
       $stmt->execute();
+      $values = [
+        $inputs["first_name"],
+        $inputs["last_name"],
+        $inputs["home_phone"],
+        $inputs["cell_phone"],
+        $inputs["address"],
+      ];
+      foreach ($values as $i => $value) {
+        $values[$i] = sanitize_sql($conn, $value);
+      }
+      $query = <<<SQL
+      INSERT INTO customer
+      (id, first_name, last_name, home_phone, cell_phone, address)
+       VALUES (LAST_INSERT_ID(), ?, ?, ?, ?, ?)
+      SQL;
+      $stmt = $conn->prepare($query);
+      $stmt->bind_param("sssss", ...$values);
+      $stmt->execute();
+      $stmt->close();
+      $conn->commit();
+      $conn->close();
+      return "";
     } catch (Exception $e) {
-      if ($conn->errno == DUPLICATE_ERROR) {
+      $conn->rollback();
+      if ($e->getCode() == DUPLICATE_ERROR) {
         return "Customer already existed";
       }
-    } finally {
-      $stmt->close();
-      $conn->close();
+      throw $e;
     }
-    return "";
   } catch (Exception $e) {
     throw $e;
   }
