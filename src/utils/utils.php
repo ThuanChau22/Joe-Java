@@ -91,11 +91,18 @@ function pretty_phone_number($phoneNumber)
 /**
  * Create a new session
  */
-function create_session($userName)
+function create_session($user, $isAdmin=false)
 {
-  session_start();
-  $_SESSION["user"] = $userName;
-  $_SESSION["check"] = hash("sha512", $userName . $_SERVER["HTTP_USER_AGENT"]);
+  if (session_status() != PHP_SESSION_ACTIVE) {
+    session_start();
+  }
+  if (!isset($_SESSION["init"])) {
+    session_regenerate_id();
+    $_SESSION["init"] = true;
+  }
+  $_SESSION["user"] = $user;
+  $_SESSION["isAdmin"] = $isAdmin;
+  $_SESSION["check"] = hash("sha512", $user . $_SERVER["HTTP_USER_AGENT"]);
 }
 
 /**
@@ -104,7 +111,9 @@ function create_session($userName)
  */
 function validate_session()
 {
-  session_start();
+  if (session_status() != PHP_SESSION_ACTIVE) {
+    session_start();
+  }
   $user = isset($_SESSION["user"]) ? $_SESSION["user"] : "";
   $check = isset($_SESSION["check"]) ? $_SESSION["check"] : "";
   $userAgent = isset($_SERVER["HTTP_USER_AGENT"]) ? $_SERVER["HTTP_USER_AGENT"] : "";
