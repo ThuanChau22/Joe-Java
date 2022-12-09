@@ -29,5 +29,6 @@
 
 .news-item-content {
   font-size: clamp(16px, 2vw, 18px);
+  text-align: justify;
   margin-top: clamp(5px, 1vw, 10px) !important;
 }

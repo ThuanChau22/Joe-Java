@@ -20,7 +20,7 @@
 
 .about-content-text {
   color: #d9d9d9;
-  text-align: center;
+  text-align: justify;
   font-size: clamp(16px, 2vw, 20px);
   padding: 0px clamp(5px, 3vw, 100px);
   line-height: clamp(24px, 2vw, 45px);
