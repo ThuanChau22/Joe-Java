@@ -15,6 +15,17 @@ function navbar($pageId)
     </li>
     HTML;
   }
+  if (isset($_POST["logout"])) {
+    remove_session();
+  }
+  $authenticationPrompt = "<a class='auth-link' href='/auth'>Login|Register</a>";
+  if (validate_session()) {
+    $authenticationPrompt = <<<HTML
+    <form method="post" action="$pageId">
+      <input class="auth-link btn btn-link" type="submit" name="logout" value="Logout">
+    </form>
+    HTML;
+  }
   return <<<HTML
   <nav id="navbar" class="navbar navbar-expand-md navbar-dark fixed-top">
     <div class="container">
@@ -26,7 +37,8 @@ function navbar($pageId)
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav">$navItems</ul>
+        <ul class="navbar-nav me-auto">$navItems</ul>
+        $authenticationPrompt
       </div>
     </div>
   </nav>
