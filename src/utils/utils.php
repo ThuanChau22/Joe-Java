@@ -94,6 +94,10 @@ function pretty_phone_number($phoneNumber)
 function create_session($userName)
 {
   session_start();
+  if (!isset($_SESSION["init"])) {
+    session_regenerate_id();
+    $_SESSION["init"] = true;
+  }
   $_SESSION["user"] = $userName;
   $_SESSION["check"] = hash("sha512", $userName . $_SERVER["HTTP_USER_AGENT"]);
 }
