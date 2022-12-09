@@ -15,24 +15,35 @@ define("ALL_COMPANIES", "all");
  */
 function register_customer_form()
 {
-  $firstname = $lastname = $email = "";
+  $email = $password = "";
+  $firstname = $lastname = "";
   $address = $homePhone = $cellPhone = "";
   $successMessage = $errorMessage = "";
   if (isset($_POST["register"])) {
+    $email = sanitize_html($_POST["email"]);
+    $password = sanitize_html($_POST["password"]);
     $firstname = sanitize_html($_POST["first_name"]);
     $lastname = sanitize_html($_POST["last_name"]);
-    $email = sanitize_html($_POST["email"]);
-    $address = sanitize_html($_POST["address"]);
     $homePhone = sanitize_html($_POST["home_phone"]);
     $cellPhone = sanitize_html($_POST["cell_phone"]);
-    $inputs = [$firstname, $lastname, $email, $address, $homePhone, $cellPhone];
-    for ($i = 0; $i < count($inputs) && $errorMessage == ""; $i++) {
-      if ($inputs[$i] == "") {
+    $address = sanitize_html($_POST["address"]);
+    $inputs = [
+      "email" => $email,
+      "password" => $password,
+      "first_name" => $firstname,
+      "last_name" => $lastname,
+      "home_phone" => $homePhone,
+      "cell_phone" => $cellPhone,
+      "address" => $cellPhone,
+    ];
+    foreach ($inputs as $input) {
+      if ($input == "") {
         $errorMessage = "Please fill in all fields";
+        break;
       }
     }
     if (!$errorMessage) {
-      $errorMessage = add_customer(...$inputs);
+      $errorMessage = add_customer($inputs);
     }
     if (!$errorMessage) {
       $firstname = $lastname = $email = "";
@@ -51,6 +62,18 @@ function register_customer_form()
     <div class="row px-2">
       <div class="col-sm-6 px-1">
         <div class="form-floating mb-2">
+          <input class="customers-form-input form-control" type="text" autocomplete="off" name="email" placeholder="Email" value="$email">
+          <label>Email</label>
+        </div>
+      </div>
+      <div class="col-sm-6 px-1">
+        <div class="form-floating mb-2">
+          <input class="customers-form-input form-control" type="password" autocomplete="off" name="password" placeholder="Password" value="$password">
+          <label>Password</label>
+        </div>
+      </div>
+      <div class="col-sm-6 px-1">
+        <div class="form-floating mb-2">
           <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="First name" name="first_name" value="$firstname" >
           <label>First name</label>
         </div>
@@ -61,22 +84,6 @@ function register_customer_form()
           <label>Last name</label>
         </div>
       </div>
-    </div>
-    <div class="row px-2">
-      <div class="col-sm-6 px-1">
-        <div class="form-floating mb-2">
-          <input class="customers-form-input form-control" type="text" autocomplete="off" name="email" placeholder="Email address" value="$email">
-          <label>Email address</label>
-        </div>
-      </div>
-      <div class="col-sm-6 px-1">
-        <div class="form-floating mb-2">
-          <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="Home address" name="address" value="$address">
-          <label>Home address</label>
-        </div>
-      </div>
-    </div>
-    <div class="row px-2">
       <div class="col-sm-6 px-1">
         <div class="form-floating mb-2">
           <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="Home phone number" name="home_phone" value="$homePhone">
@@ -87,6 +94,12 @@ function register_customer_form()
         <div class="form-floating mb-2">
           <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="Cell phone number" name="cell_phone" value="$cellPhone">
           <label>Cell phone number</label>
+        </div>
+      </div>
+      <div class="col-sm-6 px-1">
+        <div class="form-floating mb-2">
+          <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="Home address" name="address" value="$address">
+          <label>Home address</label>
         </div>
       </div>
     </div>
@@ -101,18 +114,18 @@ function register_customer_form()
  */
 function admin_login_form()
 {
-  $username = $password = $errorMessage = "";
+  $email = $password = $errorMessage = "";
   if (isset($_POST["login"])) {
-    $username = sanitize_html($_POST["username"]);
+    $email = sanitize_html($_POST["email"]);
     $password = sanitize_html($_POST["password"]);
-    if ($username == "" || $password == "") {
+    if ($email == "" || $password == "") {
       $errorMessage = "Please fill in all form fields.";
     }
     if (!$errorMessage) {
-      $errorMessage = login($username, $password);
+      $errorMessage = login($email, $password);
     }
     if (!$errorMessage) {
-      create_session(strtolower($username));
+      create_session(strtolower($email), isAdmin($email));
       header("Location: " . $_SERVER["REQUEST_URI"]);
     }
   }
@@ -121,8 +134,8 @@ function admin_login_form()
     <div class="row px-2">
       <div class="col-sm-6 px-1">
         <div class="form-floating mb-2">
-          <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="Username" name="username" value="$username" >
-          <label>Username</label>
+          <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="Email" name="email" value="$email" >
+          <label>Email</label>
         </div>
       </div>
       <div class="col-sm-6 px-1">
@@ -134,18 +147,6 @@ function admin_login_form()
     </div>
     <input class="customers-form-btn" type="submit" name="login" value="Submit">
     <span class="customers-form-message ms-2 text-danger">$errorMessage</span>
-  </form>
-  HTML;
-}
-
-/**
- * Create admin logout form
- */
-function logout_form()
-{
-  return <<<HTML
-  <form method="post" action="customers">
-    <input class="customers-logout-btn" type="submit" name="logout" value="Logout">
   </form>
   HTML;
 }
@@ -252,7 +253,6 @@ try {
   if (validate_session()) {
     $customerFormTitle = "Register";
     $customerForm = register_customer_form();
-    $logoutForm = logout_form();
   }
   $selectedOption = get_selected_customer_option();
   $customerSelectForm = customer_select_form($selectedOption);
@@ -279,16 +279,9 @@ echo document(
   <div class="container">
     <p class="customers-page-title">Customers</p>
     <hr>
-    <div class="row mt-2 mb-2">
-      <div class="col-6">
-        <p class="customers-form-title">
-          $customerFormTitle
-        </p>
-      </div>
-      <div class="col-6">
-        $logoutForm
-      </div>
-    </div>
+    <p class="customers-form-title mt-2 mb-2">
+      $customerFormTitle
+    </p>
     $customerForm
     <p class="customers-form-title mt-5 mb-2">
       Customers

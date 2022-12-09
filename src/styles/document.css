@@ -12,8 +12,10 @@ body {
   background-image: url("../../assets/coffee-beans-background.png");
 }
 
-.custom-scroll {
-  overflow-y: scroll;
+@media only screen and (min-width: 768px) {
+  .custom-scroll {
+    overflow-y: auto;
+  }
 }
 
 .custom-scroll::-webkit-scrollbar {
