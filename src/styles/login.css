@@ -1,0 +1,38 @@
+.login-page-title {
+  color: #ffb366;
+  font-weight: bold;
+  font-size: clamp(50px, 4vw, 75px);
+  font-family: "Dancing Script", cursive;
+  margin-top: clamp(15px, 1vw, 25px) !important;
+  text-align: center;
+}
+
+.login-form-input:focus {
+  border-color: #ced4da !important;
+  box-shadow: unset !important;
+}
+
+.login-form-btn {
+  color: #663300;
+  font-size: clamp(18px, 2vw, 25px);
+  font-weight: bold;
+  background-color: #ffb366;
+  border: 1px solid #ffb366;
+  border-radius: 6px;
+  padding: 0.2% 2%;
+  box-shadow: 0 2px 4px -1px #0003, 0 4px 5px #00000024, 0 1px 10px #0000001f;
+}
+
+.login-form-btn:hover {
+  color: #d9d9d9;
+  box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
+}
+
+.login-form-btn:active {
+  color: #663300;
+  box-shadow: 0 2px 4px -1px #0003, 0 4px 5px #00000024, 0 1px 10px #0000001f;
+}
+
+.login-form-message {
+  font-size: clamp(14px, 2vw, 20px);
+}

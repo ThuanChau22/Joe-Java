@@ -3,8 +3,30 @@ require_once("../utils/utils.php");
 
 function navbar($pageId)
 {
+  $pages = ["about", "products", "news", "contacts"];
+  if (isset($_POST["logout"])) {
+    remove_session();
+    header("Location: " . $_SERVER["REQUEST_URI"]);
+  }
+  $authItems = <<<HTML
+  <li class="nav-item">
+     <a class="nav-link" href="/login">Login</a>
+  </li>
+  <li class="nav-item">
+     <a class="nav-link" href="/register">Signup</a>
+  </li>
+  HTML;
+  if (valid_session()) {
+    $authItems = <<<HTML
+    <form method="post" action="$pageId">
+      <input class="auth-link btn btn-link" type="submit" name="logout" value="Logout">
+    </form>
+    HTML;
+    if ($_SESSION["isAdmin"]) {
+      $pages[] = "customers";
+    }
+  }
   $navItems = "";
-  $pages = ["about", "products", "news", "contacts", "customers"];
   $style = "style='color:#d9d9d9 !important; font-weight: bold !important'";
   foreach ($pages as $page) {
     $labelName = ucwords(strtolower($page));
@@ -13,17 +35,6 @@ function navbar($pageId)
     <li class="nav-item">
       <a class="nav-link" href="/$page" $labelStyle>$labelName</a>
     </li>
-    HTML;
-  }
-  if (isset($_POST["logout"])) {
-    remove_session();
-  }
-  $authenticationPrompt = "<a class='auth-link' href='/auth'>Login|Register</a>";
-  if (validate_session()) {
-    $authenticationPrompt = <<<HTML
-    <form method="post" action="$pageId">
-      <input class="auth-link btn btn-link" type="submit" name="logout" value="Logout">
-    </form>
     HTML;
   }
   return <<<HTML
@@ -38,7 +49,7 @@ function navbar($pageId)
       </button>
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav me-auto">$navItems</ul>
-        $authenticationPrompt
+        <ul class="navbar-nav">$authItems</ul>
       </div>
     </div>
   </nav>

@@ -43,21 +43,6 @@
   font-size: clamp(18px, 2vw, 25px);
 }
 
-.customers-logout-btn {
-  color: #663300;
-  float: right;
-  font-weight: bold;
-  text-decoration: underline;
-  padding-top: 0;
-  font-size: clamp(14px, 1vw, 24px);
-  border: 0;
-  background-color: transparent;
-}
-
-.customers-logout-btn:hover {
-  color: #4d2600;
-}
-
 .customers-filter-select {
   color: #663300 !important;
   font-size: clamp(16px, 2vw, 18px) !important;
