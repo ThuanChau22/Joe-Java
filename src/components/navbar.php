@@ -6,6 +6,7 @@ function navbar($pageId)
   $pages = ["about", "products", "news", "contacts"];
   if (isset($_POST["logout"])) {
     remove_session();
+    header("Location: " . $_SERVER["REQUEST_URI"]);
   }
   $authItems = <<<HTML
   <li class="nav-item">
