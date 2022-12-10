@@ -175,7 +175,7 @@ function add_customer($inputs)
     } catch (Exception $e) {
       $conn->rollback();
       if ($e->getCode() == DUPLICATE_ERROR) {
-        return "Customer already existed";
+        return "Email already existed";
       }
       throw $e;
     }

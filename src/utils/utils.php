@@ -109,7 +109,7 @@ function create_session($user, $isAdmin=false)
  * Check whether session existed
  * and valid with current user
  */
-function validate_session()
+function valid_session()
 {
   if (session_status() != PHP_SESSION_ACTIVE) {
     session_start();

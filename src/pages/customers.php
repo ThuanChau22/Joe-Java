@@ -13,7 +13,7 @@ define("ALL_COMPANIES", "all");
 /**
  * Create register customer form
  */
-function register_customer_form()
+function customer_register_form()
 {
   $email = $password = "";
   $firstname = $lastname = "";
@@ -105,48 +105,6 @@ function register_customer_form()
     </div>
     <input class="customers-form-btn" type="submit" name="register" value="Submit">
     <span class="customers-form-message ms-2 $messageColor">$messageText</span>
-  </form>
-  HTML;
-}
-
-/**
- * Create admin login form
- */
-function admin_login_form()
-{
-  $email = $password = $errorMessage = "";
-  if (isset($_POST["login"])) {
-    $email = sanitize_html($_POST["email"]);
-    $password = sanitize_html($_POST["password"]);
-    if ($email == "" || $password == "") {
-      $errorMessage = "Please fill in all form fields.";
-    }
-    if (!$errorMessage) {
-      $errorMessage = login($email, $password);
-    }
-    if (!$errorMessage) {
-      create_session(strtolower($email), isAdmin($email));
-      header("Location: " . $_SERVER["REQUEST_URI"]);
-    }
-  }
-  return <<<HTML
-  <form method="post" action="customers">
-    <div class="row px-2">
-      <div class="col-sm-6 px-1">
-        <div class="form-floating mb-2">
-          <input class="customers-form-input form-control" type="text" autocomplete="off" placeholder="Email" name="email" value="$email" >
-          <label>Email</label>
-        </div>
-      </div>
-      <div class="col-sm-6 px-1">
-        <div class="form-floating mb-2">
-          <input class="customers-form-input form-control" type="password" autocomplete="off" placeholder="Password" name="password" value="$password">
-          <label>Password</label>
-        </div>
-      </div>
-    </div>
-    <input class="customers-form-btn" type="submit" name="login" value="Submit">
-    <span class="customers-form-message ms-2 text-danger">$errorMessage</span>
   </form>
   HTML;
 }
@@ -244,16 +202,10 @@ function customer_list($selectedOption = OWN_COMPANY, $searchTerm = "")
 }
 
 try {
-  if (isset($_POST["logout"])) {
-    remove_session();
+  if (!(valid_session() && $_SESSION["isAdmin"])) {
+    header("Location: /home");
   }
-  $customerFormTitle = "Login";
-  $customerForm = admin_login_form();
-  $logoutForm = "";
-  if (validate_session()) {
-    $customerFormTitle = "Register";
-    $customerForm = register_customer_form();
-  }
+  $customerRegisterForm = customer_register_form();
   $selectedOption = get_selected_customer_option();
   $customerSelectForm = customer_select_form($selectedOption);
   $searchTerm = get_search_term();
@@ -280,9 +232,9 @@ echo document(
     <p class="customers-page-title">Customers</p>
     <hr>
     <p class="customers-form-title mt-2 mb-2">
-      $customerFormTitle
+      Register
     </p>
-    $customerForm
+    $customerRegisterForm
     <p class="customers-form-title mt-5 mb-2">
       Customers
     </p>
