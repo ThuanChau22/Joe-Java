@@ -8,7 +8,7 @@ $firstname = $lastname = "";
 $address = $homePhone = $cellPhone = "";
 $errorMessage = "";
 try {
-  if (validate_session()) {
+  if (valid_session()) {
     header("Location: /home");
   }
   if (isset($_POST["register"])) {
