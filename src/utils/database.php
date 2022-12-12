@@ -131,35 +131,35 @@ function list_customers($search = "")
 
 /**
  * Add a customer to the database
- * {
+ * $field: {
  *    email, password,
  *    first_name, last_name,
  *    home_phone, cell_phone, address
  * }
  */
-function add_customer($inputs)
+function add_customer($fields)
 {
   try {
     $conn = connect_db();
+    $email = sanitize_sql($conn, $fields["email"]);
+    $password = sanitize_sql($conn, $fields["password"]);
+    $hashedPassword = hash("sha512", $password);
+    $values = [
+      $fields["first_name"], $fields["last_name"],
+      $fields["home_phone"], $fields["cell_phone"], $fields["address"],
+    ];
+    foreach ($values as $i => $value) {
+      $values[$i] = sanitize_sql($conn, $value);
+    }
+    $conn->begin_transaction();
     try {
-      $email = sanitize_sql($conn, $inputs["email"]);
-      $password = sanitize_sql($conn, $inputs["password"]);
-      $hashedPassword = hash("sha512", $password);
-      $conn->begin_transaction();
+      // Insert into user
       $query = "INSERT INTO user (email, password) VALUES (LOWER(?), ?)";
       $stmt = $conn->prepare($query);
       $stmt->bind_param("ss", $email, $hashedPassword);
       $stmt->execute();
-      $values = [
-        $inputs["first_name"],
-        $inputs["last_name"],
-        $inputs["home_phone"],
-        $inputs["cell_phone"],
-        $inputs["address"],
-      ];
-      foreach ($values as $i => $value) {
-        $values[$i] = sanitize_sql($conn, $value);
-      }
+
+      // Insert into customer
       $query = <<<SQL
       INSERT INTO customer
       (id, first_name, last_name, home_phone, cell_phone, address)
@@ -169,9 +169,6 @@ function add_customer($inputs)
       $stmt->bind_param("sssss", ...$values);
       $stmt->execute();
       $stmt->close();
-      $conn->commit();
-      $conn->close();
-      return "";
     } catch (Exception $e) {
       $conn->rollback();
       if ($e->getCode() == DUPLICATE_ERROR) {
@@ -179,6 +176,9 @@ function add_customer($inputs)
       }
       throw $e;
     }
+    $conn->commit();
+    $conn->close();
+    return "";
   } catch (Exception $e) {
     throw $e;
   }

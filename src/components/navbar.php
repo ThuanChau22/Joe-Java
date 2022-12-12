@@ -7,6 +7,7 @@ function navbar($pageId)
   if (isset($_POST["logout"])) {
     remove_session();
     header("Location: " . $_SERVER["REQUEST_URI"]);
+    exit();
   }
   $authItems = <<<HTML
   <li class="nav-item">
@@ -18,7 +19,7 @@ function navbar($pageId)
   HTML;
   if (valid_session()) {
     $authItems = <<<HTML
-    <form method="post" action="$pageId">
+    <form method="post" action="/home">
       <input class="auth-link btn btn-link" type="submit" name="logout" value="Logout">
     </form>
     HTML;
