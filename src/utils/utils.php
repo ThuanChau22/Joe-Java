@@ -89,9 +89,47 @@ function pretty_phone_number($phoneNumber)
 }
 
 /**
+ * Set referer
+ */
+function setReferer()
+{
+  if (isset($_SERVER['HTTP_REFERER'])) {
+    $referer = parse_url($_SERVER['HTTP_REFERER']);
+    $host = $referer["host"];
+    if ($host == "localhost") {
+      $host .= ":" . $referer["port"];
+    }
+    $isSameHost = $host == $_SERVER['HTTP_HOST'];
+    $isSamePath = $referer["path"] == $_SERVER['REQUEST_URI'];
+    if ($isSameHost && !$isSamePath) {
+      if (session_status() != PHP_SESSION_ACTIVE) {
+        session_start();
+      }
+      $_SESSION["referer"] = $_SERVER['HTTP_REFERER'];
+    }
+  }
+}
+
+/**
+ * Remove and return referer
+ */
+function popReferer()
+{
+  if (session_status() != PHP_SESSION_ACTIVE) {
+    session_start();
+  }
+  $referer = "/home";
+  if (isset($_SESSION["referer"])) {
+    $referer = $_SESSION["referer"];
+    unset($_SESSION["referer"]);
+  }
+  return $referer;
+}
+
+/**
  * Create a new session
  */
-function create_session($user, $isAdmin=false)
+function create_session($user, $isAdmin = false)
 {
   if (session_status() != PHP_SESSION_ACTIVE) {
     session_start();
@@ -120,7 +158,6 @@ function valid_session()
   if ($user != "" && $check != "" && $check == hash("sha512", $user . $userAgent)) {
     return true;
   }
-  remove_session();
   return false;
 }
 

@@ -203,7 +203,8 @@ function customer_list($selectedOption = OWN_COMPANY, $searchTerm = "")
 
 try {
   if (!(valid_session() && $_SESSION["isAdmin"])) {
-    header("Location: /home");
+    include_once("error.php");
+    die();
   }
   $customerRegisterForm = customer_register_form();
   $selectedOption = get_selected_customer_option();
