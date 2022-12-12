@@ -5,8 +5,10 @@ require_once("../utils/utils.php");
 
 $email = $password = $errorMessage = "";
 try {
+  setReferer();
   if (valid_session()) {
-    header("Location: /home");
+    header("Location: " . popReferer());
+    exit();
   }
   if (isset($_POST["login"])) {
     $email = sanitize_html($_POST["email"]);
@@ -19,7 +21,8 @@ try {
     }
     if (!$errorMessage) {
       create_session(strtolower($email), isAdmin($email));
-      header("Location: " . $_SERVER["REQUEST_URI"]);
+      header("Location: " . popReferer());
+      exit();
     }
   }
 } catch (Exception $e) {
