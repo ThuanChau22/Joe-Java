@@ -36,19 +36,17 @@ function customer_register_form()
       "cell_phone" => $cellPhone,
       "address" => $cellPhone,
     ];
-    foreach ($inputs as $input) {
-      if ($input == "") {
-        $errorMessage = "Please fill in all fields";
-        break;
-      }
+    if (in_array("", $inputs)) {
+      $errorMessage = "Please fill in all fields";
     }
     if (!$errorMessage) {
       $errorMessage = add_customer($inputs);
     }
     if (!$errorMessage) {
-      $firstname = $lastname = $email = "";
+      $email = $password = "";
+      $firstname = $lastname = "";
       $address = $homePhone = $cellPhone = "";
-      $successMessage = "Customer created";
+      $successMessage = "Customer Created";
     }
   }
   $messageText = $errorMessage;
@@ -203,8 +201,8 @@ function customer_list($selectedOption = OWN_COMPANY, $searchTerm = "")
 
 try {
   if (!(valid_session() && $_SESSION["isAdmin"])) {
-    include_once("error.php");
-    die();
+    header("Location: /home");
+    exit();
   }
   $customerRegisterForm = customer_register_form();
   $selectedOption = get_selected_customer_option();
