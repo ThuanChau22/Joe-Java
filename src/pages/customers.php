@@ -36,16 +36,17 @@ function customer_register_form()
       "cell_phone" => $cellPhone,
       "address" => $cellPhone,
     ];
-    if(in_array("", $inputs)) {
+    if (in_array("", $inputs)) {
       $errorMessage = "Please fill in all fields";
     }
     if (!$errorMessage) {
       $errorMessage = add_customer($inputs);
     }
     if (!$errorMessage) {
-      $firstname = $lastname = $email = "";
+      $email = $password = "";
+      $firstname = $lastname = "";
       $address = $homePhone = $cellPhone = "";
-      $successMessage = "Customer created";
+      $successMessage = "Customer Created";
     }
   }
   $messageText = $errorMessage;

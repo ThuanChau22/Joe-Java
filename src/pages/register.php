@@ -31,13 +31,16 @@ try {
       "cell_phone" => $cellPhone,
       "address" => $cellPhone,
     ];
-    if(in_array("", $inputs)) {
+    if (in_array("", $inputs)) {
       $message = "Please fill in all fields";
     }
     if (!$message) {
       $message = add_customer($inputs);
     }
     if (!$message) {
+      $email = $password = "";
+      $firstname = $lastname = "";
+      $address = $homePhone = $cellPhone = "";
       $message = "Account Created!";
       $messageColor = "text-success";
       header("Refresh: 1; URL=login");
