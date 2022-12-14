@@ -21,6 +21,7 @@ try {
       $message = login($email, $password);
     }
     if (!$message) {
+      $email = $password = "";
       $message = "Login Successful!";
       $messageColor = "text-success";
       create_session(strtolower($email), isAdmin($email));
