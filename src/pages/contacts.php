@@ -13,7 +13,8 @@ try {
   $contacts = [];
   foreach ($entries as $entry) {
     if ($entry != "") {
-      [$key, $value] = array_map("trim", explode(":", $entry, 2));
+      $entry = explode(":", $entry, 2);
+      [$key, $value] = array_map("trim", $entry);
       $contacts[$key] = $value;
     }
   }

@@ -3,9 +3,10 @@ require_once("../components/document.php");
 require_once("../utils/database.php");
 require_once("../utils/utils.php");
 
-$email = $password = $errorMessage = "";
+$email = $password = $message = "";
+$messageColor = "text-danger";
 try {
-  setReferer();
+  setReferer(excludes: ["/register"]);
   if (valid_session()) {
     header("Location: " . popReferer());
     exit();
@@ -14,15 +15,16 @@ try {
     $email = sanitize_html($_POST["email"]);
     $password = sanitize_html($_POST["password"]);
     if ($email == "" || $password == "") {
-      $errorMessage = "Please fill in all form fields.";
+      $message = "Please fill in all form fields.";
     }
-    if (!$errorMessage) {
-      $errorMessage = login($email, $password);
+    if (!$message) {
+      $message = login($email, $password);
     }
-    if (!$errorMessage) {
+    if (!$message) {
+      $message = "Login Successful!";
+      $messageColor = "text-success";
       create_session(strtolower($email), isAdmin($email));
-      header("Location: " . popReferer());
-      exit();
+      header("Refresh: 1; URL=" . popReferer());
     }
   }
 } catch (Exception $e) {
@@ -61,7 +63,7 @@ echo document(
       </div>
       <div class="text-center mt-4">
         <input class="login-form-btn" type="submit" name="login" value="Submit">
-        <p class="login-form-message text-danger mt-3">$errorMessage</p>
+        <p class="login-form-message mt-3 $messageColor">$message</p>
       </div>
     </form>
   </div>

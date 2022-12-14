@@ -4,9 +4,10 @@ require_once("../utils/utils.php");
 function navbar($pageId)
 {
   $pages = ["about", "products", "news", "contacts"];
+  $requestURI = $_SERVER["REQUEST_URI"];
   if (isset($_POST["logout"])) {
     remove_session();
-    header("Location: " . $_SERVER["REQUEST_URI"]);
+    header("Location: $requestURI");
     exit();
   }
   $authItems = <<<HTML
@@ -19,7 +20,7 @@ function navbar($pageId)
   HTML;
   if (valid_session()) {
     $authItems = <<<HTML
-    <form method="post" action="/home">
+    <form method="post" action="$requestURI">
       <input class="auth-link btn btn-link" type="submit" name="logout" value="Logout">
     </form>
     HTML;

@@ -91,7 +91,7 @@ function pretty_phone_number($phoneNumber)
 /**
  * Set referer
  */
-function setReferer()
+function setReferer($excludes = [])
 {
   if (isset($_SERVER['HTTP_REFERER'])) {
     $referer = parse_url($_SERVER['HTTP_REFERER']);
@@ -101,7 +101,8 @@ function setReferer()
     }
     $isSameHost = $host == $_SERVER['HTTP_HOST'];
     $isSamePath = $referer["path"] == $_SERVER['REQUEST_URI'];
-    if ($isSameHost && !$isSamePath) {
+    $isExcluded = in_array($referer["path"], $excludes);
+    if ($isSameHost && !$isSamePath && !$isExcluded) {
       if (session_status() != PHP_SESSION_ACTIVE) {
         session_start();
       }

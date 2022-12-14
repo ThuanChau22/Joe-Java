@@ -6,9 +6,10 @@ require_once("../utils/utils.php");
 $email = $password = "";
 $firstname = $lastname = "";
 $address = $homePhone = $cellPhone = "";
-$errorMessage = "";
+$message = "";
+$messageColor = "text-danger";
 try {
-  setReferer();
+  setReferer(excludes: ["/login"]);
   if (valid_session()) {
     header("Location: " . popReferer());
     exit();
@@ -30,19 +31,16 @@ try {
       "cell_phone" => $cellPhone,
       "address" => $cellPhone,
     ];
-    foreach ($inputs as $input) {
-      if ($input == "") {
-        $errorMessage = "Please fill in all fields";
-        break;
-      }
+    if(in_array("", $inputs)) {
+      $message = "Please fill in all fields";
     }
-    if (!$errorMessage) {
-      $errorMessage = add_customer($inputs);
+    if (!$message) {
+      $message = add_customer($inputs);
     }
-    if (!$errorMessage) {
-      create_session(strtolower($email));
-      header("Location: " . popReferer());
-      exit();
+    if (!$message) {
+      $message = "Account Created!";
+      $messageColor = "text-success";
+      header("Refresh: 1; URL=login");
     }
   }
 } catch (Exception $e) {
@@ -105,7 +103,7 @@ echo document(
       </div>
       <div class="text-center mt-4">
         <input class="register-form-btn" type="submit" name="register" value="Submit">
-        <p class="register-form-message text-danger mt-3">$errorMessage</p>
+        <p class="register-form-message mt-3 $messageColor">$message</p>
       </div>
     </form>
   </div>
