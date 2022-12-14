@@ -21,10 +21,10 @@ try {
       $message = login($email, $password);
     }
     if (!$message) {
+      create_session(strtolower($email), isAdmin($email));
       $email = $password = "";
       $message = "Login Successful!";
       $messageColor = "text-success";
-      create_session(strtolower($email), isAdmin($email));
       header("Refresh: 1; URL=" . popReferer());
     }
   }
