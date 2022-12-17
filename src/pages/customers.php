@@ -200,7 +200,7 @@ function customer_list($selectedOption = OWN_COMPANY, $searchTerm = "")
 }
 
 try {
-  if (!(valid_session() && $_SESSION["isAdmin"])) {
+  if (!is_admin()) {
     header("Location: /home");
     exit();
   }

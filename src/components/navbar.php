@@ -18,13 +18,13 @@ function navbar($pageId)
      <a class="nav-link" href="/register">Signup</a>
   </li>
   HTML;
-  if (valid_session()) {
+  if (is_authenticated()) {
     $authItems = <<<HTML
-    <form method="post" action="$requestURI">
-      <input class="auth-link btn btn-link" type="submit" name="logout" value="Logout">
+    <form class="m-0" method="post" action="$requestURI">
+      <input class="auth-link btn btn-link px-0" type="submit" name="logout" value="Logout">
     </form>
     HTML;
-    if ($_SESSION["isAdmin"]) {
+    if (is_admin()) {
       $pages[] = "customers";
     }
   }
@@ -51,7 +51,16 @@ function navbar($pageId)
       </button>
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav me-auto">$navItems</ul>
-        <ul class="navbar-nav">$authItems</ul>
+        <ul class="navbar-nav me-2">$authItems</ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/cart">
+              <span class="cart-icon material-symbols-outlined">
+                shopping_cart
+              </span><span id="cart-item-count"></span>
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>

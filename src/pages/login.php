@@ -7,7 +7,7 @@ $email = $password = $message = "";
 $messageColor = "text-danger";
 try {
   setReferer(excludes: ["/register"]);
-  if (valid_session()) {
+  if (is_authenticated()) {
     header("Location: " . popReferer());
     exit();
   }
@@ -17,11 +17,17 @@ try {
     if ($email == "" || $password == "") {
       $message = "Please fill in all form fields.";
     }
+    $user = null;
     if (!$message) {
-      $message = login($email, $password);
+      $result = login($email, $password);
+      if(is_string($result)) {
+        $message = $result;
+      } else {
+        $user = $result;
+      }
     }
-    if (!$message) {
-      create_session(strtolower($email), isAdmin($email));
+    if (!$message && isset($user)) {
+      set_authenticated($user["id"], $user["isAdmin"]);
       $email = $password = "";
       $message = "Login Successful!";
       $messageColor = "text-success";

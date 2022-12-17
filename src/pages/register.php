@@ -11,7 +11,7 @@ $message = "";
 $messageColor = "text-danger";
 try {
   setReferer(excludes: ["/login"]);
-  if (valid_session()) {
+  if (is_authenticated()) {
     header("Location: " . popReferer());
     exit();
   }

@@ -4,7 +4,15 @@ require_once("../../vendor/autoload.php");
 /**
  * Cookie names
  */
-define("VISITED_PRODUCTS", "visited-products");
+define("VISITED_PRODUCTS", "VISITED_PRODUCTS");
+define("SHOPPING_CART", "SHOPPING_CART");
+
+/**
+ * Session user
+ */
+define("UID", "uid");
+define("IS_ADMIN", "isAdmin");
+define("REFERER", "referer");
 
 /**
  * Load environment variables from .env to _ENV
@@ -37,6 +45,17 @@ function sanitize_html($string)
 }
 
 /**
+ * Stylizing 10-digit phone number
+ */
+function pretty_phone_number($phoneNumber)
+{
+  $area = substr($phoneNumber, 0, 3);
+  $prefix = substr($phoneNumber, 3, 3);
+  $line = substr($phoneNumber, 7, 4);
+  return "($area) $prefix-$line";
+}
+
+/**
  * List visited product ids from cookie
  */
 function list_visited_product_id()
@@ -51,13 +70,13 @@ function list_visited_product_id()
 /**
  * Set product id as first position to cookie
  */
-function set_visited_product_id($id)
+function set_visited_product_id($productId)
 {
   $productIdList = list_visited_product_id();
   $productIdListLength = count($productIdList);
   $productIdIndex = -1;
   for ($i = 0; $i < $productIdListLength && $i != $productIdIndex; $i++) {
-    if ($productIdList[$i] == $id) {
+    if ($productIdList[$i] == $productId) {
       $productIdIndex = $i;
     }
   }
@@ -67,7 +86,7 @@ function set_visited_product_id($id)
   if ($productIdListLength == 5) {
     array_pop($productIdList);
   }
-  array_unshift($productIdList, $id);
+  array_unshift($productIdList, $productId);
   setcookie(
     VISITED_PRODUCTS,
     value: json_encode($productIdList),
@@ -78,14 +97,38 @@ function set_visited_product_id($id)
 }
 
 /**
- * Stylizing 10-digit phone number
+ * Initialize session
+ * Return update validation function
  */
-function pretty_phone_number($phoneNumber)
+function init_session()
 {
-  $area = substr($phoneNumber, 0, 3);
-  $prefix = substr($phoneNumber, 3, 3);
-  $line = substr($phoneNumber, 7, 4);
-  return "($area) $prefix-$line";
+  if (session_status() != PHP_SESSION_ACTIVE) {
+    session_start();
+  }
+  if (!isset($_SESSION["init"])) {
+    session_regenerate_id();
+    $_SESSION["init"] = true;
+    $_SESSION["user"] = [];
+    $_SESSION["check"] = "";
+  }
+  return function () {
+    $check = json_encode($_SESSION["user"]);
+    if (isset($_SERVER["HTTP_USER_AGENT"])) {
+      $check .= $_SERVER["HTTP_USER_AGENT"];
+    }
+    $_SESSION["check"] = hash("sha512", $check);
+  };
+}
+
+/**
+ * Remove current session
+ */
+function remove_session()
+{
+  init_session();
+  unset($_SESSION);
+  setcookie(session_name(), "", time() - 3 * 24 * 60 * 60);
+  session_destroy();
 }
 
 /**
@@ -103,10 +146,9 @@ function setReferer($excludes = [])
     $isSamePath = $referer["path"] == $_SERVER['REQUEST_URI'];
     $isExcluded = in_array($referer["path"], $excludes);
     if ($isSameHost && !$isSamePath && !$isExcluded) {
-      if (session_status() != PHP_SESSION_ACTIVE) {
-        session_start();
-      }
-      $_SESSION["referer"] = $_SERVER['HTTP_REFERER'];
+      $updated = init_session();
+      $_SESSION["user"][REFERER] = $_SERVER['HTTP_REFERER'];
+      $updated();
     }
   }
 }
@@ -116,63 +158,50 @@ function setReferer($excludes = [])
  */
 function popReferer()
 {
-  if (session_status() != PHP_SESSION_ACTIVE) {
-    session_start();
-  }
+  $updated = init_session();
   $referer = "/home";
-  if (isset($_SESSION["referer"])) {
-    $referer = $_SESSION["referer"];
-    unset($_SESSION["referer"]);
+  if (isset($_SESSION["user"][REFERER])) {
+    $referer = $_SESSION["user"][REFERER];
+    unset($_SESSION["user"][REFERER]);
+    $updated();
   }
   return $referer;
 }
 
 /**
- * Create a new session
+ * Set user as authenticated
  */
-function create_session($user, $isAdmin = false)
+function set_authenticated($uid, $isAdmin)
 {
-  if (session_status() != PHP_SESSION_ACTIVE) {
-    session_start();
-  }
-  if (!isset($_SESSION["init"])) {
-    session_regenerate_id();
-    $_SESSION["init"] = true;
-  }
-  $_SESSION["user"] = $user;
-  $_SESSION["isAdmin"] = $isAdmin;
-  $_SESSION["check"] = hash("sha512", $user . $_SERVER["HTTP_USER_AGENT"]);
+  $updated = init_session();
+  $_SESSION["user"][UID] = $uid;
+  $_SESSION["user"][IS_ADMIN] = $isAdmin;
+  $updated();
 }
 
 /**
- * Check whether session existed
- * and valid with current user
+ * Check whether user is authenticated
  */
-function valid_session()
+function is_authenticated()
 {
-  if (session_status() != PHP_SESSION_ACTIVE) {
-    session_start();
+  init_session();
+  $user = $_SESSION["user"];
+  $check = json_encode($user);
+  if (isset($_SERVER["HTTP_USER_AGENT"])) {
+    $check .= $_SERVER["HTTP_USER_AGENT"];
   }
-  $user = isset($_SESSION["user"]) ? $_SESSION["user"] : "";
-  $check = isset($_SESSION["check"]) ? $_SESSION["check"] : "";
-  $userAgent = isset($_SERVER["HTTP_USER_AGENT"]) ? $_SERVER["HTTP_USER_AGENT"] : "";
-  if ($user != "" && $check != "" && $check == hash("sha512", $user . $userAgent)) {
-    return true;
+  if ($_SESSION["check"] != hash("sha512", $check)) {
+    return false;
   }
-  return false;
+  return isset($user[UID]) && isset($user[IS_ADMIN]);
 }
 
 /**
- * Remove current session
+ * Check whether user is an admin
  */
-function remove_session()
+function is_admin()
 {
-  if (session_status() != PHP_SESSION_ACTIVE) {
-    session_start();
-  }
-  unset($_SESSION);
-  setcookie(session_name(), "", time() - 3 * 24 * 60 * 60);
-  session_destroy();
+  return is_authenticated() && $_SESSION["user"][IS_ADMIN];
 }
 
 /**
