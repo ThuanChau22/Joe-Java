@@ -227,7 +227,7 @@ echo document(
   <script src="/src/scripts/utils.js" type="text/javascript"></script>
   HTML,
   content: <<<HTML
-  <div class="container">
+  <div class="container mb-5">
     <p class="customers-page-title">Customers</p>
     <hr>
     <p class="customers-form-title mt-2 mb-2">
@@ -245,7 +245,7 @@ echo document(
         $customerSearchForm
       </div>
     </div>
-    <div id="customer-list" class="mb-5">
+    <div id="customer-list">
       $customerList
     </div>
   </div>

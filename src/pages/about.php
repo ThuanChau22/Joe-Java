@@ -7,7 +7,7 @@ echo document(
   <link href="/src/styles/about.css" rel="stylesheet">
   HTML,
   content: <<<HTML
-  <div id="about" class="container-fluid">
+  <div id="about" class="container-fluid pb-5">
     <p class="about-page-title">About Us</p>
     <div class="row">
       <div class="col-xl-2 col-md-0"></div>

@@ -170,9 +170,8 @@ echo document(
   <script src="/src/scripts/utils.js" type="text/javascript"></script>
   HTML,
   content: <<<HTML
-  <div id="products" class="container">
+  <div id="products" class="container mb-5">
     $pageContent
-    <div class="mb-5"></div>
   </div>
   HTML,
 );
