@@ -12,7 +12,7 @@ $messageColor = "text-danger";
 try {
   setReferer(excludes: ["/login"]);
   if (is_authenticated()) {
-    header("Location: " . popReferer());
+    header("Location:" . popReferer());
     exit();
   }
   if (isset($_POST["register"])) {
