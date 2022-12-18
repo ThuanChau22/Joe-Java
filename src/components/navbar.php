@@ -7,7 +7,7 @@ function navbar($pageId)
   $requestURI = $_SERVER["REQUEST_URI"];
   if (isset($_POST["logout"])) {
     remove_session();
-    header("Location: $requestURI");
+    header("Location:$requestURI");
     exit();
   }
   $authItems = <<<HTML
@@ -18,6 +18,7 @@ function navbar($pageId)
      <a class="nav-link" href="/register">Signup</a>
   </li>
   HTML;
+  $number_of_products = 0;
   if (is_authenticated()) {
     $authItems = <<<HTML
     <form class="m-0" method="post" action="$requestURI">
@@ -27,6 +28,16 @@ function navbar($pageId)
     if (is_admin()) {
       $pages[] = "customers";
     }
+    $userId = get_session_user()[UID];
+    $number_of_products = get_cart_number_of_products($userId);
+  } else {
+    $cart = list_cart_products_session();
+    foreach ($cart[QUANTITIES] as $quantity) {
+      $number_of_products += $quantity;
+    }
+  }
+  if ($number_of_products >= 100) {
+    $number_of_products = "99+";
   }
   $navItems = "";
   $style = "style='color:#d9d9d9 !important; font-weight: bold !important'";
@@ -57,7 +68,7 @@ function navbar($pageId)
             <a class="nav-link" href="/cart">
               <span class="cart-icon material-symbols-outlined">
                 shopping_cart
-              </span><span id="cart-item-count"></span>
+              </span><span id="cart-item-count">$number_of_products</span>
             </a>
           </li>
         </ul>

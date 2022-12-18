@@ -2,17 +2,22 @@
 require_once("../../vendor/autoload.php");
 
 /**
- * Cookie names
+ * Cookie variables
  */
+define("COOKIE_LIMIT", 15 * 24 * 60 * 60);
 define("VISITED_PRODUCTS", "VISITED_PRODUCTS");
-define("SHOPPING_CART", "SHOPPING_CART");
 
 /**
- * Session user
+ * Session variables
  */
+define("USER", "user");
 define("UID", "uid");
 define("IS_ADMIN", "isAdmin");
 define("REFERER", "referer");
+define("SHOPPING_CART", "SHOPPING_CART");
+define("PRODUCT_IDS", "productIds");
+define("QUANTITIES", "quantities");
+define("CHECK", "check");
 
 /**
  * Load environment variables from .env to _ENV
@@ -90,7 +95,7 @@ function set_visited_product_id($productId)
   setcookie(
     VISITED_PRODUCTS,
     value: json_encode($productIdList),
-    expires_or_options: time() + 5 * 24 * 60 * 60,
+    expires_or_options: time() + COOKIE_LIMIT,
     secure: true,
     httponly: true,
   );
@@ -108,15 +113,20 @@ function init_session()
   if (!isset($_SESSION["init"])) {
     session_regenerate_id();
     $_SESSION["init"] = true;
-    $_SESSION["user"] = [];
-    $_SESSION["check"] = "";
+    $_SESSION[USER] = [];
+    $_SESSION[SHOPPING_CART] = [
+      PRODUCT_IDS => [],
+      QUANTITIES => [],
+    ];
+    $_SESSION[CHECK] = "";
   }
   return function () {
-    $check = json_encode($_SESSION["user"]);
+    $check = json_encode($_SESSION[USER]);
+    $check .= json_encode($_SESSION[SHOPPING_CART]);
     if (isset($_SERVER["HTTP_USER_AGENT"])) {
       $check .= $_SERVER["HTTP_USER_AGENT"];
     }
-    $_SESSION["check"] = hash("sha512", $check);
+    $_SESSION[CHECK] = hash("sha512", $check);
   };
 }
 
@@ -127,7 +137,7 @@ function remove_session()
 {
   init_session();
   unset($_SESSION);
-  setcookie(session_name(), "", time() - 3 * 24 * 60 * 60);
+  setcookie(session_name(), "", time() - COOKIE_LIMIT);
   session_destroy();
 }
 
@@ -147,7 +157,7 @@ function setReferer($excludes = [])
     $isExcluded = in_array($referer["path"], $excludes);
     if ($isSameHost && !$isSamePath && !$isExcluded) {
       $updated = init_session();
-      $_SESSION["user"][REFERER] = $_SERVER['HTTP_REFERER'];
+      $_SESSION[USER][REFERER] = $_SERVER['HTTP_REFERER'];
       $updated();
     }
   }
@@ -160,9 +170,9 @@ function popReferer()
 {
   $updated = init_session();
   $referer = "/home";
-  if (isset($_SESSION["user"][REFERER])) {
-    $referer = $_SESSION["user"][REFERER];
-    unset($_SESSION["user"][REFERER]);
+  if (isset($_SESSION[USER][REFERER])) {
+    $referer = $_SESSION[USER][REFERER];
+    unset($_SESSION[USER][REFERER]);
     $updated();
   }
   return $referer;
@@ -174,8 +184,8 @@ function popReferer()
 function set_authenticated($uid, $isAdmin)
 {
   $updated = init_session();
-  $_SESSION["user"][UID] = $uid;
-  $_SESSION["user"][IS_ADMIN] = $isAdmin;
+  $_SESSION[USER][UID] = $uid;
+  $_SESSION[USER][IS_ADMIN] = $isAdmin;
   $updated();
 }
 
@@ -185,12 +195,13 @@ function set_authenticated($uid, $isAdmin)
 function is_authenticated()
 {
   init_session();
-  $user = $_SESSION["user"];
+  $user = $_SESSION[USER];
   $check = json_encode($user);
+  $check .= json_encode($_SESSION[SHOPPING_CART]);
   if (isset($_SERVER["HTTP_USER_AGENT"])) {
     $check .= $_SERVER["HTTP_USER_AGENT"];
   }
-  if ($_SESSION["check"] != hash("sha512", $check)) {
+  if ($_SESSION[CHECK] != hash("sha512", $check)) {
     return false;
   }
   return isset($user[UID]) && isset($user[IS_ADMIN]);
@@ -201,7 +212,54 @@ function is_authenticated()
  */
 function is_admin()
 {
-  return is_authenticated() && $_SESSION["user"][IS_ADMIN];
+  return is_authenticated() && $_SESSION[USER][IS_ADMIN];
+}
+
+/**
+ * Get current user information
+ */
+function get_session_user()
+{
+  init_session();
+  return $_SESSION[USER];
+}
+
+/**
+ * Get shopping cart products from session
+ */
+function list_cart_products_session()
+{
+  init_session();
+  return $_SESSION[SHOPPING_CART];
+}
+
+/**
+ * Set product id and quantity to session
+ */
+function set_product_to_cart_session($productId, $quantity = 1)
+{
+  $updated = init_session();
+  $cart = list_cart_products_session();
+  if (isset($cart[QUANTITIES][$productId])) {
+    $_SESSION[SHOPPING_CART][QUANTITIES][$productId] += $quantity;
+  } else {
+    $_SESSION[SHOPPING_CART][PRODUCT_IDS][] = $productId;
+    $_SESSION[SHOPPING_CART][QUANTITIES][$productId] = $quantity;
+  }
+  $updated();
+}
+
+/**
+ * Clear shopping cart products from session
+ */
+function clear_cart_session()
+{
+  $updated = init_session();
+  $_SESSION[SHOPPING_CART] = [
+    PRODUCT_IDS => [],
+    QUANTITIES => [],
+  ];
+  $updated();
 }
 
 /**

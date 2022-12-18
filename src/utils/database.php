@@ -26,18 +26,14 @@ function connect_db()
 
 function close_db($conn = null, $stmt = null, $result = null)
 {
-  try {
-    if (isset($result)) {
-      $result->close();
-    }
-    if (isset($result)) {
-      $stmt->close();
-    }
-    if (isset($conn)) {
-      $conn->close();
-    }
-  } catch (Exception $e) {
-    throw new Exception("Unable to connect to database", 500);
+  if (isset($result)) {
+    $result->close();
+  }
+  if (isset($result)) {
+    $stmt->close();
+  }
+  if (isset($conn)) {
+    $conn->close();
   }
 }
 
@@ -345,14 +341,15 @@ function update_product_visited_count($productId)
   $conn = $stmt = null;
   try {
     $conn = connect_db();
+    $productId = sanitize_sql($conn, $productId);
     $query = <<<SQL
     UPDATE product
     SET visited = visited + 1
     WHERE id = ?
     SQL;
     $stmt = $conn->prepare($query);
-    $productId = sanitize_sql($conn, $productId);
     $stmt->bind_param("s", $productId);
+    $stmt->execute();
   } catch (Exception $e) {
     throw $e;
   } finally {
@@ -361,8 +358,103 @@ function update_product_visited_count($productId)
 }
 
 /**
- * Add product id to customer cart
+ * List product from customer cart
  */
-function addToCart($productId)
+function list_cart_products($userId)
 {
+  $conn = $stmt = $result = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $query = <<<SQL
+    SELECT id, name, image, price, quantity
+    FROM cart INNER JOIN product ON id = product_id
+    WHERE user_id = ? ORDER BY cart.last_update
+    SQL;
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
+  }
+}
+
+/**
+ * Get total quantity of products in cart
+ */
+function get_cart_number_of_products($userId)
+{
+  $conn = $stmt = $result = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $query = <<<SQL
+    SELECT SUM(quantity) AS count
+    FROM cart WHERE user_id = ?
+    SQL;
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $count = $result->fetch_all(MYSQLI_ASSOC)[0]["count"];
+    return $count == null ? 0 : $count;
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
+  }
+}
+
+/**
+ * Set product id to customer cart
+ */
+function set_product_to_cart($userId, $productId, $quantity = 1)
+{
+  $conn = $stmt = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $productId = sanitize_sql($conn, $productId);
+    $quantity = sanitize_sql($conn, $quantity);
+    if ($quantity < 0) {
+      throw new Exception("Quantity cannot be negative", 400);
+    }
+    $query = <<<SQL
+    INSERT INTO cart
+    (user_id, product_id, quantity) VALUES (?, ?, 1)
+    ON DUPLICATE KEY UPDATE quantity = ?
+    SQL;
+    $stmt = $conn->prepare($query);
+    $productId = sanitize_sql($conn, $productId);
+    $stmt->bind_param("sss", $userId, $productId, $quantity);
+    $stmt->execute();
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt);
+  }
+}
+
+/**
+ * Clear products from customer cart
+ */
+function clear_cart($userId)
+{
+  $conn = $stmt = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $query = "DELETE FROM cart WHERE user_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $userId);
+    $stmt->execute();
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt);
+  }
 }

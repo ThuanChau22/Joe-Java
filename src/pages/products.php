@@ -84,6 +84,7 @@ function product_list($selectedOption = ALL_PRODUCTS)
       break;
   }
   $productList = "";
+  $requestURI = $_SERVER["REQUEST_URI"];
   foreach ($products as $product) {
     $productId = $product["id"];
     $productImage = $product["image"];
@@ -102,6 +103,14 @@ function product_list($selectedOption = ALL_PRODUCTS)
             </div>
             <p class="products-card-price">$$productPrice</p>
           </div>
+          <form onsubmit="return addProductToCart(this)" method="post" action="$requestURI">
+            <input type="hidden" name="product_id" value="$productId"/>
+            <button class="btn products-add-to-cart-btn" name="add_to_cart" type="submit">
+              <span class="products-add-to-cart-icon material-symbols-outlined">
+                add_shopping_cart
+              </span>
+            </button>
+          </form>
         </div>
       </a>
     </div>
@@ -131,6 +140,7 @@ try {
     $productList
     HTML;
   } else {
+    $requestURI = $_SERVER["REQUEST_URI"];
     $productId = sanitize_html($_GET["id"]);
     $product = get_product_by_id($productId);
     $productImage = $product["image"];
@@ -147,14 +157,27 @@ try {
       </div>
       <div class="col-md-6">
         <p class="products-item-name">$productName</p>
-        <div class="pt-1"></div>
-        <p class="products-item-price">$$productPrice</p>
-        <div class="pt-3"></div>
-        <p class="products-item-description-label">Description:</p>
+        <p class="products-item-price pt-1">$$productPrice</p>
+        <p class="products-item-description-label pt-3">Description:</p>
         <p class="products-item-description-content text-muted">$productDescription</p>
+        <form onsubmit="return addProductToCart(this)" class="pt-3 pb-2" method="post" action="$requestURI">
+          <input type="hidden" name="product_id" value="$productId"/>
+          <input class="products-item-add-to-cart-btn" name="add_to_cart" type="submit" value="Add to cart">
+        </form>
       </div>
     </div>
     HTML;
+  }
+  if (isset($_POST["add_to_cart"]) && isset($_POST["product_id"])) {
+    $productId = sanitize_html($_POST["product_id"]);
+    if (is_authenticated()) {
+      $userId = get_session_user()[UID];
+      set_product_to_cart($userId, $productId);
+    } else {
+      set_product_to_cart_session($productId);
+    }
+    header("Location:" . $_SERVER["REQUEST_URI"]);
+    exit();
   }
 } catch (Exception $e) {
   handle_client_error($e);
