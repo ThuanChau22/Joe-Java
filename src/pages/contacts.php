@@ -34,7 +34,7 @@ echo document(
   <link href="/src/styles/contacts.css" rel="stylesheet">
   HTML,
   content: <<<HTML
-  <div class="container">
+  <div class="container mb-5">
     <p class="contacts-page-title">Contact Us</p>
     <hr>
     <div class="contacts-items">

@@ -18,7 +18,8 @@ function customer_register_form()
   $email = $password = "";
   $firstname = $lastname = "";
   $address = $homePhone = $cellPhone = "";
-  $successMessage = $errorMessage = "";
+  $message = "";
+  $messageColor = "text-danger";
   if (isset($_POST["register"])) {
     $email = sanitize_html($_POST["email"]);
     $password = sanitize_html($_POST["password"]);
@@ -37,22 +38,18 @@ function customer_register_form()
       "address" => $cellPhone,
     ];
     if (in_array("", $inputs)) {
-      $errorMessage = "Please fill in all fields";
+      $message = "Please fill in all fields";
     }
-    if (!$errorMessage) {
-      $errorMessage = add_customer($inputs);
+    if (!$message) {
+      $message = add_customer($inputs);
     }
-    if (!$errorMessage) {
-      $email = $password = "";
-      $firstname = $lastname = "";
-      $address = $homePhone = $cellPhone = "";
-      $successMessage = "Customer Created";
+    if (!$message) {
+      header("Location:" . $_SERVER["REQUEST_URI"] . "?register_success");
+      exit();
     }
   }
-  $messageText = $errorMessage;
-  $messageColor = "text-danger";
-  if (!$errorMessage) {
-    $messageText = $successMessage;
+  if (isset($_GET["register_success"])) {
+    $message = "Customer Created";
     $messageColor = "text-success";
   }
   return <<<HTML
@@ -102,7 +99,7 @@ function customer_register_form()
       </div>
     </div>
     <input class="customers-form-btn" type="submit" name="register" value="Submit">
-    <span class="customers-form-message ms-2 $messageColor">$messageText</span>
+    <span class="customers-form-message ms-2 $messageColor">$message</span>
   </form>
   HTML;
 }
@@ -200,8 +197,8 @@ function customer_list($selectedOption = OWN_COMPANY, $searchTerm = "")
 }
 
 try {
-  if (!(valid_session() && $_SESSION["isAdmin"])) {
-    header("Location: /home");
+  if (!is_admin()) {
+    header("Location:/home");
     exit();
   }
   $customerRegisterForm = customer_register_form();
@@ -227,7 +224,7 @@ echo document(
   <script src="/src/scripts/utils.js" type="text/javascript"></script>
   HTML,
   content: <<<HTML
-  <div class="container">
+  <div class="container mb-5">
     <p class="customers-page-title">Customers</p>
     <hr>
     <p class="customers-form-title mt-2 mb-2">
@@ -245,7 +242,7 @@ echo document(
         $customerSearchForm
       </div>
     </div>
-    <div id="customer-list" class="mb-5">
+    <div id="customer-list">
       $customerList
     </div>
   </div>

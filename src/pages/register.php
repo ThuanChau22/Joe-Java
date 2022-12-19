@@ -3,36 +3,41 @@ require_once("../components/document.php");
 require_once("../utils/database.php");
 require_once("../utils/utils.php");
 
-$email = $password = "";
 $firstname = $lastname = "";
-$address = $homePhone = $cellPhone = "";
+$email = $address = "";
+$password = $passwordCheck = "";
+$homePhone = $cellPhone = "";
 $message = "";
 $messageColor = "text-danger";
 try {
-  setReferer(excludes: ["/login"]);
-  if (valid_session()) {
-    header("Location: " . popReferer());
+  set_referer(excludes: ["/login"]);
+  if (is_authenticated()) {
+    header("Location:" . pop_referer());
     exit();
   }
   if (isset($_POST["register"])) {
-    $email = sanitize_html($_POST["email"]);
-    $password = sanitize_html($_POST["password"]);
     $firstname = sanitize_html($_POST["first_name"]);
     $lastname = sanitize_html($_POST["last_name"]);
+    $email = sanitize_html($_POST["email"]);
+    $address = sanitize_html($_POST["address"]);
+    $password = sanitize_html($_POST["password"]);
+    $passwordCheck = sanitize_html($_POST["passwordCheck"]);
     $homePhone = sanitize_html($_POST["home_phone"]);
     $cellPhone = sanitize_html($_POST["cell_phone"]);
-    $address = sanitize_html($_POST["address"]);
     $inputs = [
-      "email" => $email,
-      "password" => $password,
       "first_name" => $firstname,
       "last_name" => $lastname,
+      "email" => $email,
+      "address" => $cellPhone,
+      "password" => $password,
       "home_phone" => $homePhone,
       "cell_phone" => $cellPhone,
-      "address" => $cellPhone,
     ];
     if (in_array("", $inputs)) {
       $message = "Please fill in all fields";
+    }
+    if($password != $passwordCheck) {
+      $message = "Passwords do not match";
     }
     if (!$message) {
       $message = add_customer($inputs);
@@ -43,7 +48,7 @@ try {
       $address = $homePhone = $cellPhone = "";
       $message = "Account Created!";
       $messageColor = "text-success";
-      header("Refresh: 1; URL=login");
+      header("Refresh:1;URL=login");
     }
   }
 } catch (Exception $e) {
@@ -63,18 +68,6 @@ echo document(
       <div class="row px-2">
         <div class="col-sm-6 px-1">
           <div class="form-floating mb-2">
-            <input class="register-form-input form-control" type="text" autocomplete="off" name="email" placeholder="Email" value="$email">
-            <label>Email</label>
-          </div>
-        </div>
-        <div class="col-sm-6 px-1">
-          <div class="form-floating mb-2">
-            <input class="register-form-input form-control" type="password" autocomplete="off" name="password" placeholder="Password" value="$password">
-            <label>Password</label>
-          </div>
-        </div>
-        <div class="col-sm-6 px-1">
-          <div class="form-floating mb-2">
             <input class="register-form-input form-control" type="text" autocomplete="off" placeholder="First name" name="first_name" value="$firstname" >
             <label>First name</label>
           </div>
@@ -87,6 +80,30 @@ echo document(
         </div>
         <div class="col-sm-6 px-1">
           <div class="form-floating mb-2">
+            <input class="register-form-input form-control" type="text" autocomplete="off" name="email" placeholder="Email" value="$email">
+            <label>Email</label>
+          </div>
+        </div>
+        <div class="col-sm-6 px-1">
+          <div class="form-floating mb-2">
+            <input class="register-form-input form-control" type="text" autocomplete="off" placeholder="Home address" name="address" value="$address">
+            <label>Home address</label>
+          </div>
+        </div>
+        <div class="col-sm-6 px-1">
+          <div class="form-floating mb-2">
+            <input class="register-form-input form-control" type="password" autocomplete="off" name="password" placeholder="Password" value="$password">
+            <label>Password</label>
+          </div>
+        </div>
+        <div class="col-sm-6 px-1">
+          <div class="form-floating mb-2">
+            <input class="register-form-input form-control" type="password" autocomplete="off" name="passwordCheck" placeholder="Re-enter Password" value="$password">
+            <label>Re-enter Password</label>
+          </div>
+        </div>
+        <div class="col-sm-6 px-1">
+          <div class="form-floating mb-2">
             <input class="register-form-input form-control" type="text" autocomplete="off" placeholder="Home phone number" name="home_phone" value="$homePhone">
             <label>Home phone number</label>
           </div>
@@ -95,12 +112,6 @@ echo document(
           <div class="form-floating mb-2">
             <input class="register-form-input form-control" type="text" autocomplete="off" placeholder="Cell phone number" name="cell_phone" value="$cellPhone">
             <label>Cell phone number</label>
-          </div>
-        </div>
-        <div class="col-sm-6 px-1">
-          <div class="form-floating mb-2">
-            <input class="register-form-input form-control" type="text" autocomplete="off" placeholder="Home address" name="address" value="$address">
-            <label>Home address</label>
           </div>
         </div>
       </div>

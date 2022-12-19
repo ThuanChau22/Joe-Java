@@ -24,6 +24,19 @@ function connect_db()
   }
 }
 
+function close_db($conn = null, $stmt = null, $result = null)
+{
+  if (isset($result)) {
+    $result->close();
+  }
+  if (isset($result)) {
+    $stmt->close();
+  }
+  if (isset($conn)) {
+    $conn->close();
+  }
+}
+
 /**
  * Sanitize MySQL input
  */
@@ -34,54 +47,39 @@ function sanitize_sql($conn, $string)
 
 /**
  * Authenticate user with password
+ * Return user data if authenticated
+ * else return error message
  */
 function login($email, $password)
 {
+  $conn = $stmt = $result = null;
   try {
     $conn = connect_db();
     $email = sanitize_sql($conn, $email);
     $password = sanitize_sql($conn, $password);
-    $query = "SELECT password FROM user WHERE email = ?";
+    $query = "SELECT id, password FROM user WHERE email = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
     $users = $result->fetch_all(MYSQLI_ASSOC);
-    $result->close();
-    $stmt->close();
-    $conn->close();
     $hashedPassword = hash("sha512", $password);
     if (count($users) == 0 || $users[0]["password"] != $hashedPassword) {
-      return "Incorrect user name or password.";
+      return "Incorrect user name or password";
     }
-    return "";
-  } catch (Exception $e) {
-    throw $e;
-  }
-}
-
-/**
- * Check whether authenticated user is an admin
- */
-function isAdmin($email)
-{
-  try {
-    $conn = connect_db();
-    $query = <<<SQL
-    SELECT id FROM admin
-    JOIN user USING(id) WHERE email = ?
-    SQL;
+    $query = "SELECT id FROM admin WHERE id = ?";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $email);
+    $stmt->bind_param("s", $users[0]["id"]);
     $stmt->execute();
     $result = $stmt->get_result();
-    $count = $result->num_rows;
-    $result->close();
-    $stmt->close();
-    $conn->close();
-    return $count == 1;
+    return [
+      "id" => $users[0]["id"],
+      "isAdmin" => $result->num_rows == 1,
+    ];
   } catch (Exception $e) {
     throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
   }
 }
 
@@ -92,6 +90,7 @@ function isAdmin($email)
  */
 function list_customers($search = "")
 {
+  $conn = $stmt = $result = null;
   try {
     $conn = connect_db();
     $query = <<<SQL
@@ -119,13 +118,11 @@ function list_customers($search = "")
     }
     $stmt->execute();
     $result = $stmt->get_result();
-    $customers = $result->fetch_all(MYSQLI_ASSOC);
-    $result->close();
-    $stmt->close();
-    $conn->close();
-    return $customers;
+    return $result->fetch_all(MYSQLI_ASSOC);
   } catch (Exception $e) {
     throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
   }
 }
 
@@ -139,11 +136,11 @@ function list_customers($search = "")
  */
 function add_customer($fields)
 {
+  $conn = $stmt = null;
   try {
     $conn = connect_db();
     $email = sanitize_sql($conn, $fields["email"]);
     $password = sanitize_sql($conn, $fields["password"]);
-    $hashedPassword = hash("sha512", $password);
     $values = [
       $fields["first_name"], $fields["last_name"],
       $fields["home_phone"], $fields["cell_phone"], $fields["address"],
@@ -156,6 +153,7 @@ function add_customer($fields)
       // Insert into user
       $query = "INSERT INTO user (email, password) VALUES (LOWER(?), ?)";
       $stmt = $conn->prepare($query);
+      $hashedPassword = hash("sha512", $password);
       $stmt->bind_param("ss", $email, $hashedPassword);
       $stmt->execute();
 
@@ -168,7 +166,6 @@ function add_customer($fields)
       $stmt = $conn->prepare($query);
       $stmt->bind_param("sssss", ...$values);
       $stmt->execute();
-      $stmt->close();
     } catch (Exception $e) {
       $conn->rollback();
       if ($e->getCode() == DUPLICATE_ERROR) {
@@ -177,10 +174,11 @@ function add_customer($fields)
       throw $e;
     }
     $conn->commit();
-    $conn->close();
     return "";
   } catch (Exception $e) {
     throw $e;
+  } finally {
+    close_db($conn, $stmt);
   }
 }
 
@@ -189,6 +187,7 @@ function add_customer($fields)
  */
 function list_products()
 {
+  $conn = $stmt = $result = null;
   try {
     $conn = connect_db();
     $query = <<<SQL
@@ -199,13 +198,11 @@ function list_products()
     $stmt = $conn->prepare($query);
     $stmt->execute();
     $result = $stmt->get_result();
-    $products = $result->fetch_all(MYSQLI_ASSOC);
-    $result->close();
-    $stmt->close();
-    $conn->close();
-    return $products;
+    return $result->fetch_all(MYSQLI_ASSOC);
   } catch (Exception $e) {
     throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
   }
 }
 
@@ -215,6 +212,7 @@ function list_products()
  */
 function list_products_by_category($category = "coffee")
 {
+  $conn = $stmt = $result = null;
   try {
     $conn = connect_db();
     $query = <<<SQL
@@ -232,12 +230,11 @@ function list_products_by_category($category = "coffee")
     $stmt->execute();
     $result = $stmt->get_result();
     $products = $result->fetch_all(MYSQLI_ASSOC);
-    $result->close();
-    $stmt->close();
-    $conn->close();
     return $products;
   } catch (Exception $e) {
     throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
   }
 }
 
@@ -246,6 +243,7 @@ function list_products_by_category($category = "coffee")
  */
 function list_products_by_most_visited($limit = 5)
 {
+  $conn = $stmt = $result = null;
   try {
     $conn = connect_db();
     $query = <<<SQL
@@ -256,13 +254,11 @@ function list_products_by_most_visited($limit = 5)
     $stmt->bind_param("s", $limit);
     $stmt->execute();
     $result = $stmt->get_result();
-    $products = $result->fetch_all(MYSQLI_ASSOC);
-    $result->close();
-    $stmt->close();
-    $conn->close();
-    return $products;
+    return $result->fetch_all(MYSQLI_ASSOC);
   } catch (Exception $e) {
     throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
   }
 }
 
@@ -274,6 +270,7 @@ function list_products_by_id($idList)
   if (count($idList) == 0) {
     return [];
   }
+  $conn = $stmt = $result = null;
   try {
     $conn = connect_db();
     $wildcards = $types = "";
@@ -292,9 +289,6 @@ function list_products_by_id($idList)
     $stmt->execute();
     $result = $stmt->get_result();
     $products = $result->fetch_all(MYSQLI_ASSOC);
-    $result->close();
-    $stmt->close();
-    $conn->close();
     $mappedProducts = [];
     foreach ($products as $product) {
       $mappedProducts[$product["id"]] = $product;
@@ -306,14 +300,17 @@ function list_products_by_id($idList)
     return $products;
   } catch (Exception $e) {
     throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
   }
 }
 
 /**
  * Get a product based on product id
  */
-function get_product_by_id($id)
+function get_product_by_id($productId)
 {
+  $conn = $stmt = $result = null;
   try {
     $conn = connect_db();
     $query = <<<SQL
@@ -321,43 +318,162 @@ function get_product_by_id($id)
     FROM product WHERE id = ?
     SQL;
     $stmt = $conn->prepare($query);
-    $id = sanitize_sql($conn, $id);
-    $stmt->bind_param("s", $id);
+    $productId = sanitize_sql($conn, $productId);
+    $stmt->bind_param("s", $productId);
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows == 0) {
       throw new Exception("Product not found", 404);
     }
-    [$product] = $result->fetch_all(MYSQLI_ASSOC);
-    $result->close();
-    $stmt->close();
-    $conn->close();
-    return $product;
+    return $result->fetch_all(MYSQLI_ASSOC)[0];
   } catch (Exception $e) {
     throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
   }
 }
 
 /**
  * Increment product visited count by one
  */
-function update_product_visited_count($id)
+function update_product_visited_count($productId)
 {
+  $conn = $stmt = null;
   try {
     $conn = connect_db();
+    $productId = sanitize_sql($conn, $productId);
     $query = <<<SQL
     UPDATE product
     SET visited = visited + 1
     WHERE id = ?
     SQL;
     $stmt = $conn->prepare($query);
-    $id = sanitize_sql($conn, $id);
-    $stmt->bind_param("s", $id);
+    $stmt->bind_param("s", $productId);
     $stmt->execute();
   } catch (Exception $e) {
     throw $e;
   } finally {
-    $stmt->close();
-    $conn->close();
+    close_db($conn, $stmt);
+  }
+}
+
+/**
+ * List product from customer cart
+ */
+function list_cart_products($userId)
+{
+  $conn = $stmt = $result = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $query = <<<SQL
+    SELECT id, name, image, price, quantity
+    FROM cart INNER JOIN product ON id = product_id
+    WHERE user_id = ? ORDER BY cart.create_at
+    SQL;
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
+  }
+}
+
+/**
+ * Get total quantity of products in cart
+ */
+function get_cart_number_of_products($userId)
+{
+  $conn = $stmt = $result = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $query = <<<SQL
+    SELECT SUM(quantity) AS count
+    FROM cart WHERE user_id = ?
+    SQL;
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $count = $result->fetch_all(MYSQLI_ASSOC)[0]["count"];
+    return $count == null ? 0 : $count;
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
+  }
+}
+
+/**
+ * Set product id to customer cart
+ */
+function set_product_to_cart($userId, $productId, $quantity = 1)
+{
+  $conn = $stmt = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $productId = sanitize_sql($conn, $productId);
+    $quantity = sanitize_sql($conn, $quantity);
+    $query = <<<SQL
+    INSERT INTO cart
+    (user_id, product_id, quantity) VALUES (?, ?, 1)
+    ON DUPLICATE KEY UPDATE quantity = quantity + ?
+    SQL;
+    $stmt = $conn->prepare($query);
+    $productId = sanitize_sql($conn, $productId);
+    $stmt->bind_param("sss", $userId, $productId, $quantity);
+    $stmt->execute();
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt);
+  }
+}
+
+/**
+ * Remove a product from cart
+ */
+function remove_product_from_cart($userId, $productId)
+{
+  $conn = $stmt = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $productId = sanitize_sql($conn, $productId);
+    $query = "DELETE FROM cart WHERE user_id = ? AND product_id = ?";
+    $stmt = $conn->prepare($query);
+    $productId = sanitize_sql($conn, $productId);
+    $stmt->bind_param("ss", $userId, $productId);
+    $stmt->execute();
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt);
+  }
+}
+
+/**
+ * Clear products from customer cart
+ */
+function remove_all_products_from_cart($userId)
+{
+  $conn = $stmt = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $query = "DELETE FROM cart WHERE user_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $userId);
+    $stmt->execute();
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt);
   }
 }

@@ -6,9 +6,9 @@ require_once("../utils/utils.php");
 $email = $password = $message = "";
 $messageColor = "text-danger";
 try {
-  setReferer(excludes: ["/register"]);
-  if (valid_session()) {
-    header("Location: " . popReferer());
+  set_referer(excludes: ["/register"]);
+  if (is_authenticated()) {
+    header("Location:" . pop_referer());
     exit();
   }
   if (isset($_POST["login"])) {
@@ -17,15 +17,21 @@ try {
     if ($email == "" || $password == "") {
       $message = "Please fill in all form fields.";
     }
+    $user = null;
     if (!$message) {
-      $message = login($email, $password);
+      $result = login($email, $password);
+      if(is_string($result)) {
+        $message = $result;
+      } else {
+        $user = $result;
+      }
     }
-    if (!$message) {
-      create_session(strtolower($email), isAdmin($email));
+    if (!$message && isset($user)) {
+      set_authenticated($user["id"], $user["isAdmin"]);
       $email = $password = "";
       $message = "Login Successful!";
       $messageColor = "text-success";
-      header("Refresh: 1; URL=" . popReferer());
+      header("Refresh:1;URL=" . pop_referer());
     }
   }
 } catch (Exception $e) {
@@ -46,7 +52,7 @@ echo document(
         <div class="col-xl-4 col-lg-3 col-md-2"></div>
         <div class="col-xl-4 col-lg-6 col-md-8">
           <div class="form-floating mb-2">
-            <input class="login-form-input form-control" type="text" autocomplete="off" placeholder="Email" name="email" value="$email" >
+            <input class="login-form-input form-control" type="text" autocomplete="off" placeholder="Email" name="email" value="$email">
             <label>Email</label>
           </div>
         </div>

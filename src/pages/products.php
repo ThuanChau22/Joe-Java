@@ -84,6 +84,7 @@ function product_list($selectedOption = ALL_PRODUCTS)
       break;
   }
   $productList = "";
+  $requestURI = $_SERVER["REQUEST_URI"];
   foreach ($products as $product) {
     $productId = $product["id"];
     $productImage = $product["image"];
@@ -102,6 +103,14 @@ function product_list($selectedOption = ALL_PRODUCTS)
             </div>
             <p class="products-card-price">$$productPrice</p>
           </div>
+          <form method="post" action="$requestURI" onsubmit="return addToCart(this)">
+            <input type="hidden" name="product_id" value="$productId">
+            <button class="btn products-add-to-cart-btn" name="add_to_cart" type="submit">
+              <span class="products-add-to-cart-icon material-symbols-outlined">
+                add_shopping_cart
+              </span>
+            </button>
+          </form>
         </div>
       </a>
     </div>
@@ -113,13 +122,23 @@ function product_list($selectedOption = ALL_PRODUCTS)
   HTML
     : <<<HTML
   <div class="products-empty">
-    <p class="products-empty-content">No Product Found</p>
+    <p>No Product Found</p>
   </div>
   HTML;
 }
 
-$pageContent = "";
 try {
+  if (isset($_POST["add_to_cart"]) && isset($_POST["product_id"])) {
+    $productId = sanitize_html($_POST["product_id"]);
+    if (is_authenticated()) {
+      $userId = get_session_user()[UID];
+      set_product_to_cart($userId, $productId);
+    } else {
+      set_product_to_cart_session($productId);
+    }
+    header("Location:" . $_SERVER["REQUEST_URI"]);
+    exit();
+  }
   if (!isset($_GET["id"])) {
     $selectedOption = get_selected_product_option();
     $productSelectForm = product_select_form($selectedOption);
@@ -131,6 +150,7 @@ try {
     $productList
     HTML;
   } else {
+    $requestURI = $_SERVER["REQUEST_URI"];
     $productId = sanitize_html($_GET["id"]);
     $product = get_product_by_id($productId);
     $productImage = $product["image"];
@@ -143,15 +163,17 @@ try {
     <div class="pt-5"></div>
     <div class="products-item row">
       <div class="col-md-6">
-        <img class="products-item-image img-responsive img-center" src=$productImage>
+        <img class="img-fluid rounded" src=$productImage>
       </div>
       <div class="col-md-6">
         <p class="products-item-name">$productName</p>
-        <div class="pt-1"></div>
-        <p class="products-item-price">$$productPrice</p>
-        <div class="pt-3"></div>
-        <p class="products-item-description-label">Description:</p>
+        <p class="products-item-price pt-1">$$productPrice</p>
+        <p class="products-item-description-label pt-3">Description:</p>
         <p class="products-item-description-content text-muted">$productDescription</p>
+        <form class="pt-3 pb-2" method="post" action="$requestURI" onsubmit="return addToCart(this)">
+          <input type="hidden" name="product_id" value="$productId">
+          <input class="products-item-add-to-cart-btn" name="add_to_cart" type="submit" value="Add to cart">
+        </form>
       </div>
     </div>
     HTML;
@@ -170,9 +192,8 @@ echo document(
   <script src="/src/scripts/utils.js" type="text/javascript"></script>
   HTML,
   content: <<<HTML
-  <div id="products" class="container">
+  <div class="container mb-5">
     $pageContent
-    <div class="mb-5"></div>
   </div>
   HTML,
 );
