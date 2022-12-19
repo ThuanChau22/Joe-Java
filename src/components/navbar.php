@@ -1,4 +1,5 @@
 <?php
+require_once("../utils/database.php");
 require_once("../utils/utils.php");
 
 function navbar($pageId)
@@ -31,10 +32,7 @@ function navbar($pageId)
     $userId = get_session_user()[UID];
     $number_of_products = get_cart_number_of_products($userId);
   } else {
-    $cart = list_cart_products_session();
-    foreach ($cart[QUANTITIES] as $quantity) {
-      $number_of_products += $quantity;
-    }
+    $number_of_products = get_cart_number_of_products_session();
   }
   if ($number_of_products >= 100) {
     $number_of_products = "99+";
@@ -68,7 +66,7 @@ function navbar($pageId)
             <a class="nav-link" href="/cart">
               <span class="cart-icon material-symbols-outlined">
                 shopping_cart
-              </span><span id="cart-item-count">$number_of_products</span>
+              </span><span id="cart-product-count">$number_of_products</span>
             </a>
           </li>
         </ul>

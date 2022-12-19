@@ -29,11 +29,15 @@ const addProductToCart = (element) => {
   const xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = () => {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
-      const navBarItemCount = document.getElementById("cart-item-count");
-      navBarItemCount.innerHTML = xhttp.responseText;
+      const productCount = document.getElementById("cart-product-count");
+      let { number_of_products } = JSON.parse(xhttp.responseText);
+      if (number_of_products >= 100) {
+        number_of_products = "99+";
+      }
+      productCount.innerHTML = number_of_products;
     }
   };
-  xhttp.open("POST", "/src/scripts/products.php", true);
+  xhttp.open("POST", "/src/scripts/cart.php", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   xhttp.send(`${input1}&${input2}`);
   return false;

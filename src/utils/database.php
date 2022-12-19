@@ -369,7 +369,7 @@ function list_cart_products($userId)
     $query = <<<SQL
     SELECT id, name, image, price, quantity
     FROM cart INNER JOIN product ON id = product_id
-    WHERE user_id = ? ORDER BY cart.last_update
+    WHERE user_id = ? ORDER BY cart.create_at
     SQL;
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $userId);
@@ -420,13 +420,10 @@ function set_product_to_cart($userId, $productId, $quantity = 1)
     $userId = sanitize_sql($conn, $userId);
     $productId = sanitize_sql($conn, $productId);
     $quantity = sanitize_sql($conn, $quantity);
-    if ($quantity < 0) {
-      throw new Exception("Quantity cannot be negative", 400);
-    }
     $query = <<<SQL
     INSERT INTO cart
     (user_id, product_id, quantity) VALUES (?, ?, 1)
-    ON DUPLICATE KEY UPDATE quantity = ?
+    ON DUPLICATE KEY UPDATE quantity = quantity + ?
     SQL;
     $stmt = $conn->prepare($query);
     $productId = sanitize_sql($conn, $productId);
@@ -440,9 +437,31 @@ function set_product_to_cart($userId, $productId, $quantity = 1)
 }
 
 /**
+ * Remove a product from cart
+ */
+function remove_product_from_cart($userId, $productId)
+{
+  $conn = $stmt = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $productId = sanitize_sql($conn, $productId);
+    $query = "DELETE FROM cart WHERE user_id = ? AND product_id = ?";
+    $stmt = $conn->prepare($query);
+    $productId = sanitize_sql($conn, $productId);
+    $stmt->bind_param("ss", $userId, $productId);
+    $stmt->execute();
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt);
+  }
+}
+
+/**
  * Clear products from customer cart
  */
-function clear_cart($userId)
+function remove_all_products_from_cart($userId)
 {
   $conn = $stmt = null;
   try {

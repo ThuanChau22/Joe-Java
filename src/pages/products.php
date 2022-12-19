@@ -128,6 +128,17 @@ function product_list($selectedOption = ALL_PRODUCTS)
 }
 
 try {
+  if (isset($_POST["add_to_cart"]) && isset($_POST["product_id"])) {
+    $productId = sanitize_html($_POST["product_id"]);
+    if (is_authenticated()) {
+      $userId = get_session_user()[UID];
+      set_product_to_cart($userId, $productId);
+    } else {
+      set_product_to_cart_session($productId);
+    }
+    header("Location:" . $_SERVER["REQUEST_URI"]);
+    exit();
+  }
   if (!isset($_GET["id"])) {
     $selectedOption = get_selected_product_option();
     $productSelectForm = product_select_form($selectedOption);
@@ -166,17 +177,6 @@ try {
       </div>
     </div>
     HTML;
-  }
-  if (isset($_POST["add_to_cart"]) && isset($_POST["product_id"])) {
-    $productId = sanitize_html($_POST["product_id"]);
-    if (is_authenticated()) {
-      $userId = get_session_user()[UID];
-      set_product_to_cart($userId, $productId);
-    } else {
-      set_product_to_cart_session($productId);
-    }
-    header("Location:" . $_SERVER["REQUEST_URI"]);
-    exit();
   }
 } catch (Exception $e) {
   handle_client_error($e);

@@ -225,7 +225,7 @@ function get_session_user()
 }
 
 /**
- * Get shopping cart products from session
+ * List shopping cart products from cart session
  */
 function list_cart_products_session()
 {
@@ -234,13 +234,29 @@ function list_cart_products_session()
 }
 
 /**
- * Set product id and quantity to session
+ * Get total quantity of products in cart session
+ */
+function get_cart_number_of_products_session()
+{
+  $number_of_products = 0;
+  $cart = list_cart_products_session();
+  foreach ($cart[QUANTITIES] as $quantity) {
+    $number_of_products += $quantity;
+  }
+  return $number_of_products;
+}
+
+/**
+ * Set product id and quantity to cart session
  */
 function set_product_to_cart_session($productId, $quantity = 1)
 {
   $updated = init_session();
   $cart = list_cart_products_session();
   if (isset($cart[QUANTITIES][$productId])) {
+    if($cart[QUANTITIES][$productId] + $quantity <= 0) {
+      throw new Exception("Quantity cannot be less than 1", 400);
+    }
     $_SESSION[SHOPPING_CART][QUANTITIES][$productId] += $quantity;
   } else {
     $_SESSION[SHOPPING_CART][PRODUCT_IDS][] = $productId;
@@ -250,9 +266,30 @@ function set_product_to_cart_session($productId, $quantity = 1)
 }
 
 /**
+ * Remove a product from cart session
+ */
+function remove_product_from_cart_session($productId)
+{
+  $updated = init_session();
+  $productIds = $_SESSION[SHOPPING_CART][PRODUCT_IDS];
+  $productIdIndex = -1;
+  for ($i = 0; $i < count($productIds); $i++) {
+    if ($productIds[$i] == $productId) {
+      $productIdIndex = $i;
+      break;
+    }
+  }
+  if ($productIdIndex != -1) {
+    array_splice($_SESSION[SHOPPING_CART][PRODUCT_IDS], $productIdIndex, 1);
+  }
+  unset($_SESSION[SHOPPING_CART][QUANTITIES][$productId]);
+  $updated();
+}
+
+/**
  * Clear shopping cart products from session
  */
-function clear_cart_session()
+function remove_all_products_from_cart_session()
 {
   $updated = init_session();
   $_SESSION[SHOPPING_CART] = [
