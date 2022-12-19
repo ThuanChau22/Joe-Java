@@ -24,7 +24,7 @@ const searchCustomers = (element) => {
       xhttp.onreadystatechange = () => {
         if (xhttp.readyState == 4 && xhttp.status == 200) {
           const customerList = document.getElementById("customer-list");
-          customerList.innerHTML = xhttp.responseText;
+          customerList.innerHTML = JSON.parse(xhttp.responseText).html;
           spinner.innerHTML = "";
         }
       };
