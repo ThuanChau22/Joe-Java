@@ -1,7 +1,3 @@
-#products {
-  position: relative;
-}
-
 .products-page-title {
   color: #ffb366;
   font-weight: bold;
@@ -52,9 +48,6 @@
   text-align: center;
   margin: 20vh auto 0;
   transform: translateY(-35%);
-}
-
-.products-empty-content {
   color: #ffb366;
   font-size: clamp(40px, 4vw, 60px);
   font-family: "Dancing Script", cursive;
@@ -72,6 +65,7 @@
 .products-card-name {
   overflow: hidden;
   text-align: center;
+  font-weight: bold;
 }
 
 .products-card-name-content {
@@ -108,10 +102,6 @@
   border-radius: 10px;
   padding: clamp(10px, 1vw, 25px);
   margin: 0px !important;
-}
-
-.products-item-image {
-  width: 100%;
 }
 
 .products-item-name {

@@ -20,19 +20,19 @@ echo document(
     </div>
     <div id="home-guide-section" class="container row mx-auto">
       <div class="col-md-4">
-        <img class="home-guide-image img-responsive img-center" src="../../assets/home/coffee-bag.png" alt="">
+        <img class="home-guide-image" src="../../assets/home/coffee-bag.png" alt="">
         <p class="home-guide-content">1. Select beans that suits your taste.</p>
         <a class="home-guide-link" href="/products?category=coffee-beans">Explore</a>
         <div class="pb-5"></div>
       </div>
       <div class="col-md-4">
-        <img class="home-guide-image img-responsive img-center" src="../../assets/home/coffee-machine.png" alt="">
+        <img class="home-guide-image" src="../../assets/home/coffee-machine.png" alt="">
         <p class="home-guide-content">2. Pick your brewing gear of choice.</p>
         <a class="home-guide-link" href="/products?category=brewing-tools">Explore</a>
         <div class="pb-5"></div>
       </div>
       <div class="col-md-4">
-        <img class="home-guide-image img-responsive img-center" src="../../assets/home/coffee-beans.png" alt="">
+        <img class="home-guide-image" src="../../assets/home/coffee-beans.png" alt="">
         <p class="home-guide-content">3. Checkout our blog for more brewing guides.</p>
         <a class="home-guide-link" href="/news">Explore</a>
         <div class="pb-5"></div>

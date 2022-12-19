@@ -122,12 +122,11 @@ function product_list($selectedOption = ALL_PRODUCTS)
   HTML
     : <<<HTML
   <div class="products-empty">
-    <p class="products-empty-content">No Product Found</p>
+    <p>No Product Found</p>
   </div>
   HTML;
 }
 
-$pageContent = "";
 try {
   if (!isset($_GET["id"])) {
     $selectedOption = get_selected_product_option();
@@ -153,7 +152,7 @@ try {
     <div class="pt-5"></div>
     <div class="products-item row">
       <div class="col-md-6">
-        <img class="products-item-image img-responsive img-center" src=$productImage>
+        <img class="img-fluid rounded" src=$productImage>
       </div>
       <div class="col-md-6">
         <p class="products-item-name">$productName</p>
@@ -193,7 +192,7 @@ echo document(
   <script src="/src/scripts/utils.js" type="text/javascript"></script>
   HTML,
   content: <<<HTML
-  <div id="products" class="container mb-5">
+  <div class="container mb-5">
     $pageContent
   </div>
   HTML,
