@@ -103,8 +103,8 @@ function product_list($selectedOption = ALL_PRODUCTS)
             </div>
             <p class="products-card-price">$$productPrice</p>
           </div>
-          <form onsubmit="return addProductToCart(this)" method="post" action="$requestURI">
-            <input type="hidden" name="product_id" value="$productId"/>
+          <form method="post" action="$requestURI" onsubmit="return addToCart(this)">
+            <input type="hidden" name="product_id" value="$productId">
             <button class="btn products-add-to-cart-btn" name="add_to_cart" type="submit">
               <span class="products-add-to-cart-icon material-symbols-outlined">
                 add_shopping_cart
@@ -170,8 +170,8 @@ try {
         <p class="products-item-price pt-1">$$productPrice</p>
         <p class="products-item-description-label pt-3">Description:</p>
         <p class="products-item-description-content text-muted">$productDescription</p>
-        <form onsubmit="return addProductToCart(this)" class="pt-3 pb-2" method="post" action="$requestURI">
-          <input type="hidden" name="product_id" value="$productId"/>
+        <form class="pt-3 pb-2" method="post" action="$requestURI" onsubmit="return addToCart(this)">
+          <input type="hidden" name="product_id" value="$productId">
           <input class="products-item-add-to-cart-btn" name="add_to_cart" type="submit" value="Add to cart">
         </form>
       </div>

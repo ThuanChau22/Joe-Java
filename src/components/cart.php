@@ -16,18 +16,25 @@ function cart($cart)
       <div class="card py-1 mb-2">
         <div class="row g-0">
           <div class="col-lg-2 col-md-4 col-sm-3 col-4">
+          <a href=/products/$productId>
             <img class="img-fluid rounded-start" src=$productImage>
+          </a>
           </div>
           <div class="col-lg-10 col-md-8 col-sm-9 col-8 d-flex flex-column">
-            <p class="cart-product-title my-1">$productName</p>
+            <a class="text-decoration-none" href=/products/$productId>
+              <p class="cart-product-title my-1">$productName</p>
+            </a>
             <div class="row g-0 mt-auto">
               <div class="col-lg-3 col-md-6 col-sm-5 col-8">
-                <form class="cart-product-form" method="post" action="cart">
-                  <input type="hidden" name="product_id" value="$productId"/>
-                  <input type="hidden" name="old_quantity" value="$productQuantity"/>
-                  <input class="cart-product-input form-control w-50 py-1" type="text" autocomplete="off" maxlength="3" name="new_quantity" value=$productQuantity />
-                  <input class="cart-product-btn btn btn-link px-1 pt-0" type="submit" name="update_to_cart" value="Update"/>
-                  <input class="cart-product-btn btn btn-link px-1 pt-0" type="submit" name="delete_from_cart" value="Delete"/>
+                <form class="d-inline" method="post" action="cart" onsubmit="return updateToCart(this)">
+                  <input type="hidden" name="product_id" value="$productId">
+                  <input type="hidden" name="old_quantity" value="$productQuantity">
+                  <input class="cart-product-input form-control w-50 py-1" type="text" autocomplete="off" maxlength="3" name="new_quantity" value="$productQuantity">
+                  <input class="cart-product-btn btn btn-link px-1 pt-0" name="update_to_cart" type="submit" value="Update">
+                </form>
+                <form class="d-inline" method="post" action="cart" onsubmit="return removeFromCart(this)">
+                  <input type="hidden" name="product_id" value="$productId">
+                  <input class="cart-product-btn btn btn-link px-1 pt-0" name="remove_from_cart" type="submit" value="Delete">
                 </form>
               </div>
               <div class="col-md-9 col-md-6 col-sm-7 col-4">

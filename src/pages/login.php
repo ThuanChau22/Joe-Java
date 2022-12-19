@@ -52,7 +52,7 @@ echo document(
         <div class="col-xl-4 col-lg-3 col-md-2"></div>
         <div class="col-xl-4 col-lg-6 col-md-8">
           <div class="form-floating mb-2">
-            <input class="login-form-input form-control" type="text" autocomplete="off" placeholder="Email" name="email" value="$email" >
+            <input class="login-form-input form-control" type="text" autocomplete="off" placeholder="Email" name="email" value="$email">
             <label>Email</label>
           </div>
         </div>

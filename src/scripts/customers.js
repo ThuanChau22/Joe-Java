@@ -20,16 +20,16 @@ const searchCustomers = (element) => {
     if (isModified && (searchTerm.length == 0 || searchTerm.length >= 3)) {
       const spinner = document.getElementById("search-spinner");
       spinner.innerHTML = `<i class="fa fa-spinner fa-spin"></i>`;
-      const xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = () => {
-        if (xhttp.readyState == 4 && xhttp.status == 200) {
-          const customerList = document.getElementById("customer-list");
-          customerList.innerHTML = JSON.parse(xhttp.responseText).html;
+      const request = new XMLHttpRequest();
+      request.onreadystatechange = () => {
+        if (request.readyState == 4 && request.status == 200) {
+          const { html } = JSON.parse(request.responseText);
+          document.getElementById("customer-list").innerHTML = html;
           spinner.innerHTML = "";
         }
       };
-      xhttp.open("GET", `/src/scripts/customers.php?search=${searchTerm}`, true);
-      xhttp.send();
+      request.open("GET", `/src/scripts/customers.php?search=${searchTerm}`, true);
+      request.send();
     }
   }, 500);
 }

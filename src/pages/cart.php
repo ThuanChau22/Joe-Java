@@ -14,7 +14,7 @@ function update_cart_product($productId, $quantity)
   }
 }
 
-function delete_cart_product($productId)
+function remove_cart_product($productId)
 {
   if (is_authenticated()) {
     $userId = get_session_user()[UID];
@@ -31,7 +31,7 @@ function handle_update()
   if (($isUpdate || $isDelete) && isset($_POST["product_id"])) {
     $productId = sanitize_html($_POST["product_id"]);
     if ($isDelete) {
-      delete_cart_product($productId);
+      remove_cart_product($productId);
     }
     if (
       $isUpdate
@@ -43,7 +43,7 @@ function handle_update()
       $isValid = $newQuantity != "" && is_numeric($newQuantity);
       $isValid = $isValid && $oldQuantity != intval($newQuantity);
       if ($isValid && $newQuantity == 0) {
-        delete_cart_product($productId);
+        remove_cart_product($productId);
       }
       if ($isValid && $newQuantity > 0) {
         $quantity = intval($newQuantity) - $oldQuantity;
@@ -121,7 +121,9 @@ echo document(
   <div class="container mb-5">
     <p class="cart-page-title">Your Cart</p>
     <hr>
-    $pageContent
+    <div id="cart-content">
+      $pageContent
+    </div>
   </div>
   HTML,
 );
