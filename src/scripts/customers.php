@@ -6,5 +6,5 @@ require_once("../utils/utils.php");
 if (isset($_GET["search"])) {
   $searchTerm = sanitize_html($_GET["search"]);
   $customers = list_customers($searchTerm);
-  echo customers($customers);
+  echo json_encode(["html" => customers($customers)]);
 }

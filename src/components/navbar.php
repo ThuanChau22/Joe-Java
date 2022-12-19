@@ -1,4 +1,5 @@
 <?php
+require_once("../utils/database.php");
 require_once("../utils/utils.php");
 
 function navbar($pageId)
@@ -7,7 +8,7 @@ function navbar($pageId)
   $requestURI = $_SERVER["REQUEST_URI"];
   if (isset($_POST["logout"])) {
     remove_session();
-    header("Location: $requestURI");
+    header("Location:$requestURI");
     exit();
   }
   $authItems = <<<HTML
@@ -18,15 +19,23 @@ function navbar($pageId)
      <a class="nav-link" href="/register">Signup</a>
   </li>
   HTML;
-  if (valid_session()) {
+  $number_of_products = 0;
+  if (is_authenticated()) {
     $authItems = <<<HTML
-    <form method="post" action="$requestURI">
-      <input class="auth-link btn btn-link" type="submit" name="logout" value="Logout">
+    <form class="m-0" method="post" action="$requestURI">
+      <input class="auth-link btn btn-link px-0" type="submit" name="logout" value="Logout">
     </form>
     HTML;
-    if ($_SESSION["isAdmin"]) {
+    if (is_admin()) {
       $pages[] = "customers";
     }
+    $userId = get_session_user()[UID];
+    $number_of_products = get_cart_number_of_products($userId);
+  } else {
+    $number_of_products = get_cart_number_of_products_session();
+  }
+  if ($number_of_products >= 100) {
+    $number_of_products = "99+";
   }
   $navItems = "";
   $style = "style='color:#d9d9d9 !important; font-weight: bold !important'";
@@ -51,7 +60,16 @@ function navbar($pageId)
       </button>
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav me-auto">$navItems</ul>
-        <ul class="navbar-nav">$authItems</ul>
+        <ul class="navbar-nav me-2">$authItems</ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/cart">
+              <span class="cart-icon material-symbols-outlined">
+                shopping_cart
+              </span><span id="cart-product-count">$number_of_products</span>
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>

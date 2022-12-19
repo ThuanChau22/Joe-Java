@@ -7,7 +7,7 @@ echo document(
   <link href="/src/styles/news.css" rel="stylesheet">
   HTML,
   content: <<<HTML
-  <div class="container">
+  <div class="container mb-5">
     <p class="news-page-title">What's News</p>
     <hr>
     <div class="container">
@@ -54,7 +54,6 @@ echo document(
         </p>
       </div>
     </div>
-    <div class="mb-5"></div>
   </div>
   HTML,
 );

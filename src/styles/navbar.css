@@ -13,15 +13,25 @@
 }
 
 .nav-link {
-  font-size: clamp(16px, 2vw, 20px) !important;
+  font-size: clamp(16px, 1vw, 20px) !important;
 }
 
 .auth-link {
   color: #ffffff8c !important;
   text-decoration: none !important;
-  font-size: clamp(16px, 2vw, 20px) !important;
+  font-size: clamp(16px, 1vw, 20px) !important;
 }
 
 .auth-link:hover {
   color: #ffffffbf !important;
+}
+
+.cart-icon {
+  font-size: clamp(24px, 2vw, 30px) !important;
+  vertical-align: bottom;
+}
+
+#cart-product-count {
+  font-size: clamp(14px, 2vw, 18px);
+  vertical-align: super;
 }
