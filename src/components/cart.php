@@ -26,8 +26,8 @@ function cart($cart)
                   <input type="hidden" name="product_id" value="$productId"/>
                   <input type="hidden" name="old_quantity" value="$productQuantity"/>
                   <input class="cart-product-input form-control w-50 py-1" type="text" autocomplete="off" maxlength="3" name="new_quantity" value=$productQuantity />
-                  <input class="cart-product-btn btn btn-link px-1 pt-0" type="submit" name="update_to_cart" value="update"/>
-                  <input class="cart-product-btn btn btn-link px-1 pt-0" type="submit" name="delete_from_cart" value="delete"/>
+                  <input class="cart-product-btn btn btn-link px-1 pt-0" type="submit" name="update_to_cart" value="Update"/>
+                  <input class="cart-product-btn btn btn-link px-1 pt-0" type="submit" name="delete_from_cart" value="Delete"/>
                 </form>
               </div>
               <div class="col-md-9 col-md-6 col-sm-7 col-4">

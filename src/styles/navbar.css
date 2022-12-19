@@ -31,7 +31,7 @@
   vertical-align: bottom;
 }
 
-#cart-item-count {
+#cart-product-count {
   font-size: clamp(14px, 2vw, 18px);
   vertical-align: super;
 }

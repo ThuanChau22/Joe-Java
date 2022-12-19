@@ -144,7 +144,7 @@ function remove_session()
 /**
  * Set referer
  */
-function setReferer($excludes = [])
+function set_referer($excludes = [])
 {
   if (isset($_SERVER['HTTP_REFERER'])) {
     $referer = parse_url($_SERVER['HTTP_REFERER']);
@@ -166,7 +166,7 @@ function setReferer($excludes = [])
 /**
  * Remove and return referer
  */
-function popReferer()
+function pop_referer()
 {
   $updated = init_session();
   $referer = "/home";

@@ -10,9 +10,9 @@ $homePhone = $cellPhone = "";
 $message = "";
 $messageColor = "text-danger";
 try {
-  setReferer(excludes: ["/login"]);
+  set_referer(excludes: ["/login"]);
   if (is_authenticated()) {
-    header("Location:" . popReferer());
+    header("Location:" . pop_referer());
     exit();
   }
   if (isset($_POST["register"])) {

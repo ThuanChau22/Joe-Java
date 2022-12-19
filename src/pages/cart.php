@@ -4,7 +4,7 @@ require_once("../components/document.php");
 require_once("../utils/database.php");
 require_once("../utils/utils.php");
 
-function updateCartProduct($productId, $quantity)
+function update_cart_product($productId, $quantity)
 {
   if (is_authenticated()) {
     $userId = get_session_user()[UID];
@@ -14,7 +14,7 @@ function updateCartProduct($productId, $quantity)
   }
 }
 
-function deleteCartProduct($productId)
+function delete_cart_product($productId)
 {
   if (is_authenticated()) {
     $userId = get_session_user()[UID];
@@ -24,14 +24,14 @@ function deleteCartProduct($productId)
   }
 }
 
-function handleUpdate()
+function handle_update()
 {
   $isUpdate = isset($_POST["update_to_cart"]);
   $isDelete = isset($_POST["delete_from_cart"]);
   if (($isUpdate || $isDelete) && isset($_POST["product_id"])) {
     $productId = sanitize_html($_POST["product_id"]);
     if ($isDelete) {
-      deleteCartProduct($productId);
+      delete_cart_product($productId);
     }
     if (
       $isUpdate
@@ -43,11 +43,11 @@ function handleUpdate()
       $isValid = $newQuantity != "" && is_numeric($newQuantity);
       $isValid = $isValid && $oldQuantity != intval($newQuantity);
       if ($isValid && $newQuantity == 0) {
-        deleteCartProduct($productId);
+        delete_cart_product($productId);
       }
       if ($isValid && $newQuantity > 0) {
         $quantity = intval($newQuantity) - $oldQuantity;
-        updateCartProduct($productId, $quantity);
+        update_cart_product($productId, $quantity);
       }
     }
     header("Location:/cart");
@@ -55,7 +55,7 @@ function handleUpdate()
   }
 }
 
-function handleCheckout()
+function handle_checkout()
 {
   if (isset($_POST["checkout"])) {
     if (is_authenticated()) {
@@ -69,7 +69,7 @@ function handleCheckout()
   }
 }
 
-function checkoutSuccess()
+function checkout_success()
 {
   header("Refresh:3;URL=/cart");
   return <<<HTML
@@ -79,7 +79,7 @@ function checkoutSuccess()
   HTML;
 }
 
-function fetchCart()
+function fetch_cart()
 {
   if (is_authenticated()) {
     $userId = get_session_user()[UID];
@@ -97,12 +97,12 @@ function fetchCart()
 }
 
 try {
-  handleUpdate();
-  handleCheckout();
+  handle_update();
+  handle_checkout();
   if (isset($_GET["checkout_success"])) {
-    $pageContent = checkoutSuccess();
+    $pageContent = checkout_success();
   } else {
-    $pageContent = cart(fetchCart());
+    $pageContent = cart(fetch_cart());
   }
 } catch (Exception $e) {
   handle_client_error($e);

@@ -6,9 +6,9 @@ require_once("../utils/utils.php");
 $email = $password = $message = "";
 $messageColor = "text-danger";
 try {
-  setReferer(excludes: ["/register"]);
+  set_referer(excludes: ["/register"]);
   if (is_authenticated()) {
-    header("Location:" . popReferer());
+    header("Location:" . pop_referer());
     exit();
   }
   if (isset($_POST["login"])) {
@@ -31,7 +31,7 @@ try {
       $email = $password = "";
       $message = "Login Successful!";
       $messageColor = "text-success";
-      header("Refresh:1;URL=" . popReferer());
+      header("Refresh:1;URL=" . pop_referer());
     }
   }
 } catch (Exception $e) {
