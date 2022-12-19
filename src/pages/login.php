@@ -31,7 +31,7 @@ try {
       $email = $password = "";
       $message = "Login Successful!";
       $messageColor = "text-success";
-      header("Refresh: 1; URL=" . popReferer());
+      header("Refresh:1;URL=" . popReferer());
     }
   }
 } catch (Exception $e) {

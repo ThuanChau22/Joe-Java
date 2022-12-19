@@ -48,7 +48,7 @@ try {
       $address = $homePhone = $cellPhone = "";
       $message = "Account Created!";
       $messageColor = "text-success";
-      header("Refresh: 1; URL=login");
+      header("Refresh:1;URL=login");
     }
   }
 } catch (Exception $e) {
