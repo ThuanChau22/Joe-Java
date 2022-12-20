@@ -22,12 +22,6 @@
   font-weight: bold;
 }
 
-/* .cart-product-form {
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-} */
-
 .cart-product-input:focus {
   border-color: #ced4da !important;
   box-shadow: unset !important;
@@ -39,12 +33,18 @@
 
 .cart-product-price {
   color: #ffb366;
-  font-size: clamp(14px, 2vw, 16px);
+  font-size: clamp(14px, 2vw, 18px);
   font-weight: bold;
   font-family: "Dancing Script", cursive;
   position: absolute;
   bottom: 12px;
   right: 12px;
+}
+
+.cart-summary {
+  position: sticky !important;
+  position: -webkit-sticky !important;
+  top: 1rem;
 }
 
 .cart-summary-title {

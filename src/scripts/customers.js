@@ -8,28 +8,28 @@ const initialSearchTerm = () => {
 }
 window.addEventListener("load", initialSearchTerm);
 
-const searchCustomers = (element) => {
+const searchCustomers = (e) => {
   clearTimeout(timeoutId);
-  timeoutId = setTimeout(() => {
-    let isModified = false;
-    const value = element.value.trim();
-    if (searchTerm !== value) {
-      searchTerm = value;
-      isModified = true;
-    }
-    if (isModified && (searchTerm.length == 0 || searchTerm.length >= 3)) {
-      const spinner = document.getElementById("search-spinner");
-      spinner.innerHTML = `<i class="fa fa-spinner fa-spin"></i>`;
-      const request = new XMLHttpRequest();
-      request.onreadystatechange = () => {
-        if (request.readyState == 4 && request.status == 200) {
-          const { html } = JSON.parse(request.responseText);
-          document.getElementById("customer-list").innerHTML = html;
-          spinner.innerHTML = "";
+  timeoutId = setTimeout(async () => {
+    try {
+      let isModified = false;
+      const value = e.target.value.trim();
+      if (searchTerm !== value) {
+        searchTerm = value;
+        isModified = true;
+      }
+      if (isModified && (searchTerm.length == 0 || searchTerm.length >= 3)) {
+        const spinner = document.getElementById("search-spinner");
+        spinner.innerHTML = `<i class="fa fa-spinner fa-spin"></i>`;
+        const url = `/src/api/customers.php?html&search=${searchTerm}`;
+        const response = await api({ url });
+        if (response) {
+          document.getElementById("customer-list").innerHTML = response.html;
         }
-      };
-      request.open("GET", `/src/scripts/customers.php?search=${searchTerm}`, true);
-      request.send();
+        spinner.innerHTML = "";
+      }
+    } catch (error) {
+      location.href = "/error";
     }
   }, 500);
 }

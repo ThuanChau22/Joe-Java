@@ -22,20 +22,46 @@ const hoverOverLongProductName = () => {
 window.addEventListener("load", hoverOverLongProductName);
 window.addEventListener("resize", hoverOverLongProductName);
 
-const addToCart = (element) => {
-  const [add_to_cart, product_id] = element;
-  const addToCart = `${add_to_cart.name}=${add_to_cart.value}`;
-  const productId = `${product_id.name}=${product_id.value}`;
-  const request = new XMLHttpRequest();
-  request.onreadystatechange = () => {
-    if (request.readyState == 4 && request.status == 200) {
-      let { number_of_products } = JSON.parse(request.responseText);
-      number_of_products = number_of_products >= 100 ? "99+" : number_of_products;
-      document.getElementById("cart-product-count").innerHTML = number_of_products;
+const startSpinner = (productId) => {
+  const addButton = document.getElementById(`add-to-cart-${productId}`);
+  if (addButton) {
+    addButton.innerHTML = `<i class="fa fa-spinner fa-spin"></i>`;
+  }
+  const addIcon = document.getElementById(`add-to-cart-icon-${productId}`);
+  if (addIcon) {
+    addIcon.innerHTML = `<i class="fa fa-spinner fa-spin"></i>`;
+  }
+}
+
+const stopSpinner = (productId) => {
+  const addButton = document.getElementById(`add-to-cart-${productId}`);
+  if (addButton) {
+    addButton.innerHTML = "Added";
+  }
+  const addIcon = document.getElementById(`add-to-cart-icon-${productId}`);
+  if (addIcon) {
+    addIcon.innerHTML = "add_shopping_cart";
+  }
+}
+
+const addToCart = async (e) => {
+  e.preventDefault();
+  try {
+    const { add_to_cart, product_id } = e.target;
+    startSpinner(product_id.value);
+    const url = "/src/api/cart.php";
+    const body = {
+      add_to_cart: add_to_cart.value,
+      product_id: product_id.value,
+    };
+    const response = await api({ method: "POST", url, body });
+    if (response) {
+      let productCount = response.number_of_products;
+      productCount = productCount >= 100 ? "99+" : productCount;
+      document.getElementById("cart-product-count").innerHTML = productCount;
     }
-  };
-  request.open("POST", "/src/scripts/cart.php", true);
-  request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  request.send(`${addToCart}&${productId}`);
-  return false;
+    stopSpinner(product_id.value);
+  } catch (error) {
+    location.href = "/error";
+  }
 }
