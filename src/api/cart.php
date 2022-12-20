@@ -58,41 +58,47 @@ function remove_from_cart($productId)
   return [$cart, $number_of_products];
 }
 
-if (isset($_POST["add_to_cart"]) && isset($_POST["product_id"])) {
-  $productId = sanitize_html($_POST["product_id"]);
-  $number_of_products = add_to_cart($productId);
-  echo json_encode(["number_of_products" => $number_of_products]);
-}
-
-if (
-  isset($_POST["update_to_cart"])
-  && isset($_POST["product_id"])
-  && isset($_POST["old_quantity"])
-  && isset($_POST["new_quantity"])
-) {
-  $productId = sanitize_html($_POST["product_id"]);
-  $oldQuantity = sanitize_html($_POST["old_quantity"]);
-  $newQuantity = sanitize_html($_POST["new_quantity"]);
-  $isValid = $newQuantity != "" && is_numeric($newQuantity);
-  $isValid = $isValid && $oldQuantity != intval($newQuantity);
-  if ($isValid && $newQuantity == 0) {
+try {
+  $_POST = json_decode(file_get_contents("php://input"), true);
+  if (isset($_POST["add_to_cart"]) && isset($_POST["product_id"])) {
+    $productId = sanitize_html($_POST["product_id"]);
+    $number_of_products = add_to_cart($productId);
+    echo json_encode(["number_of_products" => $number_of_products]);
+  }
+  if (
+    isset($_POST["update_to_cart"])
+    && isset($_POST["product_id"])
+    && isset($_POST["old_quantity"])
+    && isset($_POST["new_quantity"])
+  ) {
+    $productId = sanitize_html($_POST["product_id"]);
+    $oldQuantity = sanitize_html($_POST["old_quantity"]);
+    $newQuantity = sanitize_html($_POST["new_quantity"]);
+    $isValid = $newQuantity != "" && is_numeric($newQuantity);
+    $isValid = $isValid && $oldQuantity != intval($newQuantity);
+    if ($isValid && $newQuantity == 0) {
+      [$cart, $number_of_products] = remove_from_cart($productId);
+    }
+    if ($isValid && $newQuantity > 0) {
+      $quantity = intval($newQuantity) - $oldQuantity;
+      [$cart, $number_of_products] = update_to_cart($productId, $quantity);
+    }
+    echo json_encode([
+      "html" => cart($cart),
+      "number_of_products" => $number_of_products,
+    ]);
+  }
+  if (isset($_POST["remove_from_cart"]) && isset($_POST["product_id"])) {
+    $productId = sanitize_html($_POST["product_id"]);
     [$cart, $number_of_products] = remove_from_cart($productId);
+    echo json_encode([
+      "html" => cart($cart),
+      "number_of_products" => $number_of_products,
+    ]);
   }
-  if ($isValid && $newQuantity > 0) {
-    $quantity = intval($newQuantity) - $oldQuantity;
-    [$cart, $number_of_products] = update_to_cart($productId, $quantity);
-  }
-  echo json_encode([
-    "html" => cart($cart),
-    "number_of_products" => $number_of_products,
-  ]);
-}
-
-if (isset($_POST["remove_from_cart"]) && isset($_POST["product_id"])) {
-  $productId = sanitize_html($_POST["product_id"]);
-  [$cart, $number_of_products] = remove_from_cart($productId);
-  echo json_encode([
-    "html" => cart($cart),
-    "number_of_products" => $number_of_products,
-  ]);
+} catch (Exception $e) {
+  echo json_response(
+    code: $e->getCode(),
+    message: $e->getMessage(),
+  );
 }

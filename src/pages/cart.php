@@ -27,7 +27,7 @@ function remove_cart_product($productId)
 function handle_update()
 {
   $isUpdate = isset($_POST["update_to_cart"]);
-  $isDelete = isset($_POST["delete_from_cart"]);
+  $isDelete = isset($_POST["remove_from_cart"]);
   if (($isUpdate || $isDelete) && isset($_POST["product_id"])) {
     $productId = sanitize_html($_POST["product_id"]);
     if ($isDelete) {

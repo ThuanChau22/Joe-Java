@@ -26,15 +26,15 @@ function cart($cart)
             </a>
             <div class="row g-0 mt-auto">
               <div class="col-lg-3 col-md-6 col-sm-5 col-8">
-                <form class="d-inline" method="post" action="cart" onsubmit="return updateToCart(this)">
+                <form class="d-inline" method="post" action="cart" onsubmit="updateToCart(event)">
                   <input type="hidden" name="product_id" value="$productId">
                   <input type="hidden" name="old_quantity" value="$productQuantity">
                   <input class="cart-product-input form-control w-50 py-1" type="text" autocomplete="off" maxlength="3" name="new_quantity" value="$productQuantity">
                   <input class="cart-product-btn btn btn-link px-1 pt-0" name="update_to_cart" type="submit" value="Update">
                 </form>
-                <form class="d-inline" method="post" action="cart" onsubmit="return removeFromCart(this)">
+                <form class="d-inline" method="post" action="cart" onsubmit="removeFromCart(event)">
                   <input type="hidden" name="product_id" value="$productId">
-                  <input class="cart-product-btn btn btn-link px-1 pt-0" name="remove_from_cart" type="submit" value="Delete">
+                  <input class="cart-product-btn btn btn-link px-1 pt-0" name="remove_from_cart" type="submit" value="Remove">
                 </form>
               </div>
               <div class="col-md-9 col-md-6 col-sm-7 col-4">
