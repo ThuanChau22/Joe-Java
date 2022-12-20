@@ -24,9 +24,9 @@ const searchCustomers = (e) => {
         const url = `/src/api/customers.php?html&search=${searchTerm}`;
         const response = await api({ url });
         if (response) {
-          spinner.innerHTML = "";
           document.getElementById("customer-list").innerHTML = response.html;
         }
+        spinner.innerHTML = "";
       }
     } catch (error) {
       location.href = "/error";

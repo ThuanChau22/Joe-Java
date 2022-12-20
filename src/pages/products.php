@@ -106,7 +106,7 @@ function product_list($selectedOption = ALL_PRODUCTS)
           <form method="post" action="$requestURI" onsubmit="addToCart(event)">
             <input type="hidden" name="product_id" value="$productId">
             <button class="btn products-add-to-cart-btn" name="add_to_cart" type="submit">
-              <span class="products-add-to-cart-icon material-symbols-outlined">
+              <span id="add-to-cart-icon-$productId" class="products-add-to-cart-icon material-symbols-outlined">
                 add_shopping_cart
               </span>
             </button>
@@ -172,7 +172,9 @@ try {
         <p class="products-item-description-content text-muted">$productDescription</p>
         <form class="pt-3 pb-2" method="post" action="$requestURI" onsubmit="addToCart(event)">
           <input type="hidden" name="product_id" value="$productId">
-          <input class="products-item-add-to-cart-btn" name="add_to_cart" type="submit" value="Add to cart">
+          <button id="add-to-cart-$productId" class="products-item-add-to-cart-btn" name="add_to_cart" type="submit">
+            Add to Cart
+          </button>
         </form>
       </div>
     </div>

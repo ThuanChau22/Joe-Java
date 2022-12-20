@@ -22,10 +22,33 @@ const hoverOverLongProductName = () => {
 window.addEventListener("load", hoverOverLongProductName);
 window.addEventListener("resize", hoverOverLongProductName);
 
+const startSpinner = (productId) => {
+  const addButton = document.getElementById(`add-to-cart-${productId}`);
+  if (addButton) {
+    addButton.innerHTML = `<i class="fa fa-spinner fa-spin"></i>`;
+  }
+  const addIcon = document.getElementById(`add-to-cart-icon-${productId}`);
+  if (addIcon) {
+    addIcon.innerHTML = `<i class="fa fa-spinner fa-spin"></i>`;
+  }
+}
+
+const stopSpinner = (productId) => {
+  const addButton = document.getElementById(`add-to-cart-${productId}`);
+  if (addButton) {
+    addButton.innerHTML = "Added";
+  }
+  const addIcon = document.getElementById(`add-to-cart-icon-${productId}`);
+  if (addIcon) {
+    addIcon.innerHTML = "add_shopping_cart";
+  }
+}
+
 const addToCart = async (e) => {
   e.preventDefault();
   try {
     const { add_to_cart, product_id } = e.target;
+    startSpinner(product_id.value);
     const url = "/src/api/cart.php";
     const body = {
       add_to_cart: add_to_cart.value,
@@ -37,6 +60,7 @@ const addToCart = async (e) => {
       productCount = productCount >= 100 ? "99+" : productCount;
       document.getElementById("cart-product-count").innerHTML = productCount;
     }
+    stopSpinner(product_id.value);
   } catch (error) {
     location.href = "/error";
   }
