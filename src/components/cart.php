@@ -15,17 +15,17 @@ function cart($cart)
       $productList .= <<<HTML
       <div class="card py-1 mb-2">
         <div class="row g-0">
-          <div class="col-lg-2 col-md-4 col-sm-3 col-4">
+          <div class="col-md-4 col-sm-3 col-4">
           <a href=/products/$productId>
             <img class="img-fluid rounded-start" src=$productImage>
           </a>
           </div>
-          <div class="col-lg-10 col-md-8 col-sm-9 col-8 d-flex flex-column">
+          <div class="col-md-8 col-sm-9 col-8 d-flex flex-column">
             <a class="text-decoration-none" href=/products/$productId>
               <p class="cart-product-title my-1">$productName</p>
             </a>
             <div class="row g-0 mt-auto">
-              <div class="col-lg-3 col-md-6 col-sm-5 col-8">
+              <div class="col-lg-6 col-md-7 col-sm-5 col-9">
                 <form class="d-inline" method="post" action="cart" onsubmit="updateToCart(event)">
                   <input type="hidden" name="product_id" value="$productId">
                   <input type="hidden" name="old_quantity" value="$productQuantity">
@@ -37,7 +37,7 @@ function cart($cart)
                   <input class="cart-product-btn btn btn-link px-1 pt-0" name="remove_from_cart" type="submit" value="Remove">
                 </form>
               </div>
-              <div class="col-md-9 col-md-6 col-sm-7 col-4">
+              <div class="col-lg-6 col-md-5 col-sm-7 col-3">
                 <div class="cart-product-price">$$productPrice</div>
               </div>
             </div>
@@ -76,7 +76,7 @@ function cart($cart)
     }
     $total = number_format($total, 2);
     return <<<HTML
-    <div class="card">
+    <div class="cart-summary card">
       <div class="card-header">
         <p class="cart-summary-title">Order Summary</p>
       </div>
@@ -97,12 +97,14 @@ function cart($cart)
   return count($cart) > 0
     ? <<<HTML
     <div class="row">
-      <div class="col-lg-8 col-md-7 mb-3">
+      <div class="col-xl-2 col-lg-1"></div>
+      <div class="col-xl-5 col-lg-6 col-md-7 mb-3">
         $productList
       </div>
-      <div class="col-lg-4 col-md-5">
+      <div class="col-xl-3 col-lg-4 col-md-5">
         $orderSummary
       </div>
+      <div class="col-xl-2 col-lg-1"></div>
     </div>
     HTML
     : <<<HTML
