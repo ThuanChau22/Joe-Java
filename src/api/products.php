@@ -27,11 +27,11 @@ try {
         $products = list_products();
         break;
     }
-    echo json_response(data: $products);
+    echo json_response(["data" => $products]);
   } else {
     $id = sanitize_html($_GET["id"]);
     $product = get_product_by_id($id);
-    echo json_response(data: $product);
+    echo json_response(["data" => $product]);
   }
 } catch (Exception $e) {
   echo json_response(
