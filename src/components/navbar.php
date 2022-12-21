@@ -1,5 +1,6 @@
 <?php
 require_once("../utils/database.php");
+require_once("../utils/session.php");
 require_once("../utils/utils.php");
 
 function navbar($pageId)
@@ -19,7 +20,6 @@ function navbar($pageId)
      <a class="nav-link" href="/register">Signup</a>
   </li>
   HTML;
-  $number_of_products = 0;
   if (is_authenticated()) {
     $authItems = <<<HTML
     <form class="m-0" method="post" action="$requestURI">
@@ -29,13 +29,11 @@ function navbar($pageId)
     if (is_admin()) {
       $pages[] = "customers";
     }
-    $userId = get_session_user()[UID];
-    $number_of_products = get_cart_number_of_products($userId);
+    $userId = get_user_session()[UID];
+    $numberOfProducts = get_cart_quantities($userId);
   } else {
-    $number_of_products = get_cart_number_of_products_session();
-  }
-  if ($number_of_products >= 100) {
-    $number_of_products = "99+";
+    $numberOfProducts = get_cart_quantities_session();
+    $numberOfProducts = $numberOfProducts >= 100 ? "99+" : $numberOfProducts;
   }
   $navItems = "";
   $style = "style='color:#d9d9d9 !important; font-weight: bold !important'";
@@ -66,7 +64,7 @@ function navbar($pageId)
             <a class="nav-link" href="/cart">
               <span class="cart-icon material-symbols-outlined">
                 shopping_cart
-              </span><span id="cart-product-count">$number_of_products</span>
+              </span><span id="cart-product-count">$numberOfProducts</span>
             </a>
           </li>
         </ul>

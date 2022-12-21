@@ -1,6 +1,7 @@
 <?php
 require_once("../components/document.php");
 require_once("../utils/database.php");
+require_once("../utils/session.php");
 require_once("../utils/utils.php");
 
 /**
@@ -131,7 +132,7 @@ try {
   if (isset($_POST["add_to_cart"]) && isset($_POST["product_id"])) {
     $productId = sanitize_html($_POST["product_id"]);
     if (is_authenticated()) {
-      $userId = get_session_user()[UID];
+      $userId = get_user_session()[UID];
       set_product_to_cart($userId, $productId);
     } else {
       set_product_to_cart_session($productId);

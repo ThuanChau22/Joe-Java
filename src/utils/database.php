@@ -148,34 +148,34 @@ function add_customer($fields)
     foreach ($values as $i => $value) {
       $values[$i] = sanitize_sql($conn, $value);
     }
-    $conn->begin_transaction();
-    try {
-      // Insert into user
-      $query = "INSERT INTO user (email, password) VALUES (LOWER(?), ?)";
-      $stmt = $conn->prepare($query);
-      $hashedPassword = hash("sha512", $password);
-      $stmt->bind_param("ss", $email, $hashedPassword);
-      $stmt->execute();
 
-      // Insert into customer
-      $query = <<<SQL
-      INSERT INTO customer
-      (id, first_name, last_name, home_phone, cell_phone, address)
-       VALUES (LAST_INSERT_ID(), ?, ?, ?, ?, ?)
-      SQL;
-      $stmt = $conn->prepare($query);
-      $stmt->bind_param("sssss", ...$values);
-      $stmt->execute();
-    } catch (Exception $e) {
-      $conn->rollback();
-      if ($e->getCode() == DUPLICATE_ERROR) {
-        return "Email already existed";
-      }
-      throw $e;
-    }
+    $conn->begin_transaction();
+    // Insert into user
+    $query = "INSERT INTO user (email, password) VALUES (LOWER(?), ?)";
+    $stmt = $conn->prepare($query);
+    $hashedPassword = hash("sha512", $password);
+    $stmt->bind_param("ss", $email, $hashedPassword);
+    $stmt->execute();
+
+    // Insert into customer
+    $query = <<<SQL
+    INSERT INTO customer
+    (id, first_name, last_name, home_phone, cell_phone, address)
+     VALUES (LAST_INSERT_ID(), ?, ?, ?, ?, ?)
+    SQL;
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("sssss", ...$values);
+    $stmt->execute();
+
     $conn->commit();
     return "";
   } catch (Exception $e) {
+    if (isset($conn)) {
+      $conn->rollback();
+    }
+    if ($e->getCode() == DUPLICATE_ERROR) {
+      return "Email already existed";
+    }
     throw $e;
   } finally {
     close_db($conn, $stmt);
@@ -358,6 +358,55 @@ function update_product_visited_count($productId)
 }
 
 /**
+ * Get cart update timestamp
+ */
+function get_cart_update($userId)
+{
+  $conn = $stmt = $result = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $query = "SELECT cart_update FROM user WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $timestamp = $result->fetch_all(MYSQLI_ASSOC)[0]["cart_update"];
+    return date(DATE_ATOM, strtotime($timestamp));
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
+  }
+}
+
+/**
+ * Get total quantity of products in cart
+ */
+function get_cart_quantities($userId)
+{
+  $conn = $stmt = $result = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $query = <<<SQL
+    SELECT SUM(quantity) AS count
+    FROM cart WHERE user_id = ?
+    SQL;
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $count = $result->fetch_all(MYSQLI_ASSOC)[0]["count"];
+    return $count == null ? 0 : $count;
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt, $result);
+  }
+}
+
+/**
  * List product from customer cart
  */
 function list_cart_products($userId)
@@ -384,32 +433,6 @@ function list_cart_products($userId)
 }
 
 /**
- * Get total quantity of products in cart
- */
-function get_cart_number_of_products($userId)
-{
-  $conn = $stmt = $result = null;
-  try {
-    $conn = connect_db();
-    $userId = sanitize_sql($conn, $userId);
-    $query = <<<SQL
-    SELECT SUM(quantity) AS count
-    FROM cart WHERE user_id = ?
-    SQL;
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $userId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $count = $result->fetch_all(MYSQLI_ASSOC)[0]["count"];
-    return $count == null ? 0 : $count;
-  } catch (Exception $e) {
-    throw $e;
-  } finally {
-    close_db($conn, $stmt, $result);
-  }
-}
-
-/**
  * Set product id to customer cart
  */
 function set_product_to_cart($userId, $productId, $quantity = 1)
@@ -420,16 +443,29 @@ function set_product_to_cart($userId, $productId, $quantity = 1)
     $userId = sanitize_sql($conn, $userId);
     $productId = sanitize_sql($conn, $productId);
     $quantity = sanitize_sql($conn, $quantity);
+
+    $conn->begin_transaction();
+    // Insert/Update product to customer cart
     $query = <<<SQL
     INSERT INTO cart
     (user_id, product_id, quantity) VALUES (?, ?, 1)
     ON DUPLICATE KEY UPDATE quantity = quantity + ?
     SQL;
     $stmt = $conn->prepare($query);
-    $productId = sanitize_sql($conn, $productId);
     $stmt->bind_param("sss", $userId, $productId, $quantity);
     $stmt->execute();
+
+    // Update customer cart timestamp
+    $query = "UPDATE user SET cart_update = CURRENT_TIMESTAMP WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $userId);
+    $stmt->execute();
+
+    $conn->commit();
   } catch (Exception $e) {
+    if (isset($conn)) {
+      $conn->rollback();
+    }
     throw $e;
   } finally {
     close_db($conn, $stmt);
@@ -446,12 +482,25 @@ function remove_product_from_cart($userId, $productId)
     $conn = connect_db();
     $userId = sanitize_sql($conn, $userId);
     $productId = sanitize_sql($conn, $productId);
+
+    $conn->begin_transaction();
+    // Remove product from customer cart
     $query = "DELETE FROM cart WHERE user_id = ? AND product_id = ?";
     $stmt = $conn->prepare($query);
-    $productId = sanitize_sql($conn, $productId);
     $stmt->bind_param("ss", $userId, $productId);
     $stmt->execute();
+
+    // Update customer cart timestamp
+    $query = "UPDATE user SET cart_update = CURRENT_TIMESTAMP WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $userId);
+    $stmt->execute();
+
+    $conn->commit();
   } catch (Exception $e) {
+    if (isset($conn)) {
+      $conn->rollback();
+    }
     throw $e;
   } finally {
     close_db($conn, $stmt);
@@ -467,11 +516,25 @@ function remove_all_products_from_cart($userId)
   try {
     $conn = connect_db();
     $userId = sanitize_sql($conn, $userId);
+
+    $conn->begin_transaction();
+    // Remove all products from customer cart
     $query = "DELETE FROM cart WHERE user_id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $userId);
     $stmt->execute();
+
+    // Update customer cart timestamp
+    $query = "UPDATE user SET cart_update = CURRENT_TIMESTAMP WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $userId);
+    $stmt->execute();
+
+    $conn->commit();
   } catch (Exception $e) {
+    if (isset($conn)) {
+      $conn->rollback();
+    }
     throw $e;
   } finally {
     close_db($conn, $stmt);
