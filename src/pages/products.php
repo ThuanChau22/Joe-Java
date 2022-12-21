@@ -91,9 +91,9 @@ function product_list($selectedOption = ALL_PRODUCTS)
     $productName = $product["name"];
     $productPrice = $product["price"];
     $productList .= <<<HTML
-    <div class="products-card col-xl-2 col-lg-3 col-md-4 col-sm-6">
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 pt-3">
       <a class="products-card-link" href=/products/$productId>
-        <div class="card">
+        <div class="products-card card">
           <img class="card-img-top" src=$productImage>
           <div class="card-body">
             <div class="products-card-name">
