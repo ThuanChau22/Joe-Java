@@ -383,7 +383,7 @@ function get_cart_update($userId)
 /**
  * Get total quantity of products in cart
  */
-function get_cart_quantities($userId)
+function get_cart_quantity($userId)
 {
   $conn = $stmt = $result = null;
   try {

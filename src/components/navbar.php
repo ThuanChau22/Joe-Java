@@ -30,9 +30,9 @@ function navbar($pageId)
       $pages[] = "customers";
     }
     $userId = get_user_session()[UID];
-    $numberOfProducts = get_cart_quantities($userId);
+    $numberOfProducts = get_cart_quantity($userId);
   } else {
-    $numberOfProducts = get_cart_quantities_session();
+    $numberOfProducts = get_cart_quantity_session();
     $numberOfProducts = $numberOfProducts >= 100 ? "99+" : $numberOfProducts;
   }
   $navItems = "";

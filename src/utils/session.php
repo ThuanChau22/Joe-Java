@@ -58,18 +58,18 @@ function remove_session()
  */
 function set_referer($excludes = [])
 {
-  if (isset($_SERVER['HTTP_REFERER'])) {
-    $referer = parse_url($_SERVER['HTTP_REFERER']);
+  if (isset($_SERVER["HTTP_REFERER"])) {
+    $referer = parse_url($_SERVER["HTTP_REFERER"]);
     $host = $referer["host"];
     if ($host == "localhost") {
       $host .= ":" . $referer["port"];
     }
-    $isSameHost = $host == $_SERVER['HTTP_HOST'];
-    $isSamePath = $referer["path"] == $_SERVER['REQUEST_URI'];
+    $isSameHost = $host == $_SERVER["HTTP_HOST"];
+    $isSamePath = $referer["path"] == $_SERVER["REQUEST_URI"];
     $isExcluded = in_array($referer["path"], $excludes);
     if ($isSameHost && !$isSamePath && !$isExcluded) {
       $updated = init_session();
-      $_SESSION[USER][REFERER] = $_SERVER['HTTP_REFERER'];
+      $_SESSION[USER][REFERER] = $_SERVER["HTTP_REFERER"];
       $updated();
     }
   }
@@ -148,7 +148,7 @@ function get_cart_session()
 /**
  * Get total quantity of products in cart session
  */
-function get_cart_quantities_session()
+function get_cart_quantity_session()
 {
   $number_of_products = 0;
   $cart = get_cart_session();

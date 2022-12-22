@@ -108,9 +108,9 @@ function json_response($data = null, $code = 200, $message = "")
 {
   header_remove();
   http_response_code($code);
-  header("Cache-Control: no-transform,public,max-age=300,s-maxage=900");
+  header("Cache-Control: no-cache, private");
   header('Content-Type: application/json');
-  $body = $data;
+  $body = ["data" => $data];
   if ($code >= 300 && $code < 500) {
     $body = [
       "status" => $code,

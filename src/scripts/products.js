@@ -49,14 +49,15 @@ const addToCart = async (e) => {
   try {
     const { add_to_cart, product_id } = e.target;
     startSpinner(product_id.value);
-    const url = "/src/api/cart.php";
+    const baseURL = "/src/api/cart.php";
     const body = {
       add_to_cart: add_to_cart.value,
       product_id: product_id.value,
     };
-    const response = await api({ method: "POST", url, body });
-    if (response) {
-      let productCount = response.number_of_products;
+    await api({ method: "POST", url: baseURL, body });
+    const quantity = await api({ url: `${baseURL}?quantity` });
+    if (quantity) {
+      let productCount = quantity.data;
       productCount = productCount >= 100 ? "99+" : productCount;
       document.getElementById("cart-product-count").innerHTML = productCount;
     }
