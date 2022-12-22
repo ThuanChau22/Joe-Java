@@ -30,11 +30,12 @@ function navbar($pageId)
       $pages[] = "customers";
     }
     $userId = get_user_session()[UID];
+    merge_to_cart_session($userId);
     $numberOfProducts = get_cart_quantity($userId);
   } else {
     $numberOfProducts = get_cart_quantity_session();
-    $numberOfProducts = $numberOfProducts >= 100 ? "99+" : $numberOfProducts;
   }
+  $numberOfProducts = $numberOfProducts >= 100 ? "99+" : $numberOfProducts;
   $navItems = "";
   $style = "style='color:#d9d9d9 !important; font-weight: bold !important'";
   foreach ($pages as $page) {

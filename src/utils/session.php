@@ -193,6 +193,19 @@ function set_product_to_cart_session($productId, $quantity = 1)
 }
 
 /**
+ * Merge cart session to cart database
+ */
+function merge_to_cart_session($userId)
+{
+  $cart = get_cart_session();
+  merge_to_cart($userId, [
+    "productIds" => $cart[PRODUCT_IDS],
+    "quantities" => $cart[QUANTITIES],
+  ]);
+  remove_all_products_from_cart_session();
+}
+
+/**
  * Remove a product from cart session
  */
 function remove_product_from_cart_session($productId)
