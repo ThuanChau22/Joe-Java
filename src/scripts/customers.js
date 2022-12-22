@@ -21,10 +21,11 @@ const searchCustomers = (e) => {
       if (isModified && (searchTerm.length == 0 || searchTerm.length >= 3)) {
         const spinner = document.getElementById("search-spinner");
         spinner.innerHTML = `<i class="fa fa-spinner fa-spin"></i>`;
-        const url = `/src/api/customers.php?html&search=${searchTerm}`;
-        const response = await api({ url });
+        const baseURL = "/src/api/customers";
+        const query = `html&search=${searchTerm}`;
+        const response = await api({ url: `${baseURL}?${query}` });
         if (response) {
-          document.getElementById("customer-list").innerHTML = response.html;
+          document.getElementById("customer-list").innerHTML = response.data;
         }
         spinner.innerHTML = "";
       }

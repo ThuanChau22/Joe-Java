@@ -1,6 +1,7 @@
 <?php
 require_once("../components/document.php");
 require_once("../utils/database.php");
+require_once("../utils/session.php");
 require_once("../utils/utils.php");
 
 /**
@@ -91,9 +92,9 @@ function product_list($selectedOption = ALL_PRODUCTS)
     $productName = $product["name"];
     $productPrice = $product["price"];
     $productList .= <<<HTML
-    <div class="products-card col-xl-2 col-lg-3 col-md-4 col-sm-6">
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 pt-3">
       <a class="products-card-link" href=/products/$productId>
-        <div class="card">
+        <div class="products-card card">
           <img class="card-img-top" src=$productImage>
           <div class="card-body">
             <div class="products-card-name">
@@ -131,7 +132,7 @@ try {
   if (isset($_POST["add_to_cart"]) && isset($_POST["product_id"])) {
     $productId = sanitize_html($_POST["product_id"]);
     if (is_authenticated()) {
-      $userId = get_session_user()[UID];
+      $userId = get_user_session()[UID];
       set_product_to_cart($userId, $productId);
     } else {
       set_product_to_cart_session($productId);

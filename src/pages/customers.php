@@ -2,6 +2,7 @@
 require_once("../components/document.php");
 require_once("../components/customers.php");
 require_once("../utils/database.php");
+require_once("../utils/session.php");
 require_once("../utils/utils.php");
 
 /**

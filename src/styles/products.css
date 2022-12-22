@@ -53,13 +53,13 @@
   font-family: "Dancing Script", cursive;
 }
 
-.products-card {
-  padding-top: clamp(15px, 1vw, 20px);
-}
-
 .products-card-link, .products-card-link:hover {
   color: #663300;
   text-decoration: none;
+}
+
+.products-card:hover {
+  box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
 }
 
 .products-card-name {

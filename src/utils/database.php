@@ -108,8 +108,9 @@ function list_customers($search = "")
         "first_name", "last_name",
         "email", "home_phone", "cell_phone",
       ];
+      $length = count($searchFields);
       foreach ($searchFields as $i => $field) {
-        $isLast = $i == count($searchFields) - 1;
+        $isLast = $i == $length - 1;
         $conditions .= "$field LIKE ?" . ($isLast ? "" : " OR ");
         $conditionValues[] = "%$search%";
       }
@@ -148,34 +149,34 @@ function add_customer($fields)
     foreach ($values as $i => $value) {
       $values[$i] = sanitize_sql($conn, $value);
     }
-    $conn->begin_transaction();
-    try {
-      // Insert into user
-      $query = "INSERT INTO user (email, password) VALUES (LOWER(?), ?)";
-      $stmt = $conn->prepare($query);
-      $hashedPassword = hash("sha512", $password);
-      $stmt->bind_param("ss", $email, $hashedPassword);
-      $stmt->execute();
 
-      // Insert into customer
-      $query = <<<SQL
-      INSERT INTO customer
-      (id, first_name, last_name, home_phone, cell_phone, address)
-       VALUES (LAST_INSERT_ID(), ?, ?, ?, ?, ?)
-      SQL;
-      $stmt = $conn->prepare($query);
-      $stmt->bind_param("sssss", ...$values);
-      $stmt->execute();
-    } catch (Exception $e) {
-      $conn->rollback();
-      if ($e->getCode() == DUPLICATE_ERROR) {
-        return "Email already existed";
-      }
-      throw $e;
-    }
+    $conn->begin_transaction();
+    // Insert into user
+    $query = "INSERT INTO user (email, password) VALUES (LOWER(?), ?)";
+    $stmt = $conn->prepare($query);
+    $hashedPassword = hash("sha512", $password);
+    $stmt->bind_param("ss", $email, $hashedPassword);
+    $stmt->execute();
+
+    // Insert into customer
+    $query = <<<SQL
+    INSERT INTO customer
+    (id, first_name, last_name, home_phone, cell_phone, address)
+     VALUES (LAST_INSERT_ID(), ?, ?, ?, ?, ?)
+    SQL;
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("sssss", ...$values);
+    $stmt->execute();
+
     $conn->commit();
     return "";
   } catch (Exception $e) {
+    if (isset($conn)) {
+      $conn->rollback();
+    }
+    if ($e->getCode() == DUPLICATE_ERROR) {
+      return "Email already existed";
+    }
     throw $e;
   } finally {
     close_db($conn, $stmt);
@@ -267,7 +268,8 @@ function list_products_by_most_visited($limit = 5)
  */
 function list_products_by_id($idList)
 {
-  if (count($idList) == 0) {
+  $length = count($idList);
+  if ($length  == 0) {
     return [];
   }
   $conn = $stmt = $result = null;
@@ -276,7 +278,7 @@ function list_products_by_id($idList)
     $wildcards = $types = "";
     foreach ($idList as $i => $id) {
       $idList[$i] = sanitize_sql($conn, $id);
-      $isLast = $i == count($idList) - 1;
+      $isLast = $i == $length - 1;
       $wildcards .= "?" . ($isLast ? "" : ",");
       $types .= "s";
     }
@@ -358,7 +360,7 @@ function update_product_visited_count($productId)
 }
 
 /**
- * List product from customer cart
+ * List product from cart
  */
 function list_cart_products($userId)
 {
@@ -386,7 +388,7 @@ function list_cart_products($userId)
 /**
  * Get total quantity of products in cart
  */
-function get_cart_number_of_products($userId)
+function get_cart_quantity($userId)
 {
   $conn = $stmt = $result = null;
   try {
@@ -410,7 +412,7 @@ function get_cart_number_of_products($userId)
 }
 
 /**
- * Set product id to customer cart
+ * Set product id to cart
  */
 function set_product_to_cart($userId, $productId, $quantity = 1)
 {
@@ -426,8 +428,51 @@ function set_product_to_cart($userId, $productId, $quantity = 1)
     ON DUPLICATE KEY UPDATE quantity = quantity + ?
     SQL;
     $stmt = $conn->prepare($query);
-    $productId = sanitize_sql($conn, $productId);
     $stmt->bind_param("sss", $userId, $productId, $quantity);
+    $stmt->execute();
+  } catch (Exception $e) {
+    throw $e;
+  } finally {
+    close_db($conn, $stmt);
+  }
+}
+
+
+/**
+ * Merge to cart
+ * $cart: {
+ *    productIds:Array
+ *    quantities:Array
+ * }
+ */
+function merge_to_cart($userId, $cart)
+{
+  $length = count($cart["productIds"]);
+  if ($length == 0) {
+    return;
+  }
+  $conn = $stmt = null;
+  try {
+    $conn = connect_db();
+    $userId = sanitize_sql($conn, $userId);
+    $wildcards = $types = "";
+    $values = [];
+    foreach ($cart["productIds"] as $i => $productId) {
+      $productId = sanitize_sql($conn, $productId);
+      $quantity = $cart["quantities"][$productId];
+      $quantity = sanitize_sql($conn, $quantity);
+      $isLast = $i == $length - 1;
+      $wildcards .= "(?,?,?)" . ($isLast ? "" : ",");
+      $types .= "sss";
+      array_push($values, $userId, $productId, $quantity);
+    }
+    $query = <<<SQL
+    INSERT INTO cart
+    (user_id, product_id, quantity) VALUES $wildcards
+    ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)
+    SQL;
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param($types, ...$values);
     $stmt->execute();
   } catch (Exception $e) {
     throw $e;
@@ -448,7 +493,6 @@ function remove_product_from_cart($userId, $productId)
     $productId = sanitize_sql($conn, $productId);
     $query = "DELETE FROM cart WHERE user_id = ? AND product_id = ?";
     $stmt = $conn->prepare($query);
-    $productId = sanitize_sql($conn, $productId);
     $stmt->bind_param("ss", $userId, $productId);
     $stmt->execute();
   } catch (Exception $e) {
@@ -459,7 +503,7 @@ function remove_product_from_cart($userId, $productId)
 }
 
 /**
- * Clear products from customer cart
+ * Clear products from cart
  */
 function remove_all_products_from_cart($userId)
 {

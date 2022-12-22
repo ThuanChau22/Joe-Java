@@ -13,12 +13,12 @@ function cart($cart)
       $productPrice = $product["price"];
       $productQuantity = $product["quantity"];
       $productList .= <<<HTML
-      <div class="card py-1 mb-2">
+      <div class="cart-product-card card py-1 mb-2">
         <div class="row g-0">
           <div class="col-md-4 col-sm-3 col-4">
-          <a href=/products/$productId>
-            <img class="img-fluid rounded-start" src=$productImage>
-          </a>
+            <a href=/products/$productId>
+              <img class="img-fluid rounded-start" src=$productImage>
+            </a>
           </div>
           <div class="col-md-8 col-sm-9 col-8 d-flex flex-column">
             <a class="text-decoration-none" href=/products/$productId>
