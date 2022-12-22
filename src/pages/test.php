@@ -3,7 +3,7 @@ require_once("../utils/utils.php");
 
 function getCustomers()
 {
-  $url = "http://localhost:8000/json/customers";
+  $url = "http://localhost:8000/api/customers";
   $curlHandler = curl_init($url);
   curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);
   $response = curl_exec($curlHandler);

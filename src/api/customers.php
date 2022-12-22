@@ -4,16 +4,18 @@ require_once("../utils/database.php");
 require_once("../utils/utils.php");
 
 try {
-  $searchTerm = "";
-  if (isset($_GET["search"])) {
-    $searchTerm = sanitize_html($_GET["search"]);
+  $requestMethod = $_SERVER["REQUEST_METHOD"];
+  if ($requestMethod == "GET") {
+    $searchTerm = "";
+    if (isset($_GET["search"])) {
+      $searchTerm = sanitize_html($_GET["search"]);
+    }
+    $customers = list_customers($searchTerm);
+    if (isset($_GET["html"])) {
+      $customers = customers($customers);
+    }
+    echo json_response($customers);
   }
-  $customers = list_customers($searchTerm);
-  $response = ["data" => $customers];
-  if (isset($_GET["html"])) {
-    $response = ["html" => customers($customers)];
-  }
-  echo json_response($response);
 } catch (Exception $e) {
   echo json_response(
     code: $e->getCode(),
