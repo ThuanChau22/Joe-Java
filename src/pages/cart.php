@@ -71,13 +71,12 @@ try {
   handle_update();
   handle_checkout();
   if (isset($_GET["checkout_success"])) {
-    $requestURI = $_SERVER["REQUEST_URI"];
-    header("Refresh:3;URL=$requestURI");
     $pageContent = <<<HTML
     <div class="cart-checkout-success">
       <p class="text-success">Thank You for Your Purchase!</p>
     </div>
     HTML;
+    header("Refresh:3;URL=cart");
   } else {
     if (is_authenticated()) {
       $userId = get_user_session()[UID];
